@@ -4,7 +4,11 @@ from django import forms
 class ProseEditorWidget(forms.Textarea):
     class Media:
         css = {"screen": ["django_prose_editor/editor.css"]}
-        js = ["django_prose_editor/editor.js", "django_prose_editor/init.js"]
+        js = [
+            "django_prose_editor/editor.js",
+            "admin/js/jquery.init.js",
+            "django_prose_editor/init.js",
+        ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
