@@ -1,78 +1,49 @@
 :root {
-  --tw-editor-font-size: 16px;
-  --tw-menubar-font-size: 16px;
+  --prose-editor-font-size: 14px;
+  --prose-menubar-font-size: 14px;
 }
 
 .ProseMirror {
-  padding: 4px;
+  padding: 0 6px;
   border: 1px solid var(--border-color);
   border-radius: 4px;
 }
 
-.tw-editor *,
-.tw-editor *::before,
-.tw-editor *::after {
+.prose-editor *,
+.prose-editor *::before,
+.prose-editor *::after {
   box-sizing: inherit;
 }
 
-.tw-editor {
-  font-size: var(--tw-editor-font-size);
+.prose-editor {
+  font-size: var(--prose-editor-font-size);
   box-sizing: border-box;
   position: relative;
 
   flex-grow: 1;
 }
 
-.tw-editor + textarea,
-.tw-hide {
+.prose-editor + textarea {
   display: none;
 }
 
-/* https://kittygiraudel.com/snippets/sr-only-class/ */
-.tw-sr-only {
-  border: 0 !important;
-  clip: rect(1px, 1px, 1px, 1px) !important;
-  -webkit-clip-path: inset(50%) !important;
-  clip-path: inset(50%) !important;
-  height: 1px !important;
-  overflow: hidden !important;
-  margin: -1px !important;
-  padding: 0 !important;
-  position: absolute !important;
-  width: 1px !important;
-  white-space: nowrap !important;
-}
-
-.tw-menubar {
-  font-size: var(--tw-menubar-font-size);
-  position: sticky;
-  top: var(--tw-menubar-top);
+.prose-menubar {
+  font-size: var(--prose-menubar-font-size);
   background: white;
-  z-index: 10;
   display: inline-flex;
+  gap: 8px;
   flex-wrap: wrap;
-  box-shadow: var(--tw-box-shadow);
-  border-radius: 0.5em;
-  margin-bottom: 0.25rem;
+  margin-bottom: 2px;
 }
 
-.tw-menubar__group {
+.prose-menubar__group {
   display: flex;
   gap: 2px;
 }
 
-.tw-menubar__group:not(:last-child)::after {
-  content: "";
-  background-color: var(--tw-secondary-color);
-  width: 2px;
-  height: 2em;
-  margin: 0.25em;
-}
-
-.tw-menubar__button {
-  color: var(--tw-primary-color);
+.prose-menubar__button {
   cursor: pointer;
-  padding: 0.25em;
+  padding: 0 0.25em;
   min-width: 2em;
   transition: all 0.25s;
   border: 1px solid;
@@ -80,16 +51,15 @@
   text-align: center;
 }
 
-.tw-menubar__button:hover {
-  background-color: var(--tw-secondary-color);
+.prose-menubar__button:hover {
   filter: brightness(110%);
 }
 
-.tw-menubar__button.active {
-  background-color: var(--tw-secondary-color);
+.prose-menubar__button.active {
+  background-color: var(--primary);
 }
 
-.tw-menubar__button.disabled {
+.prose-menubar__button.disabled {
   background-color: #acc0cc;
   filter: brightness(100%);
   cursor: not-allowed;
@@ -97,14 +67,14 @@
 }
 
 /* history */
-.tw-menubar__button--history-undo,
-.tw-menubar__button--history-redo {
+.prose-menubar__button--history-undo,
+.prose-menubar__button--history-redo {
   background-image: url(./images/history-arrow.svg);
   background-repeat: no-repeat;
   background-size: 1.25em;
   background-position: center;
 }
 
-.tw-menubar__button--history-redo {
+.prose-menubar__button--history-redo {
   transform: scaleX(-1);
 }

@@ -24,7 +24,11 @@ function markActive(state, type) {
 }
 
 function menuButtonDOM(textContent, style = "") {
-  return crel("span", { className: "tw-menubar__button", style, textContent })
+  return crel("span", {
+    className: "prose-menubar__button",
+    style,
+    textContent,
+  })
 }
 
 export function blockTypeMenuItems(schema) {
@@ -116,8 +120,8 @@ const linkDialog = (attrs) => {
     document.body.append(div)
     const dialog = div.querySelector("dialog")
     const form = div.querySelector("form")
-    form.href.value = attrs.href
-    form.title.value = attrs.title
+    form.href.value = attrs.href || ""
+    form.title.value = attrs.title || ""
 
     dialog.addEventListener("close", () => {
       div.remove()
@@ -126,7 +130,11 @@ const linkDialog = (attrs) => {
     div.querySelector("button[type=submit]").addEventListener("click", (e) => {
       e.preventDefault()
       div.remove()
-      resolve({ href: form.href.value, title: form.title.value })
+      resolve(
+        form.href.value
+          ? { href: form.href.value, title: form.title.value }
+          : null
+      )
     })
     dialog.showModal()
   })
@@ -194,7 +202,7 @@ export function historyMenuItems() {
     {
       command: undo,
       dom: crel("span", {
-        className: "tw-menubar__button tw-menubar__button--history-undo",
+        className: "prose-menubar__button prose-menubar__button--history-undo",
       }),
       active(_state) {
         return false
@@ -203,7 +211,7 @@ export function historyMenuItems() {
     {
       command: redo,
       dom: crel("span", {
-        className: "tw-menubar__button tw-menubar__button--history-redo",
+        className: "prose-menubar__button prose-menubar__button--history-redo",
       }),
       active(_state) {
         return false
@@ -217,12 +225,12 @@ class MenuView {
     this.items = itemGroups.flatMap((group) => group)
     this.editorView = editorView
 
-    this.dom = crel("div", { className: "tw-menubar" })
+    this.dom = crel("div", { className: "prose-menubar" })
 
     itemGroups
       .filter((group) => group.length)
       .forEach((group) => {
-        const groupDOM = crel("div", { className: "tw-menubar__group" })
+        const groupDOM = crel("div", { className: "prose-menubar__group" })
         this.dom.append(groupDOM)
         group.forEach(({ dom }) => groupDOM.append(dom))
       })

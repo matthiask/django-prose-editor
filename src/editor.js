@@ -100,7 +100,7 @@ export function createEditor(textarea) {
     noSpellCheck(),
   ]
 
-  const editor = crel("div", { className: "tw-editor" })
+  const editor = crel("div", { className: "prose-editor" })
   textarea.insertAdjacentElement("beforebegin", editor)
 
   const editorViewInstance = new EditorView(editor, {
