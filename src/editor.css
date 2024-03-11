@@ -1,0 +1,110 @@
+:root {
+  --tw-editor-font-size: 16px;
+  --tw-menubar-font-size: 16px;
+}
+
+.ProseMirror {
+  padding: 4px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
+
+.tw-editor *,
+.tw-editor *::before,
+.tw-editor *::after {
+  box-sizing: inherit;
+}
+
+.tw-editor {
+  font-size: var(--tw-editor-font-size);
+  box-sizing: border-box;
+  position: relative;
+
+  flex-grow: 1;
+}
+
+.tw-editor + textarea,
+.tw-hide {
+  display: none;
+}
+
+/* https://kittygiraudel.com/snippets/sr-only-class/ */
+.tw-sr-only {
+  border: 0 !important;
+  clip: rect(1px, 1px, 1px, 1px) !important;
+  -webkit-clip-path: inset(50%) !important;
+  clip-path: inset(50%) !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  position: absolute !important;
+  width: 1px !important;
+  white-space: nowrap !important;
+}
+
+.tw-menubar {
+  font-size: var(--tw-menubar-font-size);
+  position: sticky;
+  top: var(--tw-menubar-top);
+  background: white;
+  z-index: 10;
+  display: inline-flex;
+  flex-wrap: wrap;
+  box-shadow: var(--tw-box-shadow);
+  border-radius: 0.5em;
+  margin-bottom: 0.25rem;
+}
+
+.tw-menubar__group {
+  display: flex;
+  gap: 2px;
+}
+
+.tw-menubar__group:not(:last-child)::after {
+  content: "";
+  background-color: var(--tw-secondary-color);
+  width: 2px;
+  height: 2em;
+  margin: 0.25em;
+}
+
+.tw-menubar__button {
+  color: var(--tw-primary-color);
+  cursor: pointer;
+  padding: 0.25em;
+  min-width: 2em;
+  transition: all 0.25s;
+  border: 1px solid;
+  border-radius: 0.25em;
+  text-align: center;
+}
+
+.tw-menubar__button:hover {
+  background-color: var(--tw-secondary-color);
+  filter: brightness(110%);
+}
+
+.tw-menubar__button.active {
+  background-color: var(--tw-secondary-color);
+}
+
+.tw-menubar__button.disabled {
+  background-color: #acc0cc;
+  filter: brightness(100%);
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+/* history */
+.tw-menubar__button--history-undo,
+.tw-menubar__button--history-redo {
+  background-image: url(./images/history-arrow.svg);
+  background-repeat: no-repeat;
+  background-size: 1.25em;
+  background-position: center;
+}
+
+.tw-menubar__button--history-redo {
+  transform: scaleX(-1);
+}

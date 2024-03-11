@@ -1,0 +1,112 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "django-prose-editor"
+dynamic = ["version"]
+description = "Prose editor for the Django admin based on ProseMirror"
+readme = "README.rst"
+license = "BSD-3-Clause"
+requires-python = ">=3.11"
+authors = [
+    { name = "Matthias Kestenholz", email = "mk@feinheit.ch" },
+]
+classifiers = [
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
+dependencies = [
+    "Django>=4.2",
+]
+
+[project.optional-dependencies]
+tests = [
+    "coverage",
+]
+
+[project.urls]
+Homepage = "https://github.com/matthiask/django-prose-editor/"
+
+[tool.hatch.build]
+include = ["django_prose_editor/"]
+
+[tool.hatch.version]
+path = "django_prose_editor/__init__.py"
+
+[tool.ruff]
+fix = true
+show-fixes = true
+target-version = "py311"
+
+[tool.ruff.lint]
+extend-select = [
+  # pyflakes, pycodestyle
+  "F", "E", "W",
+  # mmcabe
+  "C90",
+  # isort
+  "I",
+  # pep8-naming
+  "N",
+  # pyupgrade
+  "UP",
+  # flake8-2020
+  "YTT",
+  # flake8-boolean-trap
+  "FBT",
+  # flake8-bugbear
+  "B",
+  # flake8-builtins
+  "A",
+  # flake8-comprehensions
+  "C4",
+  # flake8-django
+  "DJ",
+  # flake8-logging-format
+  "G",
+  # flake8-pie
+  "PIE",
+  # flake8-simplify
+  "SIM",
+  # flake8-gettext
+  "INT",
+  # pygrep-hooks
+  "PGH",
+  # pylint
+  "PL",
+  # unused noqa
+  "RUF100",
+]
+extend-ignore = [
+  # Allow zip() without strict=
+  "B905",
+  # No line length errors
+  "E501",
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+lines-after-imports = 2
+
+[tool.ruff.lint.mccabe]
+max-complexity = 15
+
+[tool.ruff.lint.per-file-ignores]
+"*/migrat*/*" = [
+  # Allow using PascalCase model names in migrations
+  "N806",
+  # Ignore the fact that migration files are invalid module names
+  "N999",
+]
