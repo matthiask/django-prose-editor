@@ -48,6 +48,34 @@ Note! No migrations will be generated when switching from and to
 ``models.TextField``. That's by design. Those migrations are mostly annoying.
 
 
+Security
+~~~~~~~~
+
+ProseMirror does a really good job of only allowing content which confirms to a
+particular scheme. Of course users can submit what they want, they are not
+constrainted by the HTML widgets you're using. You should still always sanitize
+the HTML submitted on the server side. A good way to do this is by using the
+``sanitize`` argument to the ``ProseEditorField``. You can use the following
+snippet to always pass HTML through `html-sanitizer
+<https://github.com/matthiask/html-sanitizer>`__:
+
+.. code-block:: python
+
+    from html_sanitizer.django import get_sanitizer
+
+    description = ProseEditorField(sanitize=get_sanitizer().sanitize)
+
+
+Convenience
+~~~~~~~~~~~
+
+Sometimes it may be useful to show an excerpt of the HTML field; the
+``ProseEditorField`` automatically adds a ``get_*_excerpt`` method to models
+which returns the truncated and stripped beginning of your HTML field's
+content. The name would be ``Project.get_description_excerpt`` in the example
+above.
+
+
 Customization
 ~~~~~~~~~~~~~
 
