@@ -19,6 +19,7 @@
   font-size: var(--prose-editor-font-size);
   box-sizing: border-box;
   position: relative;
+  max-width: 120ch;
 
   flex-grow: 1;
 }
@@ -77,4 +78,9 @@
 
 .prose-menubar__button--history-redo {
   transform: scaleX(-1);
+}
+
+/* content editor support */
+label:empty:has(+ .prose-editor) {
+  display: none;
 }
