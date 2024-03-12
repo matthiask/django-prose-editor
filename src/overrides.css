@@ -126,6 +126,8 @@
   line-height: 1.1;
   text-transform: none;
   padding: 0;
+  background: none !important;
+  border: none !important;
 }
 
 .ProseMirror pre {
