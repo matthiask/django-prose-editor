@@ -21,6 +21,7 @@ Next version
   in general, but the files are really big in this case.
 - Added a button to the menu to insert horizontal rules.
 - Added material icons for the format bar.
+- Added client side validation to dialogs.
 
 
 `0.1`_ (2024-03-11)

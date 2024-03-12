@@ -7,7 +7,7 @@ const linkDialog = (attrs) => {
     div.innerHTML = `
   <dialog class="prose-editor-dialog">
   <form>
-  <p><label>URL</label> <input type="url" name="href" size="50"></p>
+  <p><label>URL</label> <input type="url" name="href" size="50" required></p>
   <p><label>Title</label> <input type="text" name="title" size="50"></p>
   <button type="submit">Update</button>
   <button value="cancel" formmethod="dialog">Cancel</button>
@@ -26,12 +26,14 @@ const linkDialog = (attrs) => {
     })
     div.querySelector("button[type=submit]").addEventListener("click", (e) => {
       e.preventDefault()
-      div.remove()
-      resolve(
-        form.href.value
-          ? { href: form.href.value, title: form.title.value }
-          : null
-      )
+      if (form.reportValidity()) {
+        div.remove()
+        resolve(
+          form.href.value
+            ? { href: form.href.value, title: form.title.value }
+            : null
+        )
+      }
     })
     dialog.showModal()
   })
@@ -104,8 +106,10 @@ const htmlDialog = (html) => {
     })
     div.querySelector("button[type=submit]").addEventListener("click", (e) => {
       e.preventDefault()
-      div.remove()
-      resolve(form.html.value)
+      if (form.reportValidity()) {
+        div.remove()
+        resolve(form.html.value)
+      }
     })
     dialog.showModal()
   })
