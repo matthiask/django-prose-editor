@@ -6,7 +6,9 @@ Next version
 
 - Extended the README.
 - Fixed the initialization in Django admin inlines.
-- Added a server-side sanitization callback to the ``ProseEditorField``.
+- Added a server-side sanitization callback to the ``ProseEditorField``, and
+  added ``django_prose_editor.sanitized.SanitizedProseEditorField`` which
+  automatically does the right thing.
 - Automatically added a ``get_*_excerpt`` model method to models using the
   ``ProseEditorField`` as a convenience.
 - Cleaned up the styles.

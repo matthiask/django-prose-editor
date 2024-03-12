@@ -65,6 +65,15 @@ snippet to always pass HTML through `html-sanitizer
 
     description = ProseEditorField(sanitize=get_sanitizer().sanitize)
 
+You can also use the following, which uses a sanitizer instance which allows
+all elements which are allowed by the ProseMirror configuration:
+
+.. code-block:: python
+
+    from django_prose_editor.sanitized import SanitizedProseEditorField
+
+    description = SanitizedProseEditorField()
+
 
 Convenience
 ~~~~~~~~~~~
