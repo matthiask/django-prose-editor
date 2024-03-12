@@ -1,6 +1,7 @@
 const esbuild = require("esbuild")
 const postcss = require("esbuild-postcss")
-const watch = process.argv.includes("watch")
+const devMode = process.argv.includes("watch")
+const watch = devMode
   ? {
       onRebuild(error, result) {
         if (error) console.error("[Editor part] watch build failed:", error)
@@ -25,7 +26,7 @@ esbuild
     globalName: "DjangoProseEditor",
     plugins: [postcss()],
     outfile: "django_prose_editor/static/django_prose_editor/editor.js",
-    sourcemap: true,
+    sourcemap: devMode,
     watch,
   })
   .then((...args) => {
