@@ -4,6 +4,9 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+0.2 (2024-03-12)
+~~~~~~~~~~~~~~~~
+
 - Extended the README.
 - Fixed the initialization in Django admin inlines.
 - Added a server-side sanitization callback to the ``ProseEditorField``, and
@@ -22,9 +25,10 @@ Next version
 - Added a button to the menu to insert horizontal rules.
 - Added material icons for the format bar.
 - Added client side validation to dialogs.
+- Upgraded esbuild.
 
 
-`0.1`_ (2024-03-11)
-~~~~~~~~~~~~~~~~~~~
+0.1 (2024-03-11)
+~~~~~~~~~~~~~~~~
 
 - Initial public release.
