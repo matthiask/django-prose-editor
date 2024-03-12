@@ -3,7 +3,12 @@ import { undo, redo } from "prosemirror-history"
 import { wrapInList } from "prosemirror-schema-list"
 import { Plugin } from "prosemirror-state"
 
-import { addLink, removeLink, updateHTML } from "./commands.js"
+import {
+  addLink,
+  removeLink,
+  updateHTML,
+  insertHorizontalRule,
+} from "./commands.js"
 import { crel } from "./utils.js"
 
 export function menuPlugin(items) {
@@ -75,6 +80,13 @@ export function listMenuItems(schema) {
     {
       command: wrapIn(schema.nodes.blockquote),
       dom: menuButtonDOM("”"),
+      active(_state) {
+        return false
+      },
+    },
+    {
+      command: insertHorizontalRule,
+      dom: menuButtonDOM("-"),
       active(_state) {
         return false
       },

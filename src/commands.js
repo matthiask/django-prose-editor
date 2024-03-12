@@ -122,3 +122,12 @@ export const updateHTML = (editorViewInstance) => (state, dispatch) => {
   }
   return true
 }
+
+export const insertHorizontalRule = (state, dispatch) => {
+  if (dispatch) {
+    dispatch(
+      state.tr.replaceSelectionWith(state.schema.nodes.horizontal_rule.create())
+    )
+  }
+  return true
+}
