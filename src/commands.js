@@ -5,12 +5,12 @@ const linkDialog = (attrs) => {
   return new Promise((resolve) => {
     const div = document.createElement("div")
     div.innerHTML = `
-  <dialog>
+  <dialog class="prose-editor-dialog">
   <form>
-  <p><label>URL</label> <input type="url" name="href"></p>
-  <p><label>Titel</label> <input type="text" name="title"></p>
-  <button type="submit">Speichern</button>
-  <button value="cancel" formmethod="dialog">Abbrechen</button>
+  <p><label>URL</label> <input type="url" name="href" size="50"></p>
+  <p><label>Title</label> <input type="text" name="title" size="50"></p>
+  <button type="submit">Update</button>
+  <button value="cancel" formmethod="dialog">Cancel</button>
   </form>
   </dialog>
   `
@@ -85,11 +85,11 @@ const htmlDialog = (html) => {
   return new Promise((resolve) => {
     const div = document.createElement("div")
     div.innerHTML = `
-  <dialog>
+  <dialog class="prose-editor-dialog">
   <form>
   <p><textarea name="html" cols="80" rows="30"></textarea></p>
-  <button type="submit">Speichern</button>
-  <button value="cancel" formmethod="dialog">Abbrechen</button>
+  <button type="submit">Update</button>
+  <button value="cancel" formmethod="dialog">Cancel</button>
   </form>
   </dialog>
   `

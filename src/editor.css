@@ -87,6 +87,15 @@
   opacity: 0.3;
 }
 
+/* dialog */
+.prose-editor-dialog {
+  border: 1px solid var(--border-color);
+}
+
+.prose-editor-dialog label {
+  display: block;
+}
+
 /* content editor support */
 label:empty:has(+ .prose-editor) {
   display: none;
