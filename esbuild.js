@@ -25,7 +25,7 @@ esbuild
     globalName: "DjangoProseEditor",
     plugins: [postcss()],
     outfile: "django_prose_editor/static/django_prose_editor/editor.js",
-    // sourcemap: true,
+    sourcemap: true,
     watch,
   })
   .then((...args) => {

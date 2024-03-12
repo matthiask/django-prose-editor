@@ -1,5 +1,5 @@
 import { getMarkRange } from "./extendMarkRange.js"
-import { trimmedRangeFromSelection } from "./utils.js"
+import { getHTML, parseHTML, trimmedRangeFromSelection } from "./utils.js"
 
 const linkDialog = (attrs) => {
   return new Promise((resolve) => {
@@ -79,4 +79,46 @@ export const removeLink = (state, dispatch) => {
     return true
   }
   return false
+}
+
+const htmlDialog = (html) => {
+  return new Promise((resolve) => {
+    const div = document.createElement("div")
+    div.innerHTML = `
+  <dialog>
+  <form>
+  <p><textarea name="html" cols="80" rows="30"></textarea></p>
+  <button type="submit">Speichern</button>
+  <button value="cancel" formmethod="dialog">Abbrechen</button>
+  </form>
+  </dialog>
+  `
+    document.body.append(div)
+    const dialog = div.querySelector("dialog")
+    const form = div.querySelector("form")
+    form.html.value = html
+
+    dialog.addEventListener("close", () => {
+      div.remove()
+      resolve(null)
+    })
+    div.querySelector("button[type=submit]").addEventListener("click", (e) => {
+      e.preventDefault()
+      div.remove()
+      resolve(form.html.value)
+    })
+    dialog.showModal()
+  })
+}
+
+export const updateHTML = (editorViewInstance) => (state, dispatch) => {
+  if (dispatch) {
+    htmlDialog(getHTML(editorViewInstance)).then((html) => {
+      if (html) {
+        const doc = parseHTML(editorViewInstance.state.schema, html)
+        dispatch(state.tr.replaceWith(0, state.tr.doc.content.size, doc))
+      }
+    })
+  }
+  return true
 }

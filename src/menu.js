@@ -3,7 +3,7 @@ import { undo, redo } from "prosemirror-history"
 import { wrapInList } from "prosemirror-schema-list"
 import { Plugin } from "prosemirror-state"
 
-import { addLink, removeLink } from "./commands.js"
+import { addLink, removeLink, updateHTML } from "./commands.js"
 import { crel } from "./utils.js"
 
 export function menuPlugin(items) {
@@ -142,8 +142,19 @@ export function historyMenuItems() {
   ]
 }
 
+export function htmlMenuItem(editorViewInstance) {
+  return [
+    {
+      command: updateHTML(editorViewInstance),
+      dom: menuButtonDOM("html"),
+      active: () => false,
+    },
+  ]
+}
+
 class MenuView {
   constructor(itemGroups, editorView) {
+    itemGroups.push(htmlMenuItem(editorView))
     this.items = itemGroups.flatMap((group) => group)
     this.editorView = editorView
 
