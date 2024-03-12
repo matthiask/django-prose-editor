@@ -13,6 +13,8 @@ import {
   sinkListItem,
 } from "prosemirror-schema-list"
 
+import { addLink } from "./commands.js"
+
 const mac =
   typeof navigator != "undefined"
     ? /Mac|iP(hone|[oa]d)/.test(navigator.platform)
@@ -79,6 +81,11 @@ export function applyMarksKeymap(schema) {
   if ((type = schema.marks.strikethrough)) {
     bind("Mod-Shift-s", toggleMark(type))
     bind("Mod-Shift-S", toggleMark(type))
+  }
+
+  if ((type = schema.marks.link)) {
+    bind("Mod-k", addLink)
+    bind("Mod-K", addLink)
   }
 
   return keys

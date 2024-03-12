@@ -101,7 +101,7 @@ export function createEditor(textarea) {
   ]
 
   const editor = crel("div", { className: "prose-editor" })
-  textarea.insertAdjacentElement("beforebegin", editor)
+  textarea.before(editor)
 
   const editorViewInstance = new EditorView(editor, {
     state: EditorState.create({
