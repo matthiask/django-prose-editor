@@ -1,8 +1,3 @@
-:root {
-  --prose-editor-font-size: 14px;
-  --prose-menubar-font-size: 14px;
-}
-
 .ProseMirror {
   padding: 0 6px;
   border: 1px solid var(--border-color);
@@ -16,7 +11,6 @@
 }
 
 .prose-editor {
-  font-size: var(--prose-editor-font-size);
   box-sizing: border-box;
   position: relative;
   max-width: 120ch;
@@ -29,7 +23,7 @@
 }
 
 .prose-menubar {
-  font-size: var(--prose-menubar-font-size);
+  font-size: 14px;
   background: white;
   display: inline-flex;
   gap: 8px;
@@ -39,7 +33,6 @@
 
 .prose-menubar__group {
   display: flex;
-  gap: 2px;
 }
 
 .prose-menubar__button {
@@ -47,9 +40,36 @@
   padding: 0 0.25em;
   min-width: 2em;
   transition: all 0.25s;
-  border: 1px solid;
-  border-radius: 0.25em;
+  border: 1px solid var(--border-color);
   text-align: center;
+  display: inline-flex;
+  position: relative;
+}
+
+.prose-menubar__button--heading .level {
+  position: absolute;
+  right: 3px;
+  bottom: 2px;
+  font-size: 80%;
+}
+
+.prose-menubar__button:first-child {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.prose-menubar__button:last-child {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.prose-menubar__button + .prose-menubar__button {
+  border-left: none;
+}
+
+.prose-menubar__button.material-icons {
+  padding: 0 0.125em;
+  min-width: auto;
 }
 
 .prose-menubar__button:hover {
@@ -65,19 +85,6 @@
   filter: brightness(100%);
   cursor: not-allowed;
   opacity: 0.3;
-}
-
-/* history */
-.prose-menubar__button--history-undo,
-.prose-menubar__button--history-redo {
-  background-image: url(./images/history-arrow.svg);
-  background-repeat: no-repeat;
-  background-size: 1.25em;
-  background-position: center;
-}
-
-.prose-menubar__button--history-redo {
-  transform: scaleX(-1);
 }
 
 /* content editor support */

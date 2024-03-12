@@ -28,18 +28,33 @@ function markActive(state, type) {
   return state.doc.rangeHasMark(from, to, type)
 }
 
-function menuButtonDOM(textContent, style = "") {
+function headingButton(level) {
+  let btn = crel("span", {
+    className: "prose-menubar__button prose-menubar__button--heading",
+  })
+  btn.append(
+    crel("span", {
+      className: "material-icons",
+      textContent: "title",
+      title: `heading ${level}`,
+    }),
+    crel("span", { className: "level", textContent: `${level}` })
+  )
+  return btn
+}
+
+function materialButton(textContent, title) {
   return crel("span", {
-    className: "prose-menubar__button",
-    style,
+    className: "prose-menubar__button material-icons",
     textContent,
+    title,
   })
 }
 
 export function blockTypeMenuItems(schema) {
   const heading = (level) => ({
     command: setBlockType(schema.nodes.heading, { level }),
-    dom: menuButtonDOM(`H${level}`),
+    dom: headingButton(level),
     active(state) {
       return state.selection.$from.parent.hasMarkup(schema.nodes.heading, {
         level,
@@ -53,7 +68,7 @@ export function blockTypeMenuItems(schema) {
     heading(3),
     {
       command: setBlockType(schema.nodes.paragraph),
-      dom: menuButtonDOM("P"),
+      dom: materialButton("notes", "paragraph"),
       active(state) {
         return state.selection.$from.parent.hasMarkup(schema.nodes.paragraph)
       },
@@ -65,28 +80,28 @@ export function listMenuItems(schema) {
   return [
     {
       command: wrapInList(schema.nodes.bullet_list),
-      dom: menuButtonDOM("ul"),
+      dom: materialButton("format_list_bulleted", "unordered list"),
       active(_state) {
         return false
       },
     },
     {
       command: wrapInList(schema.nodes.ordered_list),
-      dom: menuButtonDOM("ol"),
+      dom: materialButton("format_list_numbered", "ordered list"),
       active(_state) {
         return false
       },
     },
     {
       command: wrapIn(schema.nodes.blockquote),
-      dom: menuButtonDOM("”"),
+      dom: materialButton("format_quote", "blockquote"),
       active(_state) {
         return false
       },
     },
     {
       command: insertHorizontalRule,
-      dom: menuButtonDOM("-"),
+      dom: materialButton("horizontal_rule", "horizontal rule"),
       active(_state) {
         return false
       },
@@ -95,24 +110,19 @@ export function listMenuItems(schema) {
 }
 
 export function markMenuItems(schema) {
-  const mark = (markType, textContent, style) => ({
+  const mark = (markType, textContent, title) => ({
     command: toggleMark(markType),
-    dom: menuButtonDOM(textContent, style),
+    dom: materialButton(textContent, title),
     active: (state) => markActive(state, markType),
   })
 
-  const sub = mark(schema.marks.sub, "sub", "")
-  sub.dom.innerHTML = "<sub>x</sub>"
-  const sup = mark(schema.marks.sup, "sup", "")
-  sup.dom.innerHTML = "<sup>x</sup>"
-
   return [
-    mark(schema.marks.strong, "B", "font-weight:bold"),
-    mark(schema.marks.em, "I", "font-style:italic"),
-    mark(schema.marks.underline, "U", "text-decoration:underline"),
-    mark(schema.marks.strikethrough, "S", "text-decoration:line-through"),
-    sub,
-    sup,
+    mark(schema.marks.strong, "format_bold", "bold"),
+    mark(schema.marks.em, "format_italic", "italic"),
+    mark(schema.marks.underline, "format_underline", "underline"),
+    mark(schema.marks.strikethrough, "format_strikethrough", "strikethrough"),
+    mark(schema.marks.sub, "subscript", "subscript"),
+    mark(schema.marks.sup, "superscript", "superscript"),
   ]
 }
 
@@ -120,12 +130,12 @@ export function linkMenuItems(schema) {
   return [
     {
       command: addLink,
-      dom: menuButtonDOM("link"),
+      dom: materialButton("insert_link", "insert link"),
       active: addLink,
     },
     {
       command: removeLink,
-      dom: menuButtonDOM("unlink"),
+      dom: materialButton("link_off", "remove link"),
       active: (state) => markActive(state, schema.marks.link),
     },
   ]
@@ -135,18 +145,14 @@ export function historyMenuItems() {
   return [
     {
       command: undo,
-      dom: crel("span", {
-        className: "prose-menubar__button prose-menubar__button--history-undo",
-      }),
+      dom: materialButton("undo", "undo"),
       active(_state) {
         return false
       },
     },
     {
       command: redo,
-      dom: crel("span", {
-        className: "prose-menubar__button prose-menubar__button--history-redo",
-      }),
+      dom: materialButton("redo", "redo"),
       active(_state) {
         return false
       },
@@ -158,7 +164,7 @@ export function htmlMenuItem(editorViewInstance) {
   return [
     {
       command: updateHTML(editorViewInstance),
-      dom: menuButtonDOM("html"),
+      dom: materialButton("code", "edit HTML"),
       active: () => false,
     },
   ]

@@ -20,6 +20,7 @@ Next version
 - Stopped generating source maps unless in dev mode. I like source maps a lot
   in general, but the files are really big in this case.
 - Added a button to the menu to insert horizontal rules.
+- Added material icons for the format bar.
 
 
 `0.1`_ (2024-03-11)
