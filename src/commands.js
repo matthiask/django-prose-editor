@@ -10,7 +10,7 @@ const linkDialog = (attrs) => {
   <p><label>URL</label> <input type="url" name="href" size="50" required></p>
   <p><label>Title</label> <input type="text" name="title" size="50"></p>
   <button type="submit">Update</button>
-  <button value="cancel" formmethod="dialog">Cancel</button>
+  <button type="button" value="cancel">Cancel</button>
   </form>
   </dialog>
   `
@@ -20,6 +20,11 @@ const linkDialog = (attrs) => {
     form.href.value = attrs.href || ""
     form.title.value = attrs.title || ""
 
+    dialog
+      .querySelector("button[value=cancel]")
+      .addEventListener("click", () => {
+        dialog.close()
+      })
     dialog.addEventListener("close", () => {
       div.remove()
       resolve(null)
@@ -91,7 +96,7 @@ const htmlDialog = (html) => {
   <form>
   <p><textarea name="html" cols="80" rows="30"></textarea></p>
   <button type="submit">Update</button>
-  <button value="cancel" formmethod="dialog">Cancel</button>
+  <button type="button" value="cancel">Cancel</button>
   </form>
   </dialog>
   `
@@ -100,6 +105,11 @@ const htmlDialog = (html) => {
     const form = div.querySelector("form")
     form.html.value = html
 
+    dialog
+      .querySelector("button[value=cancel]")
+      .addEventListener("click", () => {
+        dialog.close()
+      })
     dialog.addEventListener("close", () => {
       div.remove()
       resolve(null)

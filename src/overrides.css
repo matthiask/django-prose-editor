@@ -10,7 +10,7 @@
 }
 
 .ProseMirror * {
-  color: black !important;
+  color: var(--body-fg) !important;
 }
 
 .ProseMirror p {

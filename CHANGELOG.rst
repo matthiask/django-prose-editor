@@ -4,6 +4,10 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+- Made the editor usable in dark mode.
+- Changed the cancel buttons in dialogs to not validate the form.
+
+
 0.2 (2024-03-12)
 ~~~~~~~~~~~~~~~~
 

@@ -24,7 +24,7 @@
 
 .prose-menubar {
   font-size: 14px;
-  background: white;
+  background: var(--body-bg);
   display: inline-flex;
   gap: 8px;
   flex-wrap: wrap;
@@ -89,6 +89,8 @@
 
 /* dialog */
 .prose-editor-dialog {
+  background: var(--body-bg);
+  color: var(--body-fg);
   border: 1px solid var(--border-color);
 }
 
