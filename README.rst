@@ -88,4 +88,7 @@ above.
 Customization
 ~~~~~~~~~~~~~
 
-It's not possible (yet), sorry.
+It's not possible (yet), sorry. I plan to add some way of customizing the
+editor schema so that it's easily possible to build an editor which supports an
+even more restricted set of tags, for example only paragraps, bold and italic
+for a teaser body.
