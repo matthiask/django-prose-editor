@@ -52,11 +52,6 @@ export const createDebouncedBackWriter = (
   return debounce(writeBack, 250)
 }
 
-let _uniqueId = 1
-export const uniqueId = () => {
-  return ++_uniqueId
-}
-
 export const trimmedRangeFromSelection = (selection) => {
   // Copied from prosemirror-commands/src/commands.ts
   let { $from, $to } = selection
