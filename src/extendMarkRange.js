@@ -1,6 +1,4 @@
 // Thanks, tiptap
-import { TextSelection } from "prosemirror-state"
-
 function objectIncludes(object1, object2) {
   const keys = Object.keys(object2)
 
@@ -66,22 +64,3 @@ export function getMarkRange($pos, type, attributes = {}) {
     to: endPos,
   }
 }
-
-export const extendMarkRange =
-  (type, attributes = {}) =>
-  (state, dispatch) => {
-    const { doc } = state
-    const { $from, from, to } = state.selection
-
-    if (dispatch) {
-      const range = getMarkRange($from, type, attributes)
-
-      if (range && range.from <= from && range.to >= to) {
-        const newSelection = TextSelection.create(doc, range.from, range.to)
-
-        dispatch(state.tr.setSelection(newSelection))
-      }
-    }
-
-    return true
-  }
