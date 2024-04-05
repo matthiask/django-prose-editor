@@ -22,6 +22,7 @@ import {
   linkMenuItems,
   historyMenuItems,
   markMenuItems,
+  htmlMenuItem,
 } from "./menu.js"
 import { noSpellCheck } from "./nospellcheck.js"
 import { crel, createDebouncedBackWriter, parseHTML } from "./utils.js"
@@ -96,6 +97,7 @@ export function createEditor(textarea) {
       linkMenuItems(schema),
       markMenuItems(schema),
       historyMenuItems(),
+      htmlMenuItem(),
     ]),
     noSpellCheck(),
   ]

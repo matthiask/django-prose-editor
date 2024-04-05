@@ -18,8 +18,8 @@ export function parseHTML(schema, html) {
   return DOMParser.fromSchema(schema).parse(container)
 }
 
-export function getHTML(editorViewInstance) {
-  const { schema, doc } = editorViewInstance.state
+export function getHTML(state) {
+  const { schema, doc } = state
   const serializer = DOMSerializer.fromSchema(schema)
   const container = crel("article")
   container.appendChild(serializer.serializeFragment(doc.content))

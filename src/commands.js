@@ -125,11 +125,11 @@ const htmlDialog = (html) => {
   })
 }
 
-export const updateHTML = (editorViewInstance) => (state, dispatch) => {
+export const updateHTML = (state, dispatch) => {
   if (dispatch) {
-    htmlDialog(getHTML(editorViewInstance)).then((html) => {
+    htmlDialog(getHTML(state)).then((html) => {
       if (html) {
-        const doc = parseHTML(editorViewInstance.state.schema, html)
+        const doc = parseHTML(state.schema, html)
         dispatch(state.tr.replaceWith(0, state.tr.doc.content.size, doc))
       }
     })

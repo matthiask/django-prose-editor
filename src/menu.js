@@ -160,10 +160,10 @@ export function historyMenuItems() {
   ]
 }
 
-export function htmlMenuItem(editorViewInstance) {
+export function htmlMenuItem() {
   return [
     {
-      command: updateHTML(editorViewInstance),
+      command: updateHTML,
       dom: materialButton("code", "edit HTML"),
       active: () => false,
     },
@@ -172,7 +172,6 @@ export function htmlMenuItem(editorViewInstance) {
 
 class MenuView {
   constructor(itemGroups, editorView) {
-    itemGroups.push(htmlMenuItem(editorView))
     this.items = itemGroups.flatMap((group) => group)
     this.editorView = editorView
 
