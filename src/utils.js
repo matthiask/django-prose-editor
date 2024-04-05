@@ -1,8 +1,6 @@
 import { DOMParser, DOMSerializer } from "prosemirror-model"
 import debounce from "lodash-es/debounce"
 
-export const randomChoice = (arr) => arr[Math.floor(Math.random() * arr.length)]
-
 export const crel = (tagName, attributes = null) => {
   const dom = document.createElement(tagName)
   if (attributes) {
