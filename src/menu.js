@@ -52,6 +52,8 @@ function materialButton(textContent, title) {
 }
 
 export function blockTypeMenuItems(schema) {
+  if (!schema.nodes.heading) return []
+
   const heading = (level) => ({
     command: setBlockType(schema.nodes.heading, { level }),
     dom: headingButton(level),
@@ -77,44 +79,56 @@ export function blockTypeMenuItems(schema) {
 }
 
 export function listMenuItems(schema) {
-  return [
-    {
-      command: wrapInList(schema.nodes.bullet_list),
+  const items = []
+  let type
+  if ((type = schema.nodes.bullet_list)) {
+    items.push({
+      command: wrapInList(type),
       dom: materialButton("format_list_bulleted", "unordered list"),
       active(_state) {
         return false
       },
-    },
-    {
-      command: wrapInList(schema.nodes.ordered_list),
+    })
+  }
+  if ((type = schema.nodes.ordered_list)) {
+    items.push({
+      command: wrapInList(type),
       dom: materialButton("format_list_numbered", "ordered list"),
       active(_state) {
         return false
       },
-    },
-    {
-      command: wrapIn(schema.nodes.blockquote),
+    })
+  }
+  if ((type = schema.nodes.blockquote)) {
+    items.push({
+      command: wrapIn(type),
       dom: materialButton("format_quote", "blockquote"),
       active(_state) {
         return false
       },
-    },
-    {
+    })
+  }
+  if ((type = schema.nodes.horizontal_rule)) {
+    items.push({
       command: insertHorizontalRule,
       dom: materialButton("horizontal_rule", "horizontal rule"),
       active(_state) {
         return false
       },
-    },
-  ]
+    })
+  }
+  return items
 }
 
 export function markMenuItems(schema) {
-  const mark = (markType, textContent, title) => ({
-    command: toggleMark(markType),
-    dom: materialButton(textContent, title),
-    active: (state) => markActive(state, markType),
-  })
+  const mark = (markType, textContent, title) =>
+    markType
+      ? {
+          command: toggleMark(markType),
+          dom: materialButton(textContent, title),
+          active: (state) => markActive(state, markType),
+        }
+      : null
 
   return [
     mark(schema.marks.strong, "format_bold", "bold"),
@@ -123,10 +137,12 @@ export function markMenuItems(schema) {
     mark(schema.marks.strikethrough, "format_strikethrough", "strikethrough"),
     mark(schema.marks.sub, "subscript", "subscript"),
     mark(schema.marks.sup, "superscript", "superscript"),
-  ]
+  ].filter(Boolean)
 }
 
 export function linkMenuItems(schema) {
+  if (!schema.marks.link) return []
+
   return [
     {
       command: addLink,
