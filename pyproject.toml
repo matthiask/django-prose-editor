@@ -34,7 +34,7 @@ dependencies = [
 [project.optional-dependencies]
 tests = [
     "coverage",
-    "html-sanitizer",
+    "nh3",
 ]
 
 [project.urls]

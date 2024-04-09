@@ -56,17 +56,8 @@ particular scheme. Of course users can submit what they want, they are not
 constrainted by the HTML widgets you're using. You should still always sanitize
 the HTML submitted on the server side. A good way to do this is by using the
 ``sanitize`` argument to the ``ProseEditorField``. You can use the following
-snippet to always pass HTML through `html-sanitizer
-<https://github.com/matthiask/html-sanitizer>`__:
-
-.. code-block:: python
-
-    from html_sanitizer.django import get_sanitizer
-
-    description = ProseEditorField(sanitize=get_sanitizer().sanitize)
-
-You can also use the following, which uses a sanitizer instance which allows
-all elements which are allowed by the ProseMirror configuration:
+snippet to always pass HTML through `nh3
+<https://nh3.readthedocs.io/en/latest/>`__:
 
 .. code-block:: python
 
