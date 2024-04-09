@@ -79,7 +79,26 @@ above.
 Customization
 ~~~~~~~~~~~~~
 
-It's not possible (yet), sorry. I plan to add some way of customizing the
-editor schema so that it's easily possible to build an editor which supports an
-even more restricted set of tags, for example only paragraps, bold and italic
-for a teaser body.
+It's possible to slightly customize the field or widget by passing an optional
+``config`` dictionary. The default configuration is:
+
+.. code-block:: python
+
+    config = {
+        "types": None,    # Allow all nodes and marks
+        "history": True,  # Enable undo and redo
+        "html": True,     # Add a button which allows editing the raw HTML
+    }
+
+If you only want to support paragraphs, strong, emphasis, sub- and superset and
+no history or HTML editing you could add the following field:
+
+.. code-block:: python
+
+    text = SanitizedProseEditorField(
+        config={"types": ["strong", "em", "sub", "sup"]},
+    )
+
+Paragraphs cannot be removed at the moment. Note that the backend doesn't
+sanitize the content to ensure that the HTML doesn't contain only the provided
+tags, that's out of scope for now.

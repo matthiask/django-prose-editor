@@ -4,6 +4,10 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+
+0.3 (2024-04-09)
+~~~~~~~~~~~~~~~~
+
 - Made the editor usable in dark mode.
 - Changed the cancel buttons in dialogs to not validate the form.
 - Switched the ``SanitizedProseEditorField`` from html-sanitizer (which at the
@@ -11,6 +15,7 @@ Next version
   <https://nh3.readthedocs.io/en/latest/>`__. html-sanitizer is still a good
   choice but since we build on ProseMirror we only require a sanitizer, we
   don't have to clean up strange HTML.
+- Added customization options to the fields and widgets.
 
 
 0.2 (2024-03-12)
