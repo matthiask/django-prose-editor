@@ -32,6 +32,24 @@ const underlineDOM = ["u", 0],
   subDOM = ["sub", 0],
   supDOM = ["sup", 0]
 
+const pruneSchema = (schema) => {
+  // const allow = ["strong", "em", "sub", "sup"]
+  const allow = null
+
+  if (!allow) return schema
+
+  const types = ["doc", "paragraph", "text", ...allow]
+  const nodes = {}
+  const marks = {}
+  schema.spec.nodes.forEach((key, value) => {
+    if (types.includes(key)) nodes[key] = value
+  })
+  schema.spec.marks.forEach((key, value) => {
+    if (types.includes(key)) marks[key] = value
+  })
+  return new Schema({ nodes, marks })
+}
+
 export function createEditor(textarea) {
   const schemaSpec = {
     nodes: {
@@ -79,6 +97,7 @@ export function createEditor(textarea) {
     nodes: addListNodes(schema.spec.nodes, "paragraph block*", "block"),
     marks: schema.spec.marks,
   })
+  schema = pruneSchema(schema)
 
   let ourKeymap = {
     ...buildKeymap(schema),
