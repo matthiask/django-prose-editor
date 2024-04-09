@@ -5,7 +5,7 @@ const marker = "data-django-prose-editor"
 function initializeDjangoProseEditor(container) {
   for (let el of container.querySelectorAll(`[${marker}]`)) {
     if (!el.id.includes("__prefix__")) {
-      DjangoProseEditor.createEditor(el)
+      DjangoProseEditor.createEditor(el, JSON.parse(el.getAttribute(marker)))
       el.removeAttribute(marker)
     }
   }

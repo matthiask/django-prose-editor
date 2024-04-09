@@ -13,6 +13,7 @@ def _identity(x):
 class ProseEditorField(models.TextField):
     def __init__(self, *args, **kwargs):
         self.sanitize = kwargs.pop("sanitize", _identity)
+        self.config = kwargs.pop("config", {})
         super().__init__(*args, **kwargs)
 
     def clean(self, value, instance):
@@ -35,7 +36,7 @@ class ProseEditorField(models.TextField):
         return (name, "django.db.models.TextField", args, kwargs)
 
     def formfield(self, **kwargs):
-        defaults = {"form_class": ProseEditorFormField} | kwargs
+        defaults = {"config": self.config, "form_class": ProseEditorFormField} | kwargs
         return super().formfield(**defaults)
 
 
@@ -43,5 +44,7 @@ class ProseEditorFormField(forms.CharField):
     widget = ProseEditorWidget
 
     def __init__(self, *args, **kwargs):
+        config = kwargs.pop("config", {})
         kwargs["widget"] = ProseEditorWidget
         super().__init__(*args, **kwargs)
+        self.widget.config = config

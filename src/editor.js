@@ -32,25 +32,24 @@ const underlineDOM = ["u", 0],
   subDOM = ["sub", 0],
   supDOM = ["sup", 0]
 
-const pruneSchema = (schema) => {
-  // const allow = ["strong", "em", "sub", "sup"]
-  const allow = null
+const pruneSchema = (schema, types = null) => {
+  if (!types) return schema
 
-  if (!allow) return schema
-
-  const types = ["doc", "paragraph", "text", ...allow]
+  const allow = ["doc", "paragraph", "text", ...types]
   const nodes = {}
   const marks = {}
   schema.spec.nodes.forEach((key, value) => {
-    if (types.includes(key)) nodes[key] = value
+    if (allow.includes(key)) nodes[key] = value
   })
   schema.spec.marks.forEach((key, value) => {
-    if (types.includes(key)) marks[key] = value
+    if (allow.includes(key)) marks[key] = value
   })
   return new Schema({ nodes, marks })
 }
 
-export function createEditor(textarea) {
+const defaultConfig = { html: true, history: true, types: null }
+export function createEditor(textarea, config = {}) {
+  config = config || defaultConfig
   const schemaSpec = {
     nodes: {
       doc: nodes.doc,
@@ -97,7 +96,7 @@ export function createEditor(textarea) {
     nodes: addListNodes(schema.spec.nodes, "paragraph block*", "block"),
     marks: schema.spec.marks,
   })
-  schema = pruneSchema(schema)
+  schema = pruneSchema(schema, config.types)
 
   let ourKeymap = {
     ...buildKeymap(schema),
@@ -110,14 +109,16 @@ export function createEditor(textarea) {
     dropCursor(),
     gapCursor(),
     history(),
-    menuPlugin([
-      blockTypeMenuItems(schema),
-      listMenuItems(schema),
-      linkMenuItems(schema),
-      markMenuItems(schema),
-      historyMenuItems(),
-      htmlMenuItem(),
-    ]),
+    menuPlugin(
+      [
+        blockTypeMenuItems(schema),
+        listMenuItems(schema),
+        linkMenuItems(schema),
+        markMenuItems(schema),
+        config.history ? historyMenuItems() : null,
+        config.html ? htmlMenuItem() : null,
+      ].filter(Boolean)
+    ),
     noSpellCheck(),
   ]
 
