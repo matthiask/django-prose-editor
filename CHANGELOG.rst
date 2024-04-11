@@ -4,6 +4,8 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+- Allowed installing the package in Python 3.10 environments too.
+
 
 0.3 (2024-04-09)
 ~~~~~~~~~~~~~~~~
