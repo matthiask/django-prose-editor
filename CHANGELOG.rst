@@ -5,6 +5,10 @@ Next version
 ~~~~~~~~~~~~
 
 - Allowed installing the package in Python 3.10 environments too.
+- Tweaked the cleaning methods of ``ProseEditorField`` and
+  ``SanitizedProseEditorField`` to produce empty strings when no content is
+  entered. Previously they would produce an empty paragraph (``<p></p>``) since
+  our ProseMirror schema says that there exists always one or more block nodes.
 
 
 0.3 (2024-04-09)

@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from django.db import models
 from django.utils.html import strip_tags
@@ -6,13 +8,21 @@ from django.utils.text import Truncator
 from django_prose_editor.widgets import ProseEditorWidget
 
 
-def _identity(x):
+def _actually_empty(x):
+    """
+    ProseMirror's schema always adds at least one empty paragraph
+
+    We want empty fields to actually be empty strings so that those field
+    values evaluate as ``False`` in a boolean context.
+    """
+    if re.match(r"^<(?P<tag>\w+)></(?P=tag)>$", x):
+        return ""
     return x
 
 
 class ProseEditorField(models.TextField):
     def __init__(self, *args, **kwargs):
-        self.sanitize = kwargs.pop("sanitize", _identity)
+        self.sanitize = kwargs.pop("sanitize", _actually_empty)
         self.config = kwargs.pop("config", {})
         super().__init__(*args, **kwargs)
 
