@@ -23,5 +23,13 @@ class ProseEditorWidget(forms.Textarea):
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
-        context["widget"]["attrs"]["data-django-prose-editor"] = json.dumps(self.config)
+        context["widget"]["attrs"]["data-django-prose-editor"] = json.dumps(
+            self.config
+            or {
+                "types": None,
+                "history": True,
+                "html": True,
+            },
+            separators=(",", ":"),
+        )
         return context

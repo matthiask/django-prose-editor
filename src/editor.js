@@ -47,9 +47,7 @@ const pruneSchema = (schema, types = null) => {
   return new Schema({ nodes, marks })
 }
 
-const defaultConfig = { html: true, history: true, types: null }
-export function createEditor(textarea, config = {}) {
-  config = config || defaultConfig
+export function createEditor(textarea, config) {
   const schemaSpec = {
     nodes: {
       doc: nodes.doc,
