@@ -9,6 +9,7 @@ Next version
   ``SanitizedProseEditorField`` to produce empty strings when no content is
   entered. Previously they would produce an empty paragraph (``<p></p>``) since
   our ProseMirror schema says that there exists always one or more block nodes.
+- Stopped setting a black color on the ``.ProseMirror`` class by default.
 
 
 0.3 (2024-04-09)

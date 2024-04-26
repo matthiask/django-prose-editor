@@ -1,7 +1,6 @@
 /* Thanks, https://github.com/django-tiptap/django_tiptap/blob/main/django_tiptap/static/django_tiptap/css/styles.css */
 
 .ProseMirror {
-  color: black !important;
   padding: 1rem 1.75rem;
   outline: none !important;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
