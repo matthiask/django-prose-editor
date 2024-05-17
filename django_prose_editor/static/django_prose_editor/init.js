@@ -20,7 +20,16 @@ function initializeDjangoInlines() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function onReady(callback) {
+  const d = document
+  if (d.readyState !== "loading") {
+    setTimeout(callback, 0)
+  } else {
+    document.addEventListener("DOMContentLoaded", callback, { once: true })
+  }
+}
+
+onReady(() => {
   initializeDjangoProseEditor(document)
   initializeDjangoInlines()
 })

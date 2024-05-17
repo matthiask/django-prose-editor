@@ -13,7 +13,6 @@ class ProseEditorWidget(forms.Textarea):
         }
         js = [
             "django_prose_editor/editor.js",
-            "admin/js/jquery.init.js",
             "django_prose_editor/init.js",
         ]
 

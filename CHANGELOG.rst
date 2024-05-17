@@ -10,6 +10,9 @@ Next version
   entered. Previously they would produce an empty paragraph (``<p></p>``) since
   our ProseMirror schema says that there exists always one or more block nodes.
 - Stopped setting a black color on the ``.ProseMirror`` class by default.
+- Dropped the dependency on ``admin/js/jquery.init.js``. We're using our own
+  DOM-ready handler and therefore can still access ``django.jQuery`` to hook up
+  the inline events handler if running inside the Django admin.
 
 
 0.3 (2024-04-09)
