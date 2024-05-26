@@ -4,6 +4,9 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+- Updated all dependencies.
+
+
 0.4 (2024-05-26)
 ~~~~~~~~~~~~~~~~
 
