@@ -1,8 +1,8 @@
 import * as esbuild from "esbuild"
 import postcss from "esbuild-postcss"
 
-let devMode = process.argv.includes("watch")
-let ctx = await esbuild.context({
+const devMode = process.argv.includes("watch")
+const ctx = await esbuild.context({
   entryPoints: ["./src/index.js"],
   jsxFactory: "h",
   jsxFragment: "Fragment",

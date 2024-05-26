@@ -29,7 +29,7 @@ function markActive(state, type) {
 }
 
 function headingButton(level) {
-  let btn = crel("span", {
+  const btn = crel("span", {
     className: "prose-menubar__button prose-menubar__button--heading",
   })
   btn.append(
@@ -38,7 +38,7 @@ function headingButton(level) {
       textContent: "title",
       title: `heading ${level}`,
     }),
-    crel("span", { className: "level", textContent: `${level}` })
+    crel("span", { className: "level", textContent: `${level}` }),
   )
   return btn
 }

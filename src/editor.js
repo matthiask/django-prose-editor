@@ -96,12 +96,12 @@ export function createEditor(textarea, config) {
   })
   schema = pruneSchema(schema, config.types)
 
-  let ourKeymap = {
+  const ourKeymap = {
     ...buildKeymap(schema),
     ...applyMarksKeymap(schema),
   }
 
-  let plugins = [
+  const plugins = [
     keymap(ourKeymap),
     keymap(baseKeymap),
     dropCursor(),
@@ -115,7 +115,7 @@ export function createEditor(textarea, config) {
         markMenuItems(schema),
         config.history ? historyMenuItems() : null,
         config.html ? htmlMenuItem() : null,
-      ].filter(Boolean)
+      ].filter(Boolean),
     ),
     noSpellCheck(),
   ]
@@ -137,7 +137,7 @@ export function createEditor(textarea, config) {
   const debouncedWriteBack = createDebouncedBackWriter(
     schema,
     editorViewInstance,
-    textarea
+    textarea,
   )
 
   return () => {

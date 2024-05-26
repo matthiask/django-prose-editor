@@ -36,7 +36,7 @@ export function buildKeymap(schema) {
   if (!mac) bind("Mod-y", redo)
 
   if ((type = schema.nodes.hard_break)) {
-    let br = type,
+    const br = type,
       cmd = chainCommands(exitCode, (state, dispatch) => {
         if (dispatch) {
           dispatch(state.tr.replaceSelectionWith(br.create()).scrollIntoView())

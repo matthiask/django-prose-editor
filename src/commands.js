@@ -36,7 +36,7 @@ const linkDialog = (attrs) => {
         resolve(
           form.href.value
             ? { href: form.href.value, title: form.title.value }
-            : null
+            : null,
         )
       }
     })
@@ -51,7 +51,7 @@ export const addLink = (state, dispatch) => {
   if (empty && !type.isInSet($from.marks())) return false
 
   if (dispatch) {
-    let mark = $from.marks().find((mark) => mark.type === type)
+    const mark = $from.marks().find((mark) => mark.type === type)
     linkDialog(mark?.attrs || {}).then((attrs) => {
       if (attrs) {
         let range
@@ -63,10 +63,10 @@ export const addLink = (state, dispatch) => {
           dispatch(
             state.tr
               .removeMark(range.from, range.to, type)
-              .addMark(range.from, range.to, type.create(attrs))
+              .addMark(range.from, range.to, type.create(attrs)),
           )
         } else {
-          let { from, to } = trimmedRangeFromSelection(state.selection)
+          const { from, to } = trimmedRangeFromSelection(state.selection)
           dispatch(state.tr.addMark(from, to, type.create(attrs)))
         }
       }
@@ -140,7 +140,9 @@ export const updateHTML = (state, dispatch) => {
 export const insertHorizontalRule = (state, dispatch) => {
   if (dispatch) {
     dispatch(
-      state.tr.replaceSelectionWith(state.schema.nodes.horizontal_rule.create())
+      state.tr.replaceSelectionWith(
+        state.schema.nodes.horizontal_rule.create(),
+      ),
     )
   }
   return true

@@ -4,7 +4,7 @@ import debounce from "lodash-es/debounce"
 export const crel = (tagName, attributes = null) => {
   const dom = document.createElement(tagName)
   if (attributes) {
-    for (let [name, value] of Object.entries(attributes)) {
+    for (const [name, value] of Object.entries(attributes)) {
       if (/^data-|^aria-|^role/.test(name)) dom.setAttribute(name, value)
       else dom[name] = value
     }
@@ -29,13 +29,13 @@ export function getHTML(state) {
 export const createDebouncedBackWriter = (
   schema,
   editorViewInstance,
-  textarea
+  textarea,
 ) => {
   const serializer = DOMSerializer.fromSchema(schema)
-  const serialize = function () {
+  const serialize = () => {
     const container = crel("article")
     container.appendChild(
-      serializer.serializeFragment(editorViewInstance.state.doc.content)
+      serializer.serializeFragment(editorViewInstance.state.doc.content),
     )
     return container.innerHTML
   }
@@ -45,7 +45,7 @@ export const createDebouncedBackWriter = (
     if (textarea.value !== value) {
       textarea.value = value
       textarea.dispatchEvent(
-        new InputEvent("input", { bubbles: true, cancelable: true })
+        new InputEvent("input", { bubbles: true, cancelable: true }),
       )
     }
   }
@@ -54,13 +54,14 @@ export const createDebouncedBackWriter = (
 
 export const trimmedRangeFromSelection = (selection) => {
   // Copied from prosemirror-commands/src/commands.ts
-  let { $from, $to } = selection
+  const { $from, $to } = selection
   let from = $from.pos,
     to = $to.pos,
     start = $from.nodeAfter,
     end = $to.nodeBefore
-  let spaceStart = start && start.isText ? /^\s*/.exec(start.text)[0].length : 0
-  let spaceEnd = end && end.isText ? /\s*$/.exec(end.text)[0].length : 0
+  const spaceStart =
+    start && start.isText ? /^\s*/.exec(start.text)[0].length : 0
+  const spaceEnd = end && end.isText ? /\s*$/.exec(end.text)[0].length : 0
   if (from + spaceStart < to) {
     from += spaceStart
     to -= spaceEnd
