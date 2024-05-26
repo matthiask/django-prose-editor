@@ -13,6 +13,7 @@ Next version
 - Dropped the dependency on ``admin/js/jquery.init.js``. We're using our own
   DOM-ready handler and therefore can still access ``django.jQuery`` to hook up
   the inline events handler if running inside the Django admin.
+- Moved the paragraph formats into a popover.
 
 
 0.3 (2024-04-09)

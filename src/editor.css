@@ -27,9 +27,29 @@
   font-size: 14px;
   background: var(--body-bg);
   display: inline-flex;
+  align-items: center;
   gap: 8px;
   flex-wrap: wrap;
   margin-bottom: 2px;
+}
+
+.prose-menubar__dropdown {
+  display: flex;
+
+  > span {
+    border-radius: 4px;
+  }
+
+  > div {
+    display: none;
+    position: absolute;
+    background: var(--body-bg);
+    z-index: 1;
+  }
+
+  &:hover > div {
+    display: flex;
+  }
 }
 
 .prose-menubar__group {

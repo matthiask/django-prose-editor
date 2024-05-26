@@ -11,10 +11,10 @@ import {
 } from "./commands.js"
 import { crel } from "./utils.js"
 
-export function menuPlugin(items) {
+export function menuPlugin(blockTypeItems, otherItems) {
   return new Plugin({
     view(editorView) {
-      const menuView = new MenuView(items, editorView)
+      const menuView = new MenuView(editorView, blockTypeItems, otherItems)
       editorView.dom.parentNode.insertBefore(menuView.dom, editorView.dom)
 
       return menuView
@@ -68,6 +68,8 @@ export function blockTypeMenuItems(schema) {
     heading(1),
     heading(2),
     heading(3),
+    heading(4),
+    heading(5),
     {
       command: setBlockType(schema.nodes.paragraph),
       dom: materialButton("notes", "paragraph"),
@@ -187,19 +189,29 @@ export function htmlMenuItem() {
 }
 
 class MenuView {
-  constructor(itemGroups, editorView) {
-    this.items = itemGroups.flatMap((group) => group)
+  constructor(editorView, blockTypeItems, otherItemGroups) {
+    this.items = [blockTypeItems, ...otherItemGroups].flatMap((group) => group)
     this.editorView = editorView
 
     this.dom = crel("div", { className: "prose-menubar" })
 
-    itemGroups
+    if (blockTypeItems.length) {
+      const groupDOM = crel("div", { className: "prose-menubar__dropdown" })
+      const dropdownElements = crel("div")
+      this.dom.append(groupDOM)
+      groupDOM.append(materialButton("notes", "paragraph"))
+      groupDOM.append(dropdownElements)
+      blockTypeItems.forEach(({ dom }) => dropdownElements.append(dom))
+    }
+
+    otherItemGroups
       .filter((group) => group.length)
       .forEach((group) => {
         const groupDOM = crel("div", { className: "prose-menubar__group" })
         this.dom.append(groupDOM)
         group.forEach(({ dom }) => groupDOM.append(dom))
       })
+
     this.update()
 
     this.dom.addEventListener("mousedown", (e) => {
