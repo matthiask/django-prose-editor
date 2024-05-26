@@ -4,6 +4,9 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+0.4 (2024-05-26)
+~~~~~~~~~~~~~~~~
+
 - Allowed installing the package in Python 3.10 environments too.
 - Tweaked the cleaning methods of ``ProseEditorField`` and
   ``SanitizedProseEditorField`` to produce empty strings when no content is
