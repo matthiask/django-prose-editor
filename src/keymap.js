@@ -8,7 +8,7 @@ import { undo, redo } from "prosemirror-history"
 import { undoInputRule } from "prosemirror-inputrules"
 import {
   wrapInList,
-  splitListItemKeepMarks,
+  splitListItem,
   liftListItem,
   sinkListItem,
 } from "prosemirror-schema-list"
@@ -53,7 +53,7 @@ export function buildKeymap(schema) {
   if ((type = schema.nodes.blockquote)) bind("Ctrl->", wrapIn(type))
 
   if ((type = schema.nodes.list_item)) {
-    bind("Enter", splitListItemKeepMarks(type))
+    bind("Enter", splitListItem(type))
     bind("Mod-[", liftListItem(type))
     bind("Mod-]", sinkListItem(type))
   }
