@@ -8,7 +8,7 @@ import { undo, redo } from "prosemirror-history"
 import { undoInputRule } from "prosemirror-inputrules"
 import {
   wrapInList,
-  splitListItem,
+  splitListItemKeepMarks,
   liftListItem,
   sinkListItem,
 } from "prosemirror-schema-list"
@@ -16,7 +16,7 @@ import {
 import { addLink } from "./commands.js"
 
 const mac =
-  typeof navigator != "undefined"
+  typeof navigator !== "undefined"
     ? /Mac|iP(hone|[oa]d)/.test(navigator.platform)
     : false
 
@@ -26,9 +26,9 @@ const binder = (keys) => (key, cmd) => {
 
 // Adapted from prosemirror-example-setup
 export function buildKeymap(schema) {
-  let keys = {},
-    type,
-    bind = binder(keys)
+  const keys = {}
+  let type
+  const bind = binder(keys)
 
   bind("Mod-z", undo)
   bind("Shift-Mod-z", redo)
@@ -36,13 +36,13 @@ export function buildKeymap(schema) {
   if (!mac) bind("Mod-y", redo)
 
   if ((type = schema.nodes.hard_break)) {
-    const br = type,
-      cmd = chainCommands(exitCode, (state, dispatch) => {
-        if (dispatch) {
-          dispatch(state.tr.replaceSelectionWith(br.create()).scrollIntoView())
-        }
-        return true
-      })
+    const br = type
+    const cmd = chainCommands(exitCode, (state, dispatch) => {
+      if (dispatch) {
+        dispatch(state.tr.replaceSelectionWith(br.create()).scrollIntoView())
+      }
+      return true
+    })
     bind("Mod-Enter", cmd)
     bind("Shift-Enter", cmd)
     if (mac) bind("Ctrl-Enter", cmd)
@@ -53,7 +53,7 @@ export function buildKeymap(schema) {
   if ((type = schema.nodes.blockquote)) bind("Ctrl->", wrapIn(type))
 
   if ((type = schema.nodes.list_item)) {
-    bind("Enter", splitListItem(type))
+    bind("Enter", splitListItemKeepMarks(type))
     bind("Mod-[", liftListItem(type))
     bind("Mod-]", sinkListItem(type))
   }
@@ -62,9 +62,9 @@ export function buildKeymap(schema) {
 }
 
 export function applyMarksKeymap(schema) {
-  let keys = {},
-    type,
-    bind = binder(keys)
+  const keys = {}
+  let type
+  const bind = binder(keys)
 
   if ((type = schema.marks.strong)) {
     bind("Mod-b", toggleMark(type))

@@ -1,114 +1,113 @@
 [build-system]
-requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+requires = [
+  "hatchling",
+]
 
 [project]
 name = "django-prose-editor"
-dynamic = ["version"]
 description = "Prose editor for the Django admin based on ProseMirror"
 readme = "README.rst"
-license = "BSD-3-Clause"
-requires-python = ">=3.10"
+license = { text = "BSD-3-Clause" }
 authors = [
-    { name = "Matthias Kestenholz", email = "mk@feinheit.ch" },
+  { name = "Matthias Kestenholz", email = "mk@feinheit.ch" },
 ]
+requires-python = ">=3.10"
 classifiers = [
-    "Environment :: Web Environment",
-    "Framework :: Django",
-    "Framework :: Django :: 4.2",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: BSD License",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
-    "Topic :: Software Development",
-    "Topic :: Software Development :: Libraries :: Application Frameworks",
+  "Environment :: Web Environment",
+  "Framework :: Django",
+  "Framework :: Django :: 4.2",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: BSD License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+  "Topic :: Software Development",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
+dynamic = [
+  "version",
 ]
 dependencies = [
-    "Django>=4.2",
+  "django>=4.2",
 ]
 
-[project.optional-dependencies]
-tests = [
-    "coverage",
-    "nh3",
+optional-dependencies.tests = [
+  "coverage",
+  "nh3",
 ]
-
-[project.urls]
-Homepage = "https://github.com/matthiask/django-prose-editor/"
+urls.Homepage = "https://github.com/matthiask/django-prose-editor/"
 
 [tool.hatch.build]
-include = ["django_prose_editor/"]
+include = [
+  "django_prose_editor/",
+]
 
 [tool.hatch.version]
 path = "django_prose_editor/__init__.py"
 
 [tool.ruff]
-fix = true
-show-fixes = true
 target-version = "py311"
 
-[tool.ruff.lint]
-extend-select = [
-  # pyflakes, pycodestyle
-  "F", "E", "W",
-  # mmcabe
-  "C90",
-  # isort
-  "I",
-  # pep8-naming
-  "N",
-  # pyupgrade
-  "UP",
-  # flake8-2020
-  "YTT",
-  # flake8-boolean-trap
-  "FBT",
-  # flake8-bugbear
-  "B",
+fix = true
+show-fixes = true
+lint.extend-select = [
   # flake8-builtins
   "A",
+  # flake8-bugbear
+  "B",
   # flake8-comprehensions
   "C4",
+  # mmcabe
+  "C90",
   # flake8-django
   "DJ",
+  "E",
+  # pyflakes, pycodestyle
+  "F",
+  # flake8-boolean-trap
+  "FBT",
   # flake8-logging-format
   "G",
-  # flake8-pie
-  "PIE",
-  # flake8-simplify
-  "SIM",
+  # isort
+  "I",
   # flake8-gettext
   "INT",
+  # pep8-naming
+  "N",
   # pygrep-hooks
   "PGH",
+  # flake8-pie
+  "PIE",
   # pylint
   "PL",
   # unused noqa
   "RUF100",
+  # flake8-simplify
+  "SIM",
+  # pyupgrade
+  "UP",
+  "W",
+  # flake8-2020
+  "YTT",
 ]
-extend-ignore = [
+lint.extend-ignore = [
   # Allow zip() without strict=
   "B905",
   # No line length errors
   "E501",
 ]
-
-[tool.ruff.lint.isort]
-combine-as-imports = true
-lines-after-imports = 2
-
-[tool.ruff.lint.mccabe]
-max-complexity = 15
-
-[tool.ruff.lint.per-file-ignores]
-"*/migrat*/*" = [
+lint.per-file-ignores."*/migrat*/*" = [
   # Allow using PascalCase model names in migrations
   "N806",
   # Ignore the fact that migration files are invalid module names
   "N999",
 ]
+lint.isort.combine-as-imports = true
+lint.isort.lines-after-imports = 2
+lint.mccabe.max-complexity = 15

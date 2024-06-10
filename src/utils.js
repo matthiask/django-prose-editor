@@ -55,10 +55,10 @@ export const createDebouncedBackWriter = (
 export const trimmedRangeFromSelection = (selection) => {
   // Copied from prosemirror-commands/src/commands.ts
   const { $from, $to } = selection
-  let from = $from.pos,
-    to = $to.pos,
-    start = $from.nodeAfter,
-    end = $to.nodeBefore
+  let from = $from.pos
+  let to = $to.pos
+  const start = $from.nodeAfter
+  const end = $to.nodeBefore
   const spaceStart =
     start && start.isText ? /^\s*/.exec(start.text)[0].length : 0
   const spaceEnd = end && end.isText ? /\s*$/.exec(end.text)[0].length : 0

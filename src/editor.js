@@ -27,10 +27,10 @@ import {
 import { noSpellCheck } from "./nospellcheck.js"
 import { crel, createDebouncedBackWriter, parseHTML } from "./utils.js"
 
-const underlineDOM = ["u", 0],
-  strikethroughDOM = ["s", 0],
-  subDOM = ["sub", 0],
-  supDOM = ["sup", 0]
+const underlineDOM = ["u", 0]
+const strikethroughDOM = ["s", 0]
+const subDOM = ["sub", 0]
+const supDOM = ["sup", 0]
 
 const pruneSchema = (schema, types = null) => {
   if (!types) return schema

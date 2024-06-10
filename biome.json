@@ -17,7 +17,13 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "complexity": {
+        "noForEach": "off",
+        "useOptionalChain": "off"
+      },
+      "suspicious": {
+        "noAssignInExpressions": "off"
+      }
     }
   }
 }

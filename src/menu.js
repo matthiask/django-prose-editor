@@ -190,7 +190,7 @@ export function htmlMenuItem() {
 
 class MenuView {
   constructor(editorView, blockTypeItems, otherItemGroups) {
-    this.items = [blockTypeItems, ...otherItemGroups].flatMap((group) => group)
+    this.items = [blockTypeItems, ...otherItemGroups].flat()
     this.editorView = editorView
 
     this.dom = crel("div", { className: "prose-menubar" })
