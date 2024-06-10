@@ -103,6 +103,14 @@ Paragraphs cannot be removed at the moment. Note that the backend doesn't
 sanitize the content to ensure that the HTML doesn't contain only the provided
 tags, that's out of scope for now.
 
+``doc``, ``paragraph`` and ``text`` are always in the allowlist.
+
+The supported node types are ``heading``, ``blockquote``, ``horizontal_rule``
+and ``hard_break``.
+
+The supported mark types are ``link``, ``strong``, ``em``, ``underline``,
+``strikethrough``, ``sub`` and ``sup``
+
 
 Usage outside the Django admin
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
