@@ -59,9 +59,8 @@ export const trimmedRangeFromSelection = (selection) => {
   let to = $to.pos
   const start = $from.nodeAfter
   const end = $to.nodeBefore
-  const spaceStart =
-    start && start.isText ? /^\s*/.exec(start.text)[0].length : 0
-  const spaceEnd = end && end.isText ? /\s*$/.exec(end.text)[0].length : 0
+  const spaceStart = start?.isText ? /^\s*/.exec(start.text)[0].length : 0
+  const spaceEnd = end?.isText ? /\s*$/.exec(end.text)[0].length : 0
   if (from + spaceStart < to) {
     from += spaceStart
     to -= spaceEnd

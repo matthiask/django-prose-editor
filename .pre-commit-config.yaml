@@ -13,29 +13,21 @@ repos:
       - id: end-of-file-fixer
       - id: mixed-line-ending
       - id: trailing-whitespace
-  - repo: local
-    hooks:
-      - id: prettier
-        name: prettier
-        entry: npx prettier@3.3.1 --no-semi --write
-        language: system
-        types_or: [css, scss]
-        require_serial: true
   - repo: https://github.com/adamchainz/django-upgrade
     rev: 1.18.0
     hooks:
       - id: django-upgrade
         args: [--target-version, "3.2"]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.4.8"
+    rev: "v0.4.9"
     hooks:
       - id: ruff
       - id: ruff-format
   - repo: https://github.com/biomejs/pre-commit
-    rev: "v0.2.0"
+    rev: "v0.4.0"
     hooks:
       - id: biome-check
-        additional_dependencies: ["@biomejs/biome@1.8.0"]
+        additional_dependencies: ["@biomejs/biome@1.8.1"]
         args: [--unsafe]
   - repo: https://github.com/tox-dev/pyproject-fmt
     rev: 2.1.3
