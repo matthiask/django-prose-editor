@@ -1,5 +1,7 @@
 /* global DjangoProseEditor */
 
+;(() => {
+
 const marker = "data-django-prose-editor"
 
 function initializeDjangoProseEditor(container) {
@@ -33,3 +35,5 @@ onReady(() => {
   initializeDjangoProseEditor(document)
   initializeDjangoInlines()
 })
+
+})()

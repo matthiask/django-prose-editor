@@ -5,6 +5,7 @@ Next version
 ~~~~~~~~~~~~
 
 - Updated all dependencies.
+- Stopped putting anything into the global scope in ``init.js``.
 
 
 0.4 (2024-05-26)
