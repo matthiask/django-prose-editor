@@ -123,3 +123,7 @@
 label:empty:has(+ .prose-editor) {
   display: none;
 }
+
+.prose-editor-nbsp {
+  background: lightblue;
+}

@@ -85,9 +85,10 @@ It's possible to slightly customize the field or widget by passing an optional
 .. code-block:: python
 
     config = {
-        "types": None,    # Allow all nodes and marks
-        "history": True,  # Enable undo and redo
-        "html": True,     # Add a button which allows editing the raw HTML
+        "types": None,        # Allow all nodes and marks
+        "history": True,      # Enable undo and redo
+        "html": True,         # Add a button which allows editing the raw HTML
+        "typographic": False, # Do not highlight typographic characters
     }
 
 If you only want to support paragraphs, strong, emphasis, sub- and superset and

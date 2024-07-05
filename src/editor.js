@@ -25,6 +25,7 @@ import {
   htmlMenuItem,
 } from "./menu.js"
 import { noSpellCheck } from "./nospellcheck.js"
+import { typographicPlugin } from "./typographic.js"
 import { crel, createDebouncedBackWriter, parseHTML } from "./utils.js"
 
 const underlineDOM = ["u", 0]
@@ -118,7 +119,8 @@ export function createEditor(textarea, config) {
       ].filter(Boolean),
     ),
     noSpellCheck(),
-  ]
+    config.typograpic ? typographicPlugin : null,
+  ].filter(Boolean)
 
   const editor = crel("div", { className: "prose-editor" })
   textarea.before(editor)

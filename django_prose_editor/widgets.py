@@ -28,6 +28,7 @@ class ProseEditorWidget(forms.Textarea):
                 "types": None,
                 "history": True,
                 "html": True,
+                "typograpic": False,
             },
             separators=(",", ":"),
         )
