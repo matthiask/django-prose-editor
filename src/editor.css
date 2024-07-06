@@ -125,5 +125,6 @@ label:empty:has(+ .prose-editor) {
 }
 
 .prose-editor-nbsp {
-  background: lightblue;
+  background: #ddd;
+  box-shadow: 0 2px 0 0 #ddd, 0 -2px 0 0 #ddd;
 }
