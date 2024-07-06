@@ -30,6 +30,9 @@
         "noForEach": "off",
         "useOptionalChain": "off"
       },
+      "style": {
+        "noParameterAssign": "off"
+      },
       "suspicious": {
         "noAssignInExpressions": "off"
       }
