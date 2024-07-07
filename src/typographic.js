@@ -61,10 +61,10 @@ export const typographicPlugin = new Plugin({
 
       let newSet = set.map(tr.mapping, tr.doc)
       changedDescendants(oldState.doc, tr.doc, 0, (node, offset) => {
-        const decorations = typographicDecorationsForNode(node, offset)
-        // Decorations seem to be merged somehow when they apply to the same position.
-        // Maybe I should use DecorationSet.find and filter new decorations myself?
-        newSet = newSet.add(tr.doc, decorations)
+        // First, remove our inline decorations for the current node
+        newSet = newSet.remove(newSet.find(offset, offset + node.content.size))
+        // Then, add decorations (including the new content)
+        newSet = newSet.add(tr.doc, typographicDecorationsForNode(node, offset))
       })
 
       return newSet
