@@ -119,7 +119,7 @@ export function createEditor(textarea, config) {
       ].filter(Boolean),
     ),
     noSpellCheck(),
-    config.typograpic ? typographicPlugin : null,
+    config.typographic ? typographicPlugin : null,
   ].filter(Boolean)
 
   const editor = crel("div", { className: "prose-editor" })
