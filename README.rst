@@ -88,7 +88,7 @@ It's possible to slightly customize the field or widget by passing an optional
         "types": None,        # Allow all nodes and marks
         "history": True,      # Enable undo and redo
         "html": True,         # Add a button which allows editing the raw HTML
-        "typographic": False, # Do not highlight typographic characters
+        "typographic": True,  # Highlight typographic characters
     }
 
 If you only want to support paragraphs, strong, emphasis, sub- and superset and
