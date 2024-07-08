@@ -6,7 +6,11 @@ Next version
 
 - Updated all dependencies.
 - Stopped putting anything into the global scope in ``init.js``.
-- Added optional support for showing typographic characters.
+- Added support for showing typographic characters.
+- Changed the editor initialization to make the initial ``textarea`` a child of
+  the ``.prose-editor`` div, and changed the CSS to ``display: none
+  !important;`` so that the ``textarea`` is only shown in exceptional
+  circumstances, when people really really want it.
 
 
 0.4 (2024-05-26)

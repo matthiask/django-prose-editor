@@ -124,6 +124,7 @@ export function createEditor(textarea, config) {
 
   const editor = crel("div", { className: "prose-editor" })
   textarea.before(editor)
+  editor.append(textarea)
 
   const editorViewInstance = new EditorView(editor, {
     state: EditorState.create({
