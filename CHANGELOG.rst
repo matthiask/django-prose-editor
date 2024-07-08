@@ -4,6 +4,10 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+
+0.5 (2024-07-08)
+~~~~~~~~~~~~~~~~
+
 - Updated all dependencies.
 - Stopped putting anything into the global scope in ``init.js``.
 - Added support for showing typographic characters.
