@@ -27,14 +27,20 @@ function changedDescendants(old, cur, offset, f) {
   }
 }
 
+const classes = {
+  "\u00A0": "prose-editor-nbsp",
+  "\u00AD": "prose-editor-shy",
+}
+
 const typographicDecorationsForNode = (node, position) => {
   const decorations = []
   if (node.text) {
-    for (const match of node.text.matchAll(/\u00A0/g)) {
+    for (const match of node.text.matchAll(/(\u00A0|\u00AD)/g)) {
+      const array = Array.from(match)
       const from = position + (match.index || 0)
       decorations.push(
         Decoration.inline(from, from + 1, {
-          class: "prose-editor-nbsp",
+          class: classes[match[1]],
         }),
       )
     }

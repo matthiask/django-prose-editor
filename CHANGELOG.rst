@@ -4,6 +4,8 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+- Added support for highlighting soft hyphens.
+
 
 0.5 (2024-07-08)
 ~~~~~~~~~~~~~~~~

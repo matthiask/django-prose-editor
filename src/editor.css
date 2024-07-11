@@ -17,6 +17,8 @@
   min-width: 40ch;
 
   flex-grow: 1;
+
+  --_t: var(--prose-editor-typographic, #ccc);
 }
 
 .prose-editor > textarea {
@@ -125,6 +127,11 @@ label:empty:has(+ .prose-editor) {
 }
 
 .prose-editor-nbsp {
-  background: #ddd;
-  box-shadow: 0 2px 0 0 #ddd, 0 -2px 0 0 #ddd;
+  background: var(--_t);
+  box-shadow: 0 2px 0 0 var(--_t), 0 -2px 0 0 var(--_t);
+}
+
+.prose-editor-shy {
+  background: var(--_t);
+  box-shadow: 0 2px 0 1px var(--_t), 0 -2px 0 1px var(--_t);
 }
