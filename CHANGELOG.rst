@@ -5,6 +5,7 @@ Next version
 ~~~~~~~~~~~~
 
 - Added support for highlighting soft hyphens.
+- Updated all dependencies.
 
 
 0.5 (2024-07-08)
