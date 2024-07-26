@@ -3,7 +3,7 @@ import postcss from "esbuild-postcss"
 
 const devMode = process.argv.includes("watch")
 const ctx = await esbuild.context({
-  entryPoints: ["./src/index.js"],
+  entryPoints: ["./src/overrides.css", "./src/editor.js"],
   jsxFactory: "h",
   jsxFragment: "Fragment",
   loader: {
@@ -16,7 +16,7 @@ const ctx = await esbuild.context({
   format: "iife",
   globalName: "DjangoProseEditor",
   plugins: [postcss()],
-  outfile: "django_prose_editor/static/django_prose_editor/editor.js",
+  outdir: "django_prose_editor/static/django_prose_editor/",
   sourcemap: devMode,
 })
 

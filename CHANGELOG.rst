@@ -6,6 +6,9 @@ Next version
 
 - Added support for highlighting soft hyphens.
 - Updated all dependencies.
+- Moved the Django administration interface CSS overrides into their own file,
+  and only load them if necessary so that using the editor outside the admin
+  requires using  less ``!important`` overrides.
 
 
 0.5 (2024-07-08)

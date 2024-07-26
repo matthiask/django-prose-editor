@@ -1,4 +1,3 @@
-import "./overrides.css"
 import "./editor.css"
 import "prosemirror-view/style/prosemirror.css"
 

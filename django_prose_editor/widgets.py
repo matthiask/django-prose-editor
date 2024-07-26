@@ -33,3 +33,8 @@ class ProseEditorWidget(forms.Textarea):
             separators=(",", ":"),
         )
         return context
+
+
+class AdminProseEditorWidget(ProseEditorWidget):
+    class Media:
+        css = {"screen": ["django_prose_editor/overrides.css"]}

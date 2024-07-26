@@ -1,11 +1,12 @@
 import re
 
 from django import forms
+from django.contrib.admin import widgets
 from django.db import models
 from django.utils.html import strip_tags
 from django.utils.text import Truncator
 
-from django_prose_editor.widgets import ProseEditorWidget
+from django_prose_editor.widgets import AdminProseEditorWidget, ProseEditorWidget
 
 
 def _actually_empty(x):
@@ -55,6 +56,13 @@ class ProseEditorFormField(forms.CharField):
 
     def __init__(self, *args, **kwargs):
         config = kwargs.pop("config", {})
-        kwargs["widget"] = ProseEditorWidget
+
+        if (widget := kwargs.get("widget")) and issubclass(
+            widget, widgets.AdminTextareaWidget
+        ):
+            kwargs["widget"] = AdminProseEditorWidget
+        else:
+            kwargs["widget"] = ProseEditorWidget
+
         super().__init__(*args, **kwargs)
         self.widget.config = config
