@@ -4,6 +4,10 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+
+0.6 (2024-07-26)
+~~~~~~~~~~~~~~~~
+
 - Added support for highlighting soft hyphens.
 - Updated all dependencies.
 - Moved the Django administration interface CSS overrides into their own file,
