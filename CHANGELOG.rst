@@ -4,6 +4,9 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+- Added the ``django-prose-editor[sanitize]`` which automatically installs the
+  ``nh3`` dependency.
+
 
 0.6 (2024-07-26)
 ~~~~~~~~~~~~~~~~
