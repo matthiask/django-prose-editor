@@ -37,11 +37,11 @@ dependencies = [
   "django>=4.2",
 ]
 
-optional-dependencies.tests = [
-  "coverage",
+optional-dependencies.sanitize = [
   "nh3",
 ]
-optional-dependencies.sanitize = [
+optional-dependencies.tests = [
+  "coverage",
   "nh3",
 ]
 urls.Homepage = "https://github.com/matthiask/django-prose-editor/"

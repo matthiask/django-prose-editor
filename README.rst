@@ -27,7 +27,7 @@ Install the package:
     venv/bin/pip install django-prose-editor
 
 To include nh3 as optional dependency for sanitized HTML, install the extra
-"sanitize": 
+"sanitize":
 
 .. code-block:: shell
 
