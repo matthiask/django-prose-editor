@@ -1,11 +1,9 @@
 from django import test
-from django.test.utils import isolate_apps
 
 from testapp.models import ProseEditorModel, SanitizedProseEditorModel
 
 
 class Test(test.TestCase):
-    @isolate_apps()
     def test_standard_field(self):
         m = ProseEditorModel(description="<p></p>")
         m.full_clean()
@@ -19,7 +17,6 @@ class Test(test.TestCase):
         m.full_clean()
         self.assertEqual(m.description, "<p>hello</p>")
 
-    @isolate_apps()
     def test_sanitized_field(self):
         m = SanitizedProseEditorModel(
             description="<style>h1{color:red}</style><h1>Hello</h1>"
