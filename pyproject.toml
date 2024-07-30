@@ -41,6 +41,9 @@ optional-dependencies.tests = [
   "coverage",
   "nh3",
 ]
+optional-dependencies.sanitize = [
+  "nh3",
+]
 urls.Homepage = "https://github.com/matthiask/django-prose-editor/"
 
 [tool.hatch.build]

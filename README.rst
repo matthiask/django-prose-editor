@@ -26,6 +26,13 @@ Install the package:
 
     venv/bin/pip install django-prose-editor
 
+To include nh3 as optional dependency for sanitized HTML, install the extra
+"sanitize": 
+
+.. code-block:: shell
+
+    venv/bin/pip install django-prose-editor[sanitize]
+
 Add ``django_prose_editor`` to ``INSTALLED_APPS``:
 
 .. code-block:: python
@@ -65,6 +72,8 @@ snippet to always pass HTML through `nh3
 
     description = SanitizedProseEditorField()
 
+Install django-prose-editor with the extra "sanitize" to use
+``SanitizedProseEditorField``.
 
 Convenience
 ~~~~~~~~~~~
