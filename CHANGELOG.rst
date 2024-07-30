@@ -6,6 +6,7 @@ Next version
 
 - Added the ``django-prose-editor[sanitize]`` which automatically installs the
   ``nh3`` dependency.
+- Properly restored the textarea element when destroying the editor.
 
 
 0.6 (2024-07-26)

@@ -143,6 +143,7 @@ export function createEditor(textarea, config) {
   )
 
   return () => {
+    editor.before(textarea)
     try {
       editorViewInstance.destroy()
     } catch (_err) {
