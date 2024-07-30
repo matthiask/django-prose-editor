@@ -56,9 +56,17 @@ class ProseEditorFormField(forms.CharField):
 
     def __init__(self, *args, **kwargs):
         config = kwargs.pop("config", {})
+        widget = kwargs.get("widget")
 
-        if (widget := kwargs.get("widget")) and issubclass(
-            widget, widgets.AdminTextareaWidget
+        # We don't know if widget is set, and if it is, we do not know if it is
+        # a class or an instance of the widget. The following if statement
+        # should take all possibilities into account.
+        if widget and (
+            (
+                isinstance(widget, type)
+                and issubclass(widget, widgets.AdminTextareaWidget)
+            )
+            or isinstance(widget, widgets.AdminTextareaWidget)
         ):
             kwargs["widget"] = AdminProseEditorWidget
         else:

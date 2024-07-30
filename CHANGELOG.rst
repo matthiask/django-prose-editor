@@ -7,6 +7,9 @@ Next version
 - Added the ``django-prose-editor[sanitize]`` which automatically installs the
   ``nh3`` dependency.
 - Properly restored the textarea element when destroying the editor.
+- Added more unittesting.
+- Supported using the ``ProseEditorFormField`` with widget instances, not just
+  with widget classes.
 
 
 0.6 (2024-07-26)

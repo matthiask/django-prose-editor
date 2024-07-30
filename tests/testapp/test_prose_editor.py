@@ -1,4 +1,6 @@
 from django import test
+from django.contrib.auth.models import User
+from django.test import Client
 
 from testapp.models import ProseEditorModel, SanitizedProseEditorModel
 
@@ -35,3 +37,15 @@ class Test(test.TestCase):
         m = SanitizedProseEditorModel(description="<p>hello</p>")
         m.full_clean()
         self.assertEqual(m.description, "<p>hello</p>")
+
+    def test_admin(self):
+        client = Client()
+        client.force_login(
+            User.objects.create_superuser("admin", "admin@example.com", "password")
+        )
+
+        response = client.get("/admin/testapp/proseeditormodel/add/")
+        # print(response, response.content.decode("utf-8"))
+        self.assertContains(
+            response, 'href="/static/django_prose_editor/overrides.css"'
+        )
