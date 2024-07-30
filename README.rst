@@ -72,8 +72,8 @@ snippet to always pass HTML through `nh3
 
     description = SanitizedProseEditorField()
 
-Install django-prose-editor with the extra "sanitized" to use
-SanitizedProseEditorField.
+Install django-prose-editor with the extra "sanitize" to use
+``SanitizedProseEditorField``.
 
 Convenience
 ~~~~~~~~~~~
