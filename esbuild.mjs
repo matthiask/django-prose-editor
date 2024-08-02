@@ -11,7 +11,9 @@ const ctx = await esbuild.context({
   globalName: "DjangoProseEditor",
   plugins: [postcss()],
   outdir: "django_prose_editor/static/django_prose_editor/",
-  sourcemap: devMode,
+  // I really like sourcemaps, but I don't want to distribute them here.
+  // People can check the open source package after all.
+  // sourcemap: devMode,
 })
 
 if (devMode) {
