@@ -44,6 +44,8 @@ optional-dependencies.tests = [
   "coverage",
   "nh3",
 ]
+urls.Documentation = "https://django-prose-editor.readthedocs.io/"
+
 urls.Homepage = "https://github.com/matthiask/django-prose-editor/"
 
 [tool.hatch.build]
