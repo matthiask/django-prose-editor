@@ -4,12 +4,6 @@ import postcss from "esbuild-postcss"
 const devMode = process.argv.includes("watch")
 const ctx = await esbuild.context({
   entryPoints: ["./src/overrides.css", "./src/editor.js"],
-  jsxFactory: "h",
-  jsxFragment: "Fragment",
-  loader: {
-    ".js": "jsx",
-    ".svg": "file",
-  },
   minify: true,
   bundle: true,
   target: "es6",
