@@ -18,7 +18,7 @@ If this does not seem convincing you can always add your own rich text plugin wi
 
 
 Installation
-~~~~~~~~~~~~
+============
 
 The first step is to ensure that you have an activated virtualenv for your
 current project, using something like ``. .venv/bin/activate``.
@@ -59,7 +59,7 @@ Note! No migrations will be generated when switching from and to
 
 
 Security
-~~~~~~~~
+========
 
 ProseMirror does a really good job of only allowing content which confirms to a
 particular scheme. Of course users can submit what they want, they are not
@@ -79,7 +79,7 @@ Install django-prose-editor with the extra "sanitize" to use
 ``SanitizedProseEditorField``.
 
 Convenience
-~~~~~~~~~~~
+===========
 
 Sometimes it may be useful to show an excerpt of the HTML field; the
 ``ProseEditorField`` automatically adds a ``get_*_excerpt`` method to models
@@ -89,7 +89,7 @@ above.
 
 
 Customization
-~~~~~~~~~~~~~
+=============
 
 It's possible to slightly customize the field or widget by passing an optional
 ``config`` dictionary. The default configuration is:
@@ -127,7 +127,7 @@ The supported mark types are ``link``, ``strong``, ``em``, ``underline``,
 
 
 Usage outside the Django admin
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+==============================
 
 The prose editor can easily be used outside the Django admin. The form field
 respectively the widget includes the necessary CSS and JavaScript:

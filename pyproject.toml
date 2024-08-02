@@ -62,8 +62,6 @@ target-version = "py311"
 fix = true
 show-fixes = true
 lint.extend-select = [
-  # flake8-builtins
-  "A",
   # flake8-bugbear
   "B",
   # flake8-comprehensions

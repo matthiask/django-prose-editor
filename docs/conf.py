@@ -1,67 +1,29 @@
-import os
-import re
-import subprocess
-import sys
+from datetime import datetime
 
 
-sys.path.append(os.path.abspath(".."))
-
-project = "django-prose-editor"
-author = "Matthias Kestenholz"
-copyright = "2024, " + author
-version = __import__("django_prose_editor").version
-release = subprocess.check_output(
-    "git fetch --tags; git describe --always --tags",
-    shell=True,
-    text=True,
-).strip()
-language = "en"
-
-#######################################
-project_slug = re.sub(r"[^a-z]+", "", project)
-
-extensions = []
 templates_path = ["_templates"]
-source_suffix = ".rst"
 master_doc = "index"
 
-exclude_patterns = ["build", "Thumbs.db", ".DS_Store"]
-pygments_style = "sphinx"
-todo_include_todos = False
+project = "django-prose-editor"
+copyright = f"{datetime.now().year}, the django-prose-editor developers"
 
-html_theme = "alabaster"
-# html_static_path = ["_static"]
-htmlhelp_basename = project_slug + "doc"
+exclude_patterns = ["_build"]
 
-latex_elements = {
-    "papersize": "a4",
+html_theme = "furo"
+html_theme_options = {
+    "source_repository": "https://github.com/matthiask/django-prose-editor/",
+    "source_branch": "main",
+    "source_directory": "docs/",
+    "footer_icons": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/matthiask/django-prose-editor/",
+            "html": """
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+            """,
+            "class": "",
+        },
+    ],
 }
-latex_documents = [
-    (
-        master_doc,
-        project_slug + ".tex",
-        project + " Documentation",
-        author,
-        "manual",
-    )
-]
-man_pages = [
-    (
-        master_doc,
-        project_slug,
-        project + " Documentation",
-        [author],
-        1,
-    )
-]
-texinfo_documents = [
-    (
-        master_doc,
-        project_slug,
-        project + " Documentation",
-        author,
-        project_slug,
-        "",  # Description
-        "Miscellaneous",
-    )
-]
