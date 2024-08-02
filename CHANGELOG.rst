@@ -16,6 +16,7 @@ Next version
   when in a block of the respective type.
 - Stopped showing the 'remove link' button as active when inside a link -- it's
   not active, just enabled.
+- Improved the styles of the dialog a bit.
 
 
 0.6 (2024-07-26)

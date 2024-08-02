@@ -106,10 +106,32 @@
   background: var(--_b);
   color: var(--_f);
   border: 1px solid var(--_r);
+  border-radius: 4px;
 }
 
 .prose-editor-dialog label {
   display: block;
+}
+
+.prose-editor-dialog button {
+  all: unset;
+
+  cursor: pointer;
+  padding: 0.25em 0.5em;
+  min-width: 2em;
+  transition: all 0.25s;
+  background: var(--_b);
+  color: var(--_f);
+  border: 1px solid var(--_r);
+  border-radius: 4px;
+  text-align: center;
+  display: inline-flex;
+  position: relative;
+}
+
+.prose-editor-dialog button:active,
+.prose-editor-dialog button:hover {
+  background: var(--_a);
 }
 
 /* content editor support */
