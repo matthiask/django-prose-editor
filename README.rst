@@ -142,3 +142,17 @@ If you're rendering the form in a template you have to include the form media:
 
 Note that the form media isn't django-prose-editor specific, that's a Django
 feature.
+
+The django-prose-editor CSS uses the following CSS custom properties, using
+names that are defined in the Django admin's CSS:
+
+* ``--border-color``
+* ``--body-fg``
+* ``--body-bg``
+* ``--primary``
+
+You should set these properties with appropriate values to use
+django-prose-editor outside the admin in your site.
+
+In addition, you may optionally set a ``--prose-editor-typographic`` property
+to control the color of typographic characters when shown.
