@@ -12,6 +12,8 @@ Next version
   with widget classes.
 - Documented the CSS custom properties. Thanks @carltongibson!
 - Converted the block type dropdown back to a button group.
+- Changed the CSS so that block type buttons look active instead of disabled
+  when in a block of the respective type.
 
 
 0.6 (2024-07-26)

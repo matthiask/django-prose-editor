@@ -88,7 +88,7 @@
   background-color: var(--_a);
 }
 
-.prose-menubar__button.disabled {
+.prose-menubar__button.disabled:not(.active) {
   background: var(--_d);
   filter: brightness(100%);
   cursor: not-allowed;
