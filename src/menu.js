@@ -137,13 +137,14 @@ export function markMenuItems(schema) {
 }
 
 export function linkMenuItems(schema) {
-  if (!schema.marks.link) return []
+  const mark = schema.marks.link
+  if (!mark) return []
 
   return [
     {
       command: addLink,
       dom: materialButton("insert_link", "insert link"),
-      active: addLink,
+      active: (state) => markActive(state, mark),
     },
     {
       command: removeLink,

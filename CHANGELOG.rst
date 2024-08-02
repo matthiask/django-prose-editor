@@ -4,6 +4,9 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+- Made the link button only active when the cursor is inside a link.
+
+
 0.7 (2024-08-02)
 ~~~~~~~~~~~~~~~~
 
