@@ -9,7 +9,7 @@ import {
   updateHTML,
   insertHorizontalRule,
 } from "./commands.js"
-import { crel } from "./utils.js"
+import { crel, markActive } from "./utils.js"
 
 export function menuPlugin(blockTypeItems, otherItems) {
   return new Plugin({
@@ -20,12 +20,6 @@ export function menuPlugin(blockTypeItems, otherItems) {
       return menuView
     },
   })
-}
-
-function markActive(state, type) {
-  const { from, $from, to, empty } = state.selection
-  if (empty) return type.isInSet(state.storedMarks || $from.marks())
-  return state.doc.rangeHasMark(from, to, type)
 }
 
 function headingButton(level) {

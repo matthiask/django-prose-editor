@@ -1,9 +1,3 @@
-.ProseMirror {
-  padding: 0 6px;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-}
-
 .prose-editor *,
 .prose-editor *::before,
 .prose-editor *::after {
@@ -17,7 +11,16 @@
   min-width: 40ch;
 
   flex-grow: 1;
+}
 
+.prose-editor,
+.prose-editor-dialog {
+  /* --body-bg, --body-fg, --border-color and --primary are used in the Django admin CSS */
+  --_b: var(--prose-editor-background, var(--body-bg, #fff));
+  --_f: var(--prose-editor-foreground, var(--body-fg, #333));
+  --_r: var(--prose-editor-border-color, var(--border-color, #ccc));
+  --_a: var(--prose-editor-active-color, var(--primary, #79aec8));
+  --_d: var(--prose-editor-disabled-color, var(--border-color, #ccc));
   --_t: var(--prose-editor-typographic, #ccc);
 }
 
@@ -27,7 +30,6 @@
 
 .prose-menubar {
   font-size: 14px;
-  background: var(--body-bg);
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -45,7 +47,7 @@
   > div {
     display: none;
     position: absolute;
-    background: var(--body-bg);
+    background: var(--_b);
     z-index: 1;
   }
 
@@ -63,7 +65,9 @@
   padding: 0 0.25em;
   min-width: 2em;
   transition: all 0.25s;
-  border: 1px solid var(--border-color);
+  background: var(--_b);
+  color: var(--_f);
+  border: 1px solid var(--_r);
   text-align: center;
   display: inline-flex;
   position: relative;
@@ -100,21 +104,27 @@
 }
 
 .prose-menubar__button.active {
-  background-color: var(--primary);
+  background-color: var(--_a);
 }
 
 .prose-menubar__button.disabled {
-  background: var(--border-color);
+  background: var(--_d);
   filter: brightness(100%);
   cursor: not-allowed;
   opacity: 0.3;
 }
 
+.prose-editor .ProseMirror {
+  padding: 0 6px;
+  border: 1px solid var(--_r);
+  border-radius: 4px;
+}
+
 /* dialog */
 .prose-editor-dialog {
-  background: var(--body-bg);
-  color: var(--body-fg);
-  border: 1px solid var(--border-color);
+  background: var(--_b);
+  color: var(--_f);
+  border: 1px solid var(--_r);
 }
 
 .prose-editor-dialog label {
