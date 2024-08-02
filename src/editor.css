@@ -37,25 +37,6 @@
   margin-bottom: 2px;
 }
 
-.prose-menubar__dropdown {
-  display: flex;
-
-  > span {
-    border-radius: 4px;
-  }
-
-  > div {
-    display: none;
-    position: absolute;
-    background: var(--_b);
-    z-index: 1;
-  }
-
-  &:hover > div {
-    display: flex;
-  }
-}
-
 .prose-menubar__group {
   display: flex;
 }

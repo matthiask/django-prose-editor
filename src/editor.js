@@ -108,8 +108,8 @@ export function createEditor(textarea, config) {
     gapCursor(),
     history(),
     menuPlugin(
-      blockTypeMenuItems(schema),
       [
+        blockTypeMenuItems(schema),
         listMenuItems(schema),
         linkMenuItems(schema),
         markMenuItems(schema),

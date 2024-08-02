@@ -11,10 +11,10 @@ import {
 } from "./commands.js"
 import { crel, markActive } from "./utils.js"
 
-export function menuPlugin(blockTypeItems, otherItems) {
+export function menuPlugin(items) {
   return new Plugin({
     view(editorView) {
-      const menuView = new MenuView(editorView, blockTypeItems, otherItems)
+      const menuView = new MenuView(editorView, items)
       editorView.dom.parentNode.insertBefore(menuView.dom, editorView.dom)
 
       return menuView
@@ -183,22 +183,13 @@ export function htmlMenuItem() {
 }
 
 class MenuView {
-  constructor(editorView, blockTypeItems, otherItemGroups) {
-    this.items = [blockTypeItems, ...otherItemGroups].flat()
+  constructor(editorView, itemGroups) {
+    this.items = itemGroups.flat()
     this.editorView = editorView
 
     this.dom = crel("div", { className: "prose-menubar" })
 
-    if (blockTypeItems.length) {
-      const groupDOM = crel("div", { className: "prose-menubar__dropdown" })
-      const dropdownElements = crel("div")
-      this.dom.append(groupDOM)
-      groupDOM.append(materialButton("notes", "paragraph"))
-      groupDOM.append(dropdownElements)
-      blockTypeItems.forEach(({ dom }) => dropdownElements.append(dom))
-    }
-
-    otherItemGroups
+    itemGroups
       .filter((group) => group.length)
       .forEach((group) => {
         const groupDOM = crel("div", { className: "prose-menubar__group" })
