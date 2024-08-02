@@ -20,18 +20,21 @@ If this does not seem convincing you can always add your own rich text plugin wi
 Installation
 ~~~~~~~~~~~~
 
-Install the package:
+The first step is to ensure that you have an activated virtualenv for your
+current project, using something like ``. .venv/bin/activate``.
+
+Install the package into your environment:
 
 .. code-block:: shell
 
-    venv/bin/pip install django-prose-editor
+    pip install django-prose-editor
 
 To include nh3 as optional dependency for sanitized HTML, install the extra
 "sanitize":
 
 .. code-block:: shell
 
-    venv/bin/pip install django-prose-editor[sanitize]
+    pip install django-prose-editor[sanitize]
 
 Add ``django_prose_editor`` to ``INSTALLED_APPS``:
 
@@ -116,7 +119,8 @@ tags, that's out of scope for now.
 ``doc``, ``paragraph`` and ``text`` are always in the allowlist.
 
 The supported node types are ``heading``, ``blockquote``, ``horizontal_rule``
-and ``hard_break``.
+and ``hard_break``. List nodes are ``ordered_list``, ``bullet_list`` and
+``list_item``.
 
 The supported mark types are ``link``, ``strong``, ``em``, ``underline``,
 ``strikethrough``, ``sub`` and ``sup``
