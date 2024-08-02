@@ -14,6 +14,8 @@ Next version
 - Converted the block type dropdown back to a button group.
 - Changed the CSS so that block type buttons look active instead of disabled
   when in a block of the respective type.
+- Stopped showing the 'remove link' button as active when inside a link -- it's
+  not active, just enabled.
 
 
 0.6 (2024-07-26)

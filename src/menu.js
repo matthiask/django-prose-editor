@@ -148,7 +148,9 @@ export function linkMenuItems(schema) {
     {
       command: removeLink,
       dom: materialButton("link_off", "remove link"),
-      active: (state) => markActive(state, schema.marks.link),
+      active() {
+        return false
+      },
     },
   ]
 }
