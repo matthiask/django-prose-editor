@@ -56,9 +56,6 @@ export const addLink = (state, dispatch) => {
       if (attrs) {
         let range
         if (empty) {
-          // TODO if two links are directly besides each other this probably
-          // removes both of them. We should pass the current mark's attributes
-          // to getMarkRange.
           range = getMarkRange($from, type)
           dispatch(
             state.tr
