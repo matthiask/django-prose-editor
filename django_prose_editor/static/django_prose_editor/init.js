@@ -2,6 +2,8 @@
 
 ;(() => {
 
+DjangoProseEditor.messages = JSON.parse(document.currentScript.dataset.messages)
+
 const marker = "data-django-prose-editor"
 
 function initializeDjangoProseEditor(container) {

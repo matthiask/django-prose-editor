@@ -2,15 +2,16 @@ import { getMarkRange } from "./extendMarkRange.js"
 import { getHTML, parseHTML, trimmedRangeFromSelection } from "./utils.js"
 
 const linkDialog = (attrs) => {
+  const { messages } = window.DjangoProseEditor
   return new Promise((resolve) => {
     const div = document.createElement("div")
     div.innerHTML = `
   <dialog class="prose-editor-dialog">
   <form>
-  <p><label>URL</label> <input type="url" name="href" size="50" required></p>
-  <p><label>Title</label> <input type="text" name="title" size="50"></p>
-  <button type="submit">Update</button>
-  <button type="button" value="cancel">Cancel</button>
+  <p><label>${messages.url}</label> <input type="url" name="href" size="50" required></p>
+  <p><label>${messages.title}</label> <input type="text" name="title" size="50"></p>
+  <button type="submit">${messages.update}</button>
+  <button type="button" value="cancel">${messages.cancel}</button>
   </form>
   </dialog>
   `
@@ -86,14 +87,15 @@ export const removeLink = (state, dispatch) => {
 }
 
 const htmlDialog = (html) => {
+  const { messages } = window.DjangoProseEditor
   return new Promise((resolve) => {
     const div = document.createElement("div")
     div.innerHTML = `
   <dialog class="prose-editor-dialog">
   <form>
   <p><textarea name="html" cols="80" rows="30"></textarea></p>
-  <button type="submit">Update</button>
-  <button type="button" value="cancel">Cancel</button>
+  <button type="submit">${messages.update}</button>
+  <button type="button" value="cancel">${messages.cancel}</button>
   </form>
   </dialog>
   `
