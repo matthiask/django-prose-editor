@@ -9,6 +9,8 @@ Next version
 - Updated the ProseMirror dependencies.
 - Added extremely hacky german translations for the dialogs.
 - Added Django 5.1 to the CI matrix.
+- Allowed specifying the heading levels for the menu. The schema itself supports
+  all heading levels (1-6) as before.
 
 
 0.7 (2024-08-02)

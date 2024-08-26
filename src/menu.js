@@ -45,7 +45,7 @@ function materialButton(textContent, title) {
   })
 }
 
-export function blockTypeMenuItems(schema) {
+export function blockTypeMenuItems(schema, headingLevels) {
   if (!schema.nodes.heading) return []
 
   const heading = (level) => ({
@@ -58,12 +58,10 @@ export function blockTypeMenuItems(schema) {
     },
   })
 
+  const _levels = headingLevels || [1, 2, 3, 4, 5]
+
   return [
-    heading(1),
-    heading(2),
-    heading(3),
-    heading(4),
-    heading(5),
+    ..._levels.map(heading),
     {
       command: setBlockType(schema.nodes.paragraph),
       dom: materialButton("notes", "paragraph"),

@@ -109,7 +109,7 @@ export function createEditor(textarea, config) {
     history(),
     menuPlugin(
       [
-        blockTypeMenuItems(schema),
+        blockTypeMenuItems(schema, config.headingLevels),
         listMenuItems(schema),
         linkMenuItems(schema),
         markMenuItems(schema),

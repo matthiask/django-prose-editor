@@ -101,6 +101,7 @@ It's possible to slightly customize the field or widget by passing an optional
         "history": True,      # Enable undo and redo
         "html": True,         # Add a button which allows editing the raw HTML
         "typographic": True,  # Highlight typographic characters
+        "headingLevels": [1, 2, 3, 4, 5],  # Available heading levels
     }
 
 If you only want to support paragraphs, strong, emphasis, sub- and superset and
