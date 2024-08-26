@@ -8,6 +8,7 @@ Next version
 - Added docs on read the docs.
 - Updated the ProseMirror dependencies.
 - Added extremely hacky german translations for the dialogs.
+- Added Django 5.1 to the CI matrix.
 
 
 0.7 (2024-08-02)
