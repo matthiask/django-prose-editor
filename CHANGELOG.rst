@@ -4,6 +4,9 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+0.8 (2024-08-26)
+~~~~~~~~~~~~~~~~
+
 - Made the link button only active when the cursor is inside a link.
 - Added docs on read the docs.
 - Updated the ProseMirror dependencies.
