@@ -4,6 +4,9 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+- Updated the ProseMirror dependencies.
+
+
 0.8 (2024-08-26)
 ~~~~~~~~~~~~~~~~
 
