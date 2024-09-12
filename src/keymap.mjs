@@ -13,7 +13,7 @@ import {
   sinkListItem,
 } from "prosemirror-schema-list"
 
-import { addLink } from "./commands.js"
+import { addLink } from "./commands.mjs"
 
 const mac =
   typeof navigator !== "undefined"

@@ -14,26 +14,35 @@ repos:
       - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/adamchainz/django-upgrade
-    rev: 1.18.0
+    rev: 1.21.0
     hooks:
       - id: django-upgrade
         args: [--target-version, "3.2"]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.4.9"
+    rev: "v0.6.4"
     hooks:
       - id: ruff
       - id: ruff-format
-  - repo: https://github.com/biomejs/pre-commit
-    rev: "v0.4.0"
-    hooks:
-      - id: biome-check
-        additional_dependencies: ["@biomejs/biome@1.8.1"]
-        args: [--unsafe]
   - repo: https://github.com/tox-dev/pyproject-fmt
-    rev: 2.1.3
+    rev: 2.2.3
     hooks:
       - id: pyproject-fmt
   - repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.18
+    rev: v0.19
     hooks:
       - id: validate-pyproject
+  - repo: local
+    hooks:
+      - id: prettier
+        name: prettier
+        entry: npx prettier@3.3.3 --no-semi --write
+        language: system
+        types_or: [css, scss]
+        require_serial: true
+      - id: eslint
+        name: eslint
+        entry: yarn eslint
+        language: system
+        types_or: [javascript]
+        require_serial: true
+        verbose: true
