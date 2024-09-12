@@ -5,8 +5,6 @@ Next version
 ~~~~~~~~~~~~
 
 - Updated the ProseMirror dependencies.
-- Switched back to ESLint and prettier. Somehow biome didn't warn when
-  variables were unused or undefined.
 
 
 0.8 (2024-08-26)

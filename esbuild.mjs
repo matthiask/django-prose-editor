@@ -1,10 +1,9 @@
-/* globals process */
 import * as esbuild from "esbuild"
 import postcss from "esbuild-postcss"
 
 const devMode = process.argv.includes("watch")
 const ctx = await esbuild.context({
-  entryPoints: ["./src/overrides.css", "./src/editor.mjs"],
+  entryPoints: ["./src/overrides.css", "./src/editor.js"],
   minify: true,
   bundle: true,
   target: "es6",

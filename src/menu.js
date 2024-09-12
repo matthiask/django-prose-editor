@@ -8,8 +8,8 @@ import {
   removeLink,
   updateHTML,
   insertHorizontalRule,
-} from "./commands.mjs"
-import { crel, markActive } from "./utils.mjs"
+} from "./commands.js"
+import { crel, markActive } from "./utils.js"
 
 export function menuPlugin(items) {
   return new Plugin({

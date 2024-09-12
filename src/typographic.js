@@ -36,6 +36,7 @@ const typographicDecorationsForNode = (node, position) => {
   const decorations = []
   if (node.text) {
     for (const match of node.text.matchAll(/(\u00A0|\u00AD)/g)) {
+      const array = Array.from(match)
       const from = position + (match.index || 0)
       decorations.push(
         Decoration.inline(from, from + 1, {

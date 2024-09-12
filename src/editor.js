@@ -13,7 +13,7 @@ import { addListNodes } from "prosemirror-schema-list"
 import { EditorState } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
 
-import { buildKeymap, applyMarksKeymap } from "./keymap.mjs"
+import { buildKeymap, applyMarksKeymap } from "./keymap.js"
 import {
   menuPlugin,
   blockTypeMenuItems,
@@ -22,10 +22,10 @@ import {
   historyMenuItems,
   markMenuItems,
   htmlMenuItem,
-} from "./menu.mjs"
-import { noSpellCheck } from "./nospellcheck.mjs"
-import { typographicPlugin } from "./typographic.mjs"
-import { crel, createDebouncedBackWriter, parseHTML } from "./utils.mjs"
+} from "./menu.js"
+import { noSpellCheck } from "./nospellcheck.js"
+import { typographicPlugin } from "./typographic.js"
+import { crel, createDebouncedBackWriter, parseHTML } from "./utils.js"
 
 const underlineDOM = ["u", 0]
 const strikethroughDOM = ["s", 0]
@@ -146,7 +146,7 @@ export function createEditor(textarea, config) {
     editor.before(textarea)
     try {
       editorViewInstance.destroy()
-    } finally {
+    } catch (_err) {
       /* Intentionally left empty */
     }
     editor.remove()

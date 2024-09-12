@@ -1,5 +1,5 @@
-import { getMarkRange } from "./extendMarkRange.mjs"
-import { getHTML, parseHTML, trimmedRangeFromSelection } from "./utils.mjs"
+import { getMarkRange } from "./extendMarkRange.js"
+import { getHTML, parseHTML, trimmedRangeFromSelection } from "./utils.js"
 
 const linkDialog = (attrs) => {
   const { messages } = window.DjangoProseEditor
