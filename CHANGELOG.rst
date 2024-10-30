@@ -6,6 +6,8 @@ Next version
 
 - Updated the ProseMirror dependencies.
 - Added Python 3.13 to the CI matrix.
+- Disable interactions and the menubar on the editor when the textarea is
+  ``disabled``.
 
 
 0.8 (2024-08-26)

@@ -48,6 +48,8 @@ const pruneSchema = (schema, types = null) => {
 }
 
 export function createEditor(textarea, config) {
+  const editable = !textarea.hasAttribute("disabled")
+
   const schemaSpec = {
     nodes: {
       doc: nodes.doc,
@@ -107,16 +109,17 @@ export function createEditor(textarea, config) {
     dropCursor(),
     gapCursor(),
     history(),
-    menuPlugin(
-      [
-        blockTypeMenuItems(schema, config.headingLevels),
-        listMenuItems(schema),
-        linkMenuItems(schema),
-        markMenuItems(schema),
-        config.history ? historyMenuItems() : null,
-        config.html ? htmlMenuItem() : null,
-      ].filter(Boolean),
-    ),
+    editable &&
+      menuPlugin(
+        [
+          blockTypeMenuItems(schema, config.headingLevels),
+          listMenuItems(schema),
+          linkMenuItems(schema),
+          markMenuItems(schema),
+          config.history ? historyMenuItems() : null,
+          config.html ? htmlMenuItem() : null,
+        ].filter(Boolean),
+      ),
     noSpellCheck(),
     config.typographic ? typographicPlugin : null,
   ].filter(Boolean)
@@ -135,7 +138,12 @@ export function createEditor(textarea, config) {
       editorViewInstance.updateState(editorViewInstance.state.apply(tr))
       debouncedWriteBack()
     },
+
+    editable(_state) {
+      return editable
+    },
   })
+
   const debouncedWriteBack = createDebouncedBackWriter(
     schema,
     editorViewInstance,
