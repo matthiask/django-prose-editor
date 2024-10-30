@@ -5,6 +5,7 @@ Next version
 ~~~~~~~~~~~~
 
 - Updated the ProseMirror dependencies.
+- Added Python 3.13 to the CI matrix.
 
 
 0.8 (2024-08-26)
