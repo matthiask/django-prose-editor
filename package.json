@@ -13,7 +13,7 @@
     "autoprefixer": "^10.4.20",
     "esbuild": "^0.24.0",
     "esbuild-postcss": "^0.0.4",
-    "postcss": "^8.4.47"
+    "postcss": "^8.4.49"
   },
   "scripts": {
     "dev": "node esbuild.mjs watch",
