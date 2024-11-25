@@ -8,6 +8,7 @@ import Link from "@tiptap/extension-link"
 
 import { addLink } from "./commands.js"
 import { Menu } from "./menu.js"
+import { NoSpellCheck } from "./nospellcheck.js"
 import { Typographic } from "./typographic.js"
 import { crel } from "./utils.js"
 
@@ -34,6 +35,7 @@ export function createEditor(textarea, _config) {
     extensions: [
       StarterKit,
       Menu,
+      NoSpellCheck,
       Subscript,
       Superscript,
       LinkWithShortcut.configure({

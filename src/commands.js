@@ -139,9 +139,7 @@ export const updateHTML = (state, dispatch) => {
 export const insertHorizontalRule = (state, dispatch) => {
   if (dispatch) {
     dispatch(
-      state.tr.replaceSelectionWith(
-        state.schema.nodes.horizontal_rule.create(),
-      ),
+      state.tr.replaceSelectionWith(state.schema.nodes.horizontalRule.create()),
     )
   }
   return true
