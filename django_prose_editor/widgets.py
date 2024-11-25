@@ -38,12 +38,22 @@ class ProseEditorWidget(forms.Textarea):
         )
 
     def get_config(self):
-        return self.config or {
+        config = self.config or {
             "types": None,
             "history": True,
             "html": True,
             "typographic": True,
         }
+
+        """
+        The supported node types are heading, blockquote, horizontal_rule and
+        hard_break. List nodes are ordered_list, bullet_list and list_item.
+
+        The supported mark types are link, strong, em, underline,
+        strikethrough, sub and sup
+        """
+
+        return config
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
