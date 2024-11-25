@@ -1,4 +1,4 @@
-import { DOMParser, DOMSerializer } from "prosemirror-model"
+import { DOMParser, DOMSerializer } from "@tiptap/pm/model"
 // import debounce from "lodash-es/debounce"
 
 export const crel = (tagName, attributes = null) => {

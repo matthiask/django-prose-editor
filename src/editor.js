@@ -33,17 +33,17 @@ export function createEditor(textarea, _config) {
 /*
 import "prosemirror-view/style/prosemirror.css"
 
-import { baseKeymap } from "prosemirror-commands"
-import { dropCursor } from "prosemirror-dropcursor"
-import { gapCursor } from "prosemirror-gapcursor"
-import { history } from "prosemirror-history"
-import { keymap } from "prosemirror-keymap"
-// import { MenuItem, icons, menuBar } from "prosemirror-menu"
-import { Schema } from "prosemirror-model"
-import { nodes, marks } from "prosemirror-schema-basic"
-import { addListNodes } from "prosemirror-schema-list"
-import { EditorState } from "prosemirror-state"
-import { EditorView } from "prosemirror-view"
+import { baseKeymap } from "@tiptap/pm/commands"
+import { dropCursor } from "@tiptap/pm/dropcursor"
+import { gapCursor } from "@tiptap/pm/gapcursor"
+import { history } from "@tiptap/pm/history"
+import { keymap } from "@tiptap/pm/keymap"
+// import { MenuItem, icons, menuBar } from "@tiptap/pm/menu"
+import { Schema } from "@tiptap/pm/model"
+import { nodes, marks } from "@tiptap/pm/schema-basic"
+import { addListNodes } from "@tiptap/pm/schema-list"
+import { EditorState } from "@tiptap/pm/state"
+import { EditorView } from "@tiptap/pm/view"
 
 import { buildKeymap, applyMarksKeymap } from "./keymap.js"
 import {

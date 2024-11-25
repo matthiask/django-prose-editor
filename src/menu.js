@@ -1,9 +1,9 @@
 import { Extension } from "@tiptap/core"
 
-import { toggleMark, setBlockType, wrapIn } from "prosemirror-commands"
-import { undo, redo } from "prosemirror-history"
-import { wrapInList } from "prosemirror-schema-list"
-import { Plugin } from "prosemirror-state"
+import { toggleMark, setBlockType, wrapIn } from "@tiptap/pm/commands"
+import { undo, redo } from "@tiptap/pm/history"
+import { wrapInList } from "@tiptap/pm/schema-list"
+import { Plugin } from "@tiptap/pm/state"
 
 export const Menu = Extension.create({
   addProseMirrorPlugins() {
