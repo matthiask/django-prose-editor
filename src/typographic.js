@@ -1,7 +1,15 @@
 // Plugin which shows typographic characters (currently only non-breaking spaces)
 
+import { Extension } from "@tiptap/core"
+
 import { Plugin } from "prosemirror-state"
 import { Decoration, DecorationSet } from "prosemirror-view"
+
+export const Typographic = Extension.create({
+  addProseMirrorPlugins() {
+    return [typographicPlugin]
+  },
+})
 
 // https://discuss.prosemirror.net/t/efficiently-finding-changed-nodes/4280/5
 // Helper for iterating through the nodes in a document that changed

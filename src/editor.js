@@ -6,8 +6,9 @@ import Subscript from "@tiptap/extension-subscript"
 import Superscript from "@tiptap/extension-superscript"
 import Link from "@tiptap/extension-link"
 
-import { crel } from "./utils.js"
 import { Menu } from "./menu.js"
+import { Typographic } from "./typographic.js"
+import { crel } from "./utils.js"
 
 export function createEditor(textarea, _config) {
   const _editable = !textarea.hasAttribute("disabled")
@@ -18,7 +19,7 @@ export function createEditor(textarea, _config) {
 
   const _editorInstance = new Editor({
     element: editor,
-    extensions: [StarterKit, Menu, Subscript, Superscript, Link],
+    extensions: [StarterKit, Menu, Subscript, Superscript, Link, Typographic],
     content: textarea.value,
     onUpdate({ editor }) {
       textarea.value = editor.getHTML()
