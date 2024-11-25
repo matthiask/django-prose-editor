@@ -6,9 +6,21 @@ import Subscript from "@tiptap/extension-subscript"
 import Superscript from "@tiptap/extension-superscript"
 import Link from "@tiptap/extension-link"
 
+import { addLink } from "./commands.js"
 import { Menu } from "./menu.js"
 import { Typographic } from "./typographic.js"
 import { crel } from "./utils.js"
+
+const LinkWithShortcut = Link.extend({
+  addKeyboardShortcuts() {
+    return {
+      "Mod-k": ({ editor }) => {
+        console.debug("editor", editor)
+        addLink(editor.view.state, editor.view.dispatch)
+      },
+    }
+  },
+})
 
 export function createEditor(textarea, _config) {
   const _editable = !textarea.hasAttribute("disabled")
@@ -19,7 +31,16 @@ export function createEditor(textarea, _config) {
 
   const _editorInstance = new Editor({
     element: editor,
-    extensions: [StarterKit, Menu, Subscript, Superscript, Link, Typographic],
+    extensions: [
+      StarterKit,
+      Menu,
+      Subscript,
+      Superscript,
+      LinkWithShortcut.configure({
+        openOnClick: false,
+      }),
+      Typographic,
+    ],
     content: textarea.value,
     onUpdate({ editor }) {
       textarea.value = editor.getHTML()
