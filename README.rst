@@ -2,7 +2,7 @@
 django-prose-editor
 ===================
 
-Prose editor for the Django admin based on ProseMirror. `Announcement blog post <https://406.ch/writing/django-prose-editor-prose-editing-component-for-the-django-admin/>`__.
+Prose editor for the Django admin based on ProseMirror and Tiptap. `Announcement blog post <https://406.ch/writing/django-prose-editor-prose-editing-component-for-the-django-admin/>`__.
 
 
 About rich text editors

@@ -1,5 +1,4 @@
 import { DOMParser, DOMSerializer } from "@tiptap/pm/model"
-// import debounce from "lodash-es/debounce"
 
 export const crel = (tagName, attributes = null) => {
   const dom = document.createElement(tagName)
@@ -26,34 +25,6 @@ export function getHTML(state) {
   return container.innerHTML
 }
 
-/*
-export const createDebouncedBackWriter = (
-  schema,
-  editorViewInstance,
-  textarea,
-) => {
-  const serializer = DOMSerializer.fromSchema(schema)
-  const serialize = () => {
-    const container = crel("article")
-    container.appendChild(
-      serializer.serializeFragment(editorViewInstance.state.doc.content),
-    )
-    return container.innerHTML
-  }
-
-  const writeBack = () => {
-    const value = serialize()
-    if (textarea.value !== value) {
-      textarea.value = value
-      textarea.dispatchEvent(
-        new InputEvent("input", { bubbles: true, cancelable: true }),
-      )
-    }
-  }
-  return debounce(writeBack, 250)
-}
-*/
-
 export const trimmedRangeFromSelection = (selection) => {
   // Copied from prosemirror-commands/src/commands.ts
   const { $from, $to } = selection
@@ -68,15 +39,6 @@ export const trimmedRangeFromSelection = (selection) => {
     to -= spaceEnd
   }
   return { from, to }
-}
-
-export function findNode(node, predicate) {
-  let found
-  node.descendants((node, pos) => {
-    if (!found && predicate(node)) found = { node, pos }
-    if (found) return false
-  })
-  return found
 }
 
 export function markActive(state, type) {

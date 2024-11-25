@@ -4,6 +4,10 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+- Changed the editor foundation to use `Tiptap <https://tiptap.dev/>__`. Tiptap
+  uses ProseMirror under the hood, but offers an extension framework which I'd
+  have to reinvent and there's really no point to do that.
+
 
 0.9 (2024-10-30)
 ~~~~~~~~~~~~~~~~
