@@ -15,6 +15,9 @@
       "a11y": {
         "noSvgWithoutTitle": "off"
       },
+      "complexity": {
+        "noForEach": "off"
+      },
       "correctness": {
         "noUndeclaredVariables": "error",
         "noUnusedImports": "error",
