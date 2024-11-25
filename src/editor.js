@@ -4,7 +4,7 @@ import { Editor } from "@tiptap/core"
 import StarterKit from "@tiptap/starter-kit"
 import Subscript from "@tiptap/extension-subscript"
 import Superscript from "@tiptap/extension-superscript"
-import Link from "@tiptap/extension-link"
+import { Link as BaseLink } from "@tiptap/extension-link"
 
 import { addLink } from "./commands.js"
 import { Menu } from "./menu.js"
@@ -12,7 +12,7 @@ import { NoSpellCheck } from "./nospellcheck.js"
 import { Typographic } from "./typographic.js"
 import { crel } from "./utils.js"
 
-const LinkWithShortcut = Link.extend({
+const Link = BaseLink.extend({
   addKeyboardShortcuts() {
     return {
       "Mod-k": ({ editor }) => {
@@ -37,7 +37,7 @@ export function createEditor(textarea, config) {
       NoSpellCheck,
       Subscript,
       Superscript,
-      LinkWithShortcut.configure({
+      Link.configure({
         openOnClick: false,
       }),
       config.typographic ? Typographic : null,
