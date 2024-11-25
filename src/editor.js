@@ -39,38 +39,44 @@ const Link = BaseLink.extend({
   },
 })
 
+const createIsTypeEnabled = (types) => (type) =>
+  types?.length ? types.includes(type) : true
+
 export function createEditor(textarea, config) {
   const editor = crel("div", { className: "prose-editor" })
   textarea.before(editor)
   editor.append(textarea)
 
+  const isTypeEnabled = createIsTypeEnabled(config.types)
+
   const editorInstance = new Editor({
     element: editor,
     editable: !textarea.hasAttribute("disabled"),
     extensions: [
-      Blockquote,
-      Bold,
-      BulletList,
+      isTypeEnabled("blockquote") && Blockquote,
+      isTypeEnabled("strong") && Bold,
+      isTypeEnabled("bullet_list") && BulletList,
       Document,
       Dropcursor,
       Gapcursor,
-      HardBreak,
-      Heading,
-      History,
-      HorizontalRule,
-      Italic,
+      isTypeEnabled("hard_break") && HardBreak,
+      isTypeEnabled("heading") && Heading,
+      config.history && History,
+      isTypeEnabled("horizontal_rule") && HorizontalRule,
+      isTypeEnabled("em") && Italic,
       ListItem,
-      OrderedList,
+      isTypeEnabled("ordered_list") && OrderedList,
       Paragraph,
-      Strike,
+      isTypeEnabled("strikethrough") && Strike,
       Text,
       Menu.configure({ config }),
       NoSpellCheck,
-      Subscript,
-      Superscript,
-      Link.configure({
-        openOnClick: false,
-      }),
+      isTypeEnabled("sub") && Subscript,
+      isTypeEnabled("sup") && Superscript,
+      isTypeEnabled("link") &&
+        Link.configure({
+          openOnClick: false,
+        }),
       config.typographic ? Typographic : null,
     ].filter(Boolean),
     content: textarea.value,

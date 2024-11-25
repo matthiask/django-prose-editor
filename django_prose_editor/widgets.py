@@ -46,11 +46,14 @@ class ProseEditorWidget(forms.Textarea):
         }
 
         """
-        The supported node types are heading, blockquote, horizontal_rule and
-        hard_break. List nodes are ordered_list, bullet_list and list_item.
+        Nodes:
+        heading blockquote horizontal_rule hard_break
 
-        The supported mark types are link, strong, em, underline,
-        strikethrough, sub and sup
+        Lists:
+        ordered_list bullet_list list_item
+
+        Marks:
+        link strong em underline strikethrough sub sup
         """
 
         return config
