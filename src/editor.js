@@ -45,6 +45,7 @@ export function createEditor(textarea, config) {
     content: textarea.value,
     onUpdate({ editor }) {
       textarea.value = editor.getHTML()
+      textarea.dispatchEvent(new Event("input", { bubbles: true }))
     },
     onDestroy() {
       editor.replaceWith(textarea)
