@@ -8,21 +8,21 @@ import { Plugin } from "@tiptap/pm/state"
 export const Menu = Extension.create({
   addProseMirrorPlugins() {
     const schema = this.editor.schema
+    const config = this.options.config
 
     // console.debug("this", this)
     // console.debug("arguments", arguments)
-    console.debug("schema", schema)
+    // console.debug("schema", schema)
 
     return [
       menuPlugin(
         [
-          // blockTypeMenuItems(schema, config.headingLevels),
-          blockTypeMenuItems(schema),
+          blockTypeMenuItems(schema, config.headingLevels),
           listMenuItems(schema),
           linkMenuItems(schema),
           markMenuItems(schema),
-          historyMenuItems(),
-          htmlMenuItem(),
+          config.history ? historyMenuItems() : null,
+          config.html ? htmlMenuItem() : null,
         ].filter(Boolean),
       ),
     ]

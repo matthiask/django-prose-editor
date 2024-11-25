@@ -23,7 +23,7 @@ const LinkWithShortcut = Link.extend({
   },
 })
 
-export function createEditor(textarea, _config) {
+export function createEditor(textarea, config) {
   const editor = crel("div", { className: "prose-editor" })
   textarea.before(editor)
   editor.append(textarea)
@@ -33,15 +33,15 @@ export function createEditor(textarea, _config) {
     editable: !textarea.hasAttribute("disabled"),
     extensions: [
       StarterKit,
-      Menu,
+      Menu.configure({ config }),
       NoSpellCheck,
       Subscript,
       Superscript,
       LinkWithShortcut.configure({
         openOnClick: false,
       }),
-      Typographic,
-    ],
+      config.typographic ? Typographic : null,
+    ].filter(Boolean),
     content: textarea.value,
     onUpdate({ editor }) {
       textarea.value = editor.getHTML()
