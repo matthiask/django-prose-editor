@@ -1,4 +1,35 @@
 import "./editor.css"
+
+import { Editor } from "@tiptap/core"
+import StarterKit from "@tiptap/starter-kit"
+import Subscript from "@tiptap/extension-subscript"
+import Superscript from "@tiptap/extension-superscript"
+import Link from "@tiptap/extension-link"
+
+import { crel } from "./utils.js"
+import { Menu } from "./menu.js"
+
+export function createEditor(textarea, _config) {
+  const _editable = !textarea.hasAttribute("disabled")
+
+  const editor = crel("div", { className: "prose-editor" })
+  textarea.before(editor)
+  editor.append(textarea)
+
+  const _editorInstance = new Editor({
+    element: editor,
+    extensions: [StarterKit, Menu, Subscript, Superscript, Link],
+    content: textarea.value,
+    onUpdate({ editor }) {
+      textarea.value = editor.getHTML()
+    },
+    onDestroy() {
+      editor.replaceWith(textarea)
+    },
+  })
+}
+
+/*
 import "prosemirror-view/style/prosemirror.css"
 
 import { baseKeymap } from "prosemirror-commands"
@@ -155,8 +186,9 @@ export function createEditor(textarea, config) {
     try {
       editorViewInstance.destroy()
     } catch (_err) {
-      /* Intentionally left empty */
+      // Intentionally left empty
     }
     editor.remove()
   }
 }
+*/

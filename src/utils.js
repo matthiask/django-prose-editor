@@ -1,5 +1,5 @@
 import { DOMParser, DOMSerializer } from "prosemirror-model"
-import debounce from "lodash-es/debounce"
+// import debounce from "lodash-es/debounce"
 
 export const crel = (tagName, attributes = null) => {
   const dom = document.createElement(tagName)
@@ -26,6 +26,7 @@ export function getHTML(state) {
   return container.innerHTML
 }
 
+/*
 export const createDebouncedBackWriter = (
   schema,
   editorViewInstance,
@@ -51,6 +52,7 @@ export const createDebouncedBackWriter = (
   }
   return debounce(writeBack, 250)
 }
+*/
 
 export const trimmedRangeFromSelection = (selection) => {
   // Copied from prosemirror-commands/src/commands.ts

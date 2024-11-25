@@ -1,7 +1,33 @@
+import { Extension } from "@tiptap/core"
+
 import { toggleMark, setBlockType, wrapIn } from "prosemirror-commands"
 import { undo, redo } from "prosemirror-history"
 import { wrapInList } from "prosemirror-schema-list"
 import { Plugin } from "prosemirror-state"
+
+export const Menu = Extension.create({
+  addProseMirrorPlugins() {
+    const schema = this.editor.schema
+
+    // console.debug("this", this)
+    // console.debug("arguments", arguments)
+    console.debug("schema", schema)
+
+    return [
+      menuPlugin(
+        [
+          // blockTypeMenuItems(schema, config.headingLevels),
+          blockTypeMenuItems(schema),
+          listMenuItems(schema),
+          linkMenuItems(schema),
+          markMenuItems(schema),
+          historyMenuItems(),
+          htmlMenuItem(),
+        ].filter(Boolean),
+      ),
+    ]
+  },
+})
 
 import {
   addLink,
@@ -75,7 +101,7 @@ export function blockTypeMenuItems(schema, headingLevels) {
 export function listMenuItems(schema) {
   const items = []
   let type
-  if ((type = schema.nodes.bullet_list)) {
+  if ((type = schema.nodes.bulletList)) {
     items.push({
       command: wrapInList(type),
       dom: materialButton("format_list_bulleted", "unordered list"),
@@ -84,7 +110,7 @@ export function listMenuItems(schema) {
       },
     })
   }
-  if ((type = schema.nodes.ordered_list)) {
+  if ((type = schema.nodes.orderedList)) {
     items.push({
       command: wrapInList(type),
       dom: materialButton("format_list_numbered", "ordered list"),
@@ -102,7 +128,7 @@ export function listMenuItems(schema) {
       },
     })
   }
-  if ((type = schema.nodes.horizontal_rule)) {
+  if ((type = schema.nodes.horizontalRule)) {
     items.push({
       command: insertHorizontalRule,
       dom: materialButton("horizontal_rule", "horizontal rule"),
@@ -125,12 +151,12 @@ export function markMenuItems(schema) {
       : null
 
   return [
-    mark(schema.marks.strong, "format_bold", "bold"),
-    mark(schema.marks.em, "format_italic", "italic"),
+    mark(schema.marks.bold, "format_bold", "bold"),
+    mark(schema.marks.italic, "format_italic", "italic"),
     mark(schema.marks.underline, "format_underline", "underline"),
-    mark(schema.marks.strikethrough, "format_strikethrough", "strikethrough"),
-    mark(schema.marks.sub, "subscript", "subscript"),
-    mark(schema.marks.sup, "superscript", "superscript"),
+    mark(schema.marks.strike, "format_strikethrough", "strikethrough"),
+    mark(schema.marks.subscript, "subscript", "subscript"),
+    mark(schema.marks.superscript, "superscript", "superscript"),
   ].filter(Boolean)
 }
 
