@@ -21,6 +21,7 @@ import { OrderedList } from "@tiptap/extension-ordered-list"
 import { Paragraph } from "@tiptap/extension-paragraph"
 import { Strike } from "@tiptap/extension-strike"
 import { Text } from "@tiptap/extension-text"
+import { Underline } from "@tiptap/extension-underline"
 
 import { addLink } from "./commands.js"
 import { Menu } from "./menu.js"
@@ -73,6 +74,7 @@ export function createEditor(textarea, config) {
       NoSpellCheck,
       isTypeEnabled("sub") && Subscript,
       isTypeEnabled("sup") && Superscript,
+      isTypeEnabled("underline") && Underline,
       isTypeEnabled("link") &&
         Link.configure({
           openOnClick: false,

@@ -8,6 +8,7 @@
     "@tiptap/extension-link": "^2.10.2",
     "@tiptap/extension-subscript": "^2.10.2",
     "@tiptap/extension-superscript": "^2.10.2",
+    "@tiptap/extension-underline": "^2.10.2",
     "@tiptap/pm": "^2.10.2",
     "@tiptap/starter-kit": "^2.10.2",
     "autoprefixer": "^10.4.20",
