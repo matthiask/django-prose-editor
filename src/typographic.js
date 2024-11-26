@@ -6,6 +6,8 @@ import { Plugin } from "@tiptap/pm/state"
 import { Decoration, DecorationSet } from "@tiptap/pm/view"
 
 export const Typographic = Extension.create({
+  name: "typographic",
+
   addProseMirrorPlugins() {
     return [typographicPlugin]
   },

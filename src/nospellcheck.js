@@ -2,6 +2,8 @@ import { Plugin } from "@tiptap/pm/state"
 import { Extension } from "@tiptap/core"
 
 export const NoSpellCheck = Extension.create({
+  name: "noSpellCheck",
+
   addProseMirrorPlugins() {
     return [noSpellCheck()]
   },

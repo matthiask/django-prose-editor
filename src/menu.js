@@ -6,6 +6,8 @@ import { wrapInList } from "@tiptap/pm/schema-list"
 import { Plugin } from "@tiptap/pm/state"
 
 export const Menu = Extension.create({
+  name: "menu",
+
   addProseMirrorPlugins() {
     const schema = this.editor.schema
     const config = this.options.config
