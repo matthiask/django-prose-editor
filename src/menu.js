@@ -17,16 +17,24 @@ export const Menu = Extension.create({
     // console.debug("schema", schema)
 
     return [
-      menuPlugin(
-        [
-          blockTypeMenuItems(schema, config.headingLevels),
-          listMenuItems(schema),
-          linkMenuItems(schema),
-          markMenuItems(schema),
-          config.history ? historyMenuItems() : null,
-          config.html ? htmlMenuItem() : null,
-        ].filter(Boolean),
-      ),
+      new Plugin({
+        view(editorView) {
+          const menuView = new MenuView(
+            editorView,
+            [
+              blockTypeMenuItems(schema, config.headingLevels),
+              listMenuItems(schema),
+              linkMenuItems(schema),
+              markMenuItems(schema),
+              config.history ? historyMenuItems() : null,
+              config.html ? htmlMenuItem() : null,
+            ].filter(Boolean),
+          )
+          editorView.dom.parentNode.insertBefore(menuView.dom, editorView.dom)
+
+          return menuView
+        },
+      }),
     ]
   },
 })
@@ -38,17 +46,6 @@ import {
   insertHorizontalRule,
 } from "./commands.js"
 import { crel, markActive } from "./utils.js"
-
-export function menuPlugin(items) {
-  return new Plugin({
-    view(editorView) {
-      const menuView = new MenuView(editorView, items)
-      editorView.dom.parentNode.insertBefore(menuView.dom, editorView.dom)
-
-      return menuView
-    },
-  })
-}
 
 function headingButton(level) {
   const btn = crel("span", {
@@ -73,7 +70,7 @@ function materialButton(textContent, title) {
   })
 }
 
-export function blockTypeMenuItems(schema, headingLevels) {
+function blockTypeMenuItems(schema, headingLevels) {
   if (!schema.nodes.heading) return []
 
   const heading = (level) => ({
@@ -100,7 +97,7 @@ export function blockTypeMenuItems(schema, headingLevels) {
   ]
 }
 
-export function listMenuItems(schema) {
+function listMenuItems(schema) {
   const items = []
   let type
   if ((type = schema.nodes.bulletList)) {
@@ -142,7 +139,7 @@ export function listMenuItems(schema) {
   return items
 }
 
-export function markMenuItems(schema) {
+function markMenuItems(schema) {
   const mark = (markType, textContent, title) =>
     markType
       ? {
@@ -162,7 +159,7 @@ export function markMenuItems(schema) {
   ].filter(Boolean)
 }
 
-export function linkMenuItems(schema) {
+function linkMenuItems(schema) {
   const mark = schema.marks.link
   if (!mark) return []
 
@@ -182,7 +179,7 @@ export function linkMenuItems(schema) {
   ]
 }
 
-export function historyMenuItems() {
+function historyMenuItems() {
   return [
     {
       command: undo,
@@ -201,7 +198,7 @@ export function historyMenuItems() {
   ]
 }
 
-export function htmlMenuItem() {
+function htmlMenuItem() {
   return [
     {
       command: updateHTML,

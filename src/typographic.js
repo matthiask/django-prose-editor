@@ -65,7 +65,7 @@ const typographicDecorations = (doc) => {
   return DecorationSet.create(doc, decorations.flat())
 }
 
-export const typographicPlugin = new Plugin({
+const typographicPlugin = new Plugin({
   state: {
     init(_, { doc }) {
       return typographicDecorations(doc)

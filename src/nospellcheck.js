@@ -5,17 +5,15 @@ export const NoSpellCheck = Extension.create({
   name: "noSpellCheck",
 
   addProseMirrorPlugins() {
-    return [noSpellCheck()]
+    return [
+      new Plugin({
+        view(editorView) {
+          return new NoSpellCheckPlugin(editorView)
+        },
+      }),
+    ]
   },
 })
-
-export function noSpellCheck() {
-  return new Plugin({
-    view(editorView) {
-      return new NoSpellCheckPlugin(editorView)
-    },
-  })
-}
 
 class NoSpellCheckPlugin {
   constructor(editorView) {
