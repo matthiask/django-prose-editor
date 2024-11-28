@@ -24,6 +24,10 @@
   --_t: var(--prose-editor-typographic, #ccc);
 }
 
+[data-django-prose-editor] {
+  opacity: 0;
+}
+
 .prose-editor > textarea {
   display: none !important; /* I don't think there exists a scenario when we'd want to show the textarea */
 }
