@@ -24,6 +24,7 @@ class ProseEditorWidget(forms.Textarea):
                 JS(
                     "django_prose_editor/init.js",
                     {
+                        "defer": True,
                         "data-messages": json.dumps(
                             {
                                 "url": gettext("URL"),
