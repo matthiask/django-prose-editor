@@ -1,6 +1,7 @@
 import json
 
 from django import forms
+from django.templatetags.static import static
 from django.utils.translation import gettext
 from js_asset.js import JS
 
@@ -20,7 +21,6 @@ class ProseEditorWidget(forms.Textarea):
                 ]
             },
             js=[
-                "django_prose_editor/editor.js",
                 JS(
                     "django_prose_editor/init.js",
                     {
@@ -32,6 +32,7 @@ class ProseEditorWidget(forms.Textarea):
                                 "cancel": gettext("Cancel"),
                             }
                         ),
+                        "data-editor-js": static("django_prose_editor/editor.js"),
                     },
                 ),
             ],

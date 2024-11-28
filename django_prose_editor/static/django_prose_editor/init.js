@@ -1,8 +1,8 @@
-/* global DjangoProseEditor */
+const config = document.currentScript.dataset
 
-;(() => {
+import(config.editorJs).then((DjangoProseEditor) => {
 
-DjangoProseEditor.messages = JSON.parse(document.currentScript.dataset.messages)
+DjangoProseEditor.messages = JSON.parse(config.messages)
 
 const marker = "data-django-prose-editor"
 
@@ -38,4 +38,4 @@ onReady(() => {
   initializeDjangoInlines()
 })
 
-})()
+})

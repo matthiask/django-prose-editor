@@ -7,7 +7,7 @@ const ctx = await esbuild.context({
   minify: true,
   bundle: true,
   target: "es6",
-  format: "iife",
+  format: "esm",
   globalName: "DjangoProseEditor",
   plugins: [
     postcss(),

@@ -31,6 +31,8 @@ import { crel } from "./utils.js"
 const createIsTypeEnabled = (types) => (type) =>
   types?.length ? types.includes(type) : true
 
+export { Extension } from "@tiptap/core"
+
 export function createEditor(textarea, config) {
   const editor = crel("div", { className: "prose-editor" })
   textarea.before(editor)
