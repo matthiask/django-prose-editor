@@ -5,8 +5,13 @@ import { addLink } from "./commands.js"
 export const Link = BaseLink.extend({
   addKeyboardShortcuts() {
     return {
-      "Mod-k": ({ editor }) => {
-        console.debug("editor", editor)
+      "Mod-k": ({ editor, ...rest }) => {
+        let e
+        if ((e = window.event)) {
+          /* Disable browser behavior of focussing the search bar or whatever */
+          e.preventDefault()
+        }
+        console.debug("editor", editor, rest)
         addLink(editor.view.state, editor.view.dispatch)
       },
     }
