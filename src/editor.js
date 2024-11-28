@@ -15,7 +15,6 @@ import { HardBreak } from "@tiptap/extension-hard-break"
 import { Heading } from "@tiptap/extension-heading"
 import { HorizontalRule } from "@tiptap/extension-horizontal-rule"
 import { Italic } from "@tiptap/extension-italic"
-import { Link as BaseLink } from "@tiptap/extension-link"
 import { ListItem } from "@tiptap/extension-list-item"
 import { OrderedList } from "@tiptap/extension-ordered-list"
 import { Strike } from "@tiptap/extension-strike"
@@ -23,22 +22,11 @@ import { Subscript } from "@tiptap/extension-subscript"
 import { Superscript } from "@tiptap/extension-superscript"
 import { Underline } from "@tiptap/extension-underline"
 
-import { addLink } from "./commands.js"
+import { Link } from "./link.js"
 import { Menu } from "./menu.js"
 import { NoSpellCheck } from "./nospellcheck.js"
 import { Typographic } from "./typographic.js"
 import { crel } from "./utils.js"
-
-const Link = BaseLink.extend({
-  addKeyboardShortcuts() {
-    return {
-      "Mod-k": ({ editor }) => {
-        console.debug("editor", editor)
-        addLink(editor.view.state, editor.view.dispatch)
-      },
-    }
-  },
-})
 
 const createIsTypeEnabled = (types) => (type) =>
   types?.length ? types.includes(type) : true
