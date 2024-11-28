@@ -2,7 +2,7 @@ import { getMarkRange } from "./extendMarkRange.js"
 import { getHTML, parseHTML, trimmedRangeFromSelection } from "./utils.js"
 
 const linkDialog = (attrs) => {
-  const { messages } = window.DjangoProseEditor
+  const { messages } = window.__proseEditor
   return new Promise((resolve) => {
     const div = document.createElement("div")
     div.innerHTML = `
@@ -87,7 +87,7 @@ export const removeLink = (state, dispatch) => {
 }
 
 const htmlDialog = (html) => {
-  const { messages } = window.DjangoProseEditor
+  const { messages } = window.__proseEditor
   return new Promise((resolve) => {
     const div = document.createElement("div")
     div.innerHTML = `
