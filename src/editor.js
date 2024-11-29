@@ -32,6 +32,7 @@ const createIsTypeEnabled = (types) => (type) =>
   types?.length ? types.includes(type) : true
 
 export { Extension } from "@tiptap/core"
+export { Plugin } from "@tiptap/pm/state"
 
 export function createEditor(textarea, config) {
   const editor = crel("div", { className: "prose-editor" })

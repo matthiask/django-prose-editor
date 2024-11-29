@@ -25,15 +25,17 @@ class ProseEditorWidget(forms.Textarea):
                     "django_prose_editor/init.js",
                     {
                         "defer": True,
-                        "data-messages": json.dumps(
+                        "data-config": json.dumps(
                             {
-                                "url": gettext("URL"),
-                                "title": gettext("Title"),
-                                "update": gettext("Update"),
-                                "cancel": gettext("Cancel"),
+                                "messages": {
+                                    "url": gettext("URL"),
+                                    "title": gettext("Title"),
+                                    "update": gettext("Update"),
+                                    "cancel": gettext("Cancel"),
+                                },
+                                "editorJS": static("django_prose_editor/editor.js"),
                             }
                         ),
-                        "data-editor-js": static("django_prose_editor/editor.js"),
                     },
                 ),
             ],

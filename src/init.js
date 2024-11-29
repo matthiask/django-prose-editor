@@ -1,17 +1,15 @@
-const config = document.currentScript.dataset
-window.__proseEditor = {
-  messages: JSON.parse(config.messages),
-}
+const config = JSON.parse(document.currentScript.dataset.config)
+window.__proseEditor = config
 
-import(config.editorJs).then((editorJs) => {
-  Object.assign(window.__proseEditor, editorJs)
+import(config.editorJS).then((module) => {
+  config.editor = module
 
   const marker = "data-django-prose-editor"
 
   function initializeEditor(container) {
     for (const el of container.querySelectorAll(`[${marker}]`)) {
       if (!el.id.includes("__prefix__")) {
-        editorJs.createEditor(el, JSON.parse(el.getAttribute(marker)))
+        module.createEditor(el, JSON.parse(el.getAttribute(marker)))
         el.removeAttribute(marker)
       }
     }
