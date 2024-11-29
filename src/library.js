@@ -33,6 +33,7 @@ import { Plugin } from "@tiptap/pm/state"
 
 const extensions = {
   base: [Document, Dropcursor, Gapcursor, Paragraph, HardBreak, Text],
+  // lists: [BulletList, OrderedList, ListItem],
 }
 
 export {
