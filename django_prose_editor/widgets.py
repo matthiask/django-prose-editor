@@ -15,7 +15,7 @@ class ProseEditorWidget(forms.Textarea):
     def media(self):
         return forms.Media(
             css={
-                "screen": [
+                "all": [
                     "django_prose_editor/material-icons.css",
                     "django_prose_editor/editor.css",
                 ]
@@ -60,4 +60,4 @@ class ProseEditorWidget(forms.Textarea):
 
 class AdminProseEditorWidget(ProseEditorWidget):
     class Media:
-        css = {"screen": ["django_prose_editor/overrides.css"]}
+        css = {"all": ["django_prose_editor/overrides.css"]}
