@@ -1,7 +1,6 @@
 import json
 
 from django import forms
-from django.templatetags.static import static
 from django.utils.translation import gettext
 from js_asset.js import JS
 
@@ -22,6 +21,10 @@ class ProseEditorWidget(forms.Textarea):
             },
             js=[
                 JS(
+                    "django_prose_editor/editor.js",
+                    {"defer": True},
+                ),
+                JS(
                     "django_prose_editor/init.js",
                     {
                         "defer": True,
@@ -33,7 +36,6 @@ class ProseEditorWidget(forms.Textarea):
                                     "update": gettext("Update"),
                                     "cancel": gettext("Cancel"),
                                 },
-                                "editorJS": static("django_prose_editor/editor.js"),
                             }
                         ),
                     },

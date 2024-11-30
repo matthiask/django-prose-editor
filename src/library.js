@@ -1,5 +1,4 @@
-// All these classes and utilities are available when importing the editor.js
-// ESM module.
+// All these classes and utilities are available on window.DjangoProseEditor
 
 import { Editor, Extension } from "@tiptap/core"
 import { Document } from "@tiptap/extension-document"
@@ -31,7 +30,7 @@ import { crel } from "./utils.js"
 
 import { Plugin } from "@tiptap/pm/state"
 
-const extensions = {
+export const extensionSets = {
   base: [Document, Dropcursor, Gapcursor, Paragraph, HardBreak, Text],
   // lists: [BulletList, OrderedList, ListItem],
 }
@@ -41,7 +40,6 @@ export {
   Extension,
   Plugin,
   crel,
-  extensions,
   /* base extensions */
   Document,
   Dropcursor,
@@ -67,4 +65,50 @@ export {
   Menu,
   NoSpellCheck,
   Typographic,
+}
+
+export function createTextareaEditor(textarea, extensions) {
+  const editor = crel("div", { className: "prose-editor" })
+  textarea.before(editor)
+  editor.append(textarea)
+
+  const editorInstance = new Editor({
+    element: editor,
+    editable: !textarea.hasAttribute("disabled"),
+    extensions,
+    content: textarea.value,
+    onUpdate({ editor }) {
+      textarea.value = editor.getHTML()
+      textarea.dispatchEvent(new Event("input", { bubbles: true }))
+    },
+    onDestroy() {
+      editor.replaceWith(textarea)
+    },
+  })
+
+  return () => {
+    editorInstance.destroy()
+  }
+}
+
+export function initializeEditors(create, selector) {
+  function initializeEditor(container) {
+    for (const el of container.querySelectorAll(selector)) {
+      if (!el.id.includes("__prefix__")) {
+        create(el)
+      }
+    }
+  }
+
+  function initializeInlines() {
+    let o
+    if ((o = window.django) && (o = o.jQuery)) {
+      o(document).on("formset:added", (e) => {
+        initializeEditor(e.target)
+      })
+    }
+  }
+
+  initializeEditor(document)
+  initializeInlines()
 }
