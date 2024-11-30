@@ -7,7 +7,12 @@ function createEditor(textarea) {
   textarea.removeAttribute(marker)
 
   const {
-    extensionSets,
+    Document,
+    Dropcursor,
+    Gapcursor,
+    Paragraph,
+    HardBreak,
+    Text,
     Blockquote,
     Bold,
     BulletList,
@@ -32,7 +37,12 @@ function createEditor(textarea) {
   const isTypeEnabled = createIsTypeEnabled(config.types)
 
   const extensions = [
-    ...extensionSets.base,
+    Document,
+    Dropcursor,
+    Gapcursor,
+    Paragraph,
+    HardBreak,
+    Text,
     Menu.configure({ config }),
     NoSpellCheck,
     config.typographic && Typographic,

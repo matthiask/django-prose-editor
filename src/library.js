@@ -30,11 +30,6 @@ import { crel } from "./utils.js"
 
 import { Plugin } from "@tiptap/pm/state"
 
-export const extensionSets = {
-  base: [Document, Dropcursor, Gapcursor, Paragraph, HardBreak, Text],
-  // lists: [BulletList, OrderedList, ListItem],
-}
-
 export {
   Editor,
   Extension,
@@ -44,6 +39,7 @@ export {
   Document,
   Dropcursor,
   Gapcursor,
+  HardBreak,
   History,
   Paragraph,
   Text,
