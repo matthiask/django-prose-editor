@@ -3,8 +3,9 @@ window.__proseEditor = JSON.parse(document.currentScript.dataset.config)
 const marker = "data-django-prose-editor"
 
 function createEditor(textarea) {
+  if (textarea.closest(".prose-editor")) return
+
   const config = JSON.parse(textarea.getAttribute(marker))
-  textarea.removeAttribute(marker)
 
   const {
     Document,
