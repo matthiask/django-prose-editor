@@ -1,6 +1,6 @@
 // All these classes and utilities are available on window.DjangoProseEditor
 
-import { Editor, Extension } from "@tiptap/core"
+import { Editor, Extension, Mark, Node } from "@tiptap/core"
 import { Document } from "@tiptap/extension-document"
 import { Dropcursor } from "@tiptap/extension-dropcursor"
 import { Gapcursor } from "@tiptap/extension-gapcursor"
@@ -34,6 +34,8 @@ import { Plugin } from "@tiptap/pm/state"
 export {
   Editor,
   Extension,
+  Mark,
+  Node,
   Plugin,
   updateAttrsDialog,
   crel,
