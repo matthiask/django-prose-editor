@@ -50,15 +50,6 @@ class JSON:
         return hash(self.__str__())
 
 
-def _get_presets():
-    presets = {
-        "default": {
-            "script": "django_prose_editor/init.js",
-        },
-    }
-    return presets | getattr(settings, "DJANGO_PROSE_EDITOR_PRESETS", {})
-
-
 class ProseEditorWidget(forms.Textarea):
     def __init__(self, *args, **kwargs):
         self.config = kwargs.pop("config", {})
@@ -95,10 +86,18 @@ class ProseEditorWidget(forms.Textarea):
                         preset["script"],
                         {"defer": True},
                     )
-                    for key, preset in _get_presets().items()
+                    for key, preset in self.get_presets().items()
                 ),
             ],
         )
+
+    def get_presets(self):
+        presets = {
+            "default": {
+                "script": "django_prose_editor/init.js",
+            },
+        }
+        return presets | getattr(settings, "DJANGO_PROSE_EDITOR_PRESETS", {})
 
     def get_config(self):
         return self.config or {
