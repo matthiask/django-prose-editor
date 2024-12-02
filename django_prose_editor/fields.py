@@ -25,6 +25,7 @@ class ProseEditorField(models.TextField):
     def __init__(self, *args, **kwargs):
         self.sanitize = kwargs.pop("sanitize", _actually_empty)
         self.config = kwargs.pop("config", {})
+        self.preset = kwargs.pop("preset", "default")
         super().__init__(*args, **kwargs)
 
     def clean(self, value, instance):
@@ -47,7 +48,11 @@ class ProseEditorField(models.TextField):
         return (name, "django.db.models.TextField", args, kwargs)
 
     def formfield(self, **kwargs):
-        defaults = {"config": self.config, "form_class": ProseEditorFormField} | kwargs
+        defaults = {
+            "config": self.config,
+            "form_class": ProseEditorFormField,
+            "preset": self.preset,
+        } | kwargs
         return super().formfield(**defaults)
 
 
@@ -56,6 +61,7 @@ class ProseEditorFormField(forms.CharField):
 
     def __init__(self, *args, **kwargs):
         config = kwargs.pop("config", {})
+        preset = kwargs.pop("preset", "default")
         widget = kwargs.get("widget")
 
         # We don't know if widget is set, and if it is, we do not know if it is
@@ -74,3 +80,4 @@ class ProseEditorFormField(forms.CharField):
 
         super().__init__(*args, **kwargs)
         self.widget.config = config
+        self.widget.preset = preset

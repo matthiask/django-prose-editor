@@ -1,13 +1,24 @@
 import json
 
 from django import forms
+from django.conf import settings
 from django.utils.translation import gettext
 from js_asset.js import JS
+
+
+def _get_presets():
+    presets = {
+        "default": {
+            "script": "django_prose_editor/init.js",
+        },
+    }
+    return presets | getattr(settings, "DJANGO_PROSE_EDITOR_PRESETS", {})
 
 
 class ProseEditorWidget(forms.Textarea):
     def __init__(self, *args, **kwargs):
         self.config = kwargs.pop("config", {})
+        self.preset = kwargs.pop("preset", "default")
         super().__init__(*args, **kwargs)
 
     @property
@@ -24,21 +35,24 @@ class ProseEditorWidget(forms.Textarea):
                     "django_prose_editor/editor.js",
                     {"defer": True},
                 ),
-                JS(
-                    "django_prose_editor/init.js",
-                    {
-                        "defer": True,
-                        "data-config": json.dumps(
-                            {
-                                "messages": {
-                                    "url": gettext("URL"),
-                                    "title": gettext("Title"),
-                                    "update": gettext("Update"),
-                                    "cancel": gettext("Cancel"),
-                                },
-                            }
-                        ),
-                    },
+                *(
+                    JS(
+                        preset["script"],
+                        {
+                            "defer": True,
+                            "data-config": json.dumps(
+                                {
+                                    "messages": {
+                                        "url": gettext("URL"),
+                                        "title": gettext("Title"),
+                                        "update": gettext("Update"),
+                                        "cancel": gettext("Cancel"),
+                                    },
+                                }
+                            ),
+                        },
+                    )
+                    for key, preset in _get_presets().items()
                 ),
             ],
         )
@@ -53,9 +67,11 @@ class ProseEditorWidget(forms.Textarea):
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
-        context["widget"]["attrs"]["data-django-prose-editor"] = json.dumps(
-            self.get_config(),
-            separators=(",", ":"),
+        context["widget"]["attrs"][f"data-django-prose-editor-{self.preset}"] = (
+            json.dumps(
+                self.get_config(),
+                separators=(",", ":"),
+            )
         )
         return context
 

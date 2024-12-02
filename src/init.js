@@ -1,6 +1,6 @@
 window.__proseEditor = JSON.parse(document.currentScript.dataset.config)
 
-const marker = "data-django-prose-editor"
+const marker = "data-django-prose-editor-default"
 
 function createEditor(textarea) {
   if (textarea.closest(".prose-editor")) return
