@@ -22,6 +22,7 @@ import { Subscript } from "@tiptap/extension-subscript"
 import { Superscript } from "@tiptap/extension-superscript"
 import { Underline } from "@tiptap/extension-underline"
 
+import { updateAttrsDialog } from "./commands.js"
 import { Link } from "./link.js"
 import { Menu } from "./menu.js"
 import { NoSpellCheck } from "./nospellcheck.js"
@@ -34,6 +35,7 @@ export {
   Editor,
   Extension,
   Plugin,
+  updateAttrsDialog,
   crel,
   /* base extensions */
   Document,

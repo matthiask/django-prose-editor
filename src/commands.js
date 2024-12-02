@@ -6,15 +6,21 @@ import {
   trimmedRangeFromSelection,
 } from "./utils.js"
 
-const linkDialog = (attrs) => {
+const formFieldForProperty = ([name, config]) => {
+  if (config.format === "textarea") {
+    return `<p><label>${config.title || name}</label> <textarea name="${name}" cols="80" rows="30"></textarea></p>`
+  }
+  return `<p><label>${config.title || name}</label> <input type="${config.format || "text"}" name="${name}" size="50"></p>`
+}
+
+export const updateAttrsDialog = (properties) => (attrs) => {
   const { messages } = settings()
   return new Promise((resolve) => {
     const div = document.createElement("div")
     div.innerHTML = `
   <dialog class="prose-editor-dialog">
   <form>
-  <p><label>${messages.url}</label> <input type="url" name="href" size="50" required></p>
-  <p><label>${messages.title}</label> <input type="text" name="title" size="50"></p>
+  ${Object.entries(properties).map(formFieldForProperty).join("")}
   <button type="submit">${messages.update}</button>
   <button type="button" value="cancel">${messages.cancel}</button>
   </form>
@@ -23,8 +29,10 @@ const linkDialog = (attrs) => {
     document.body.append(div)
     const dialog = div.querySelector("dialog")
     const form = div.querySelector("form")
-    form.href.value = attrs.href || ""
-    form.title.value = attrs.title || ""
+
+    for (const name of Object.keys(properties)) {
+      form[name].value = attrs[name] || ""
+    }
 
     dialog
       .querySelector("button[value=cancel]")
@@ -40,15 +48,26 @@ const linkDialog = (attrs) => {
       if (form.reportValidity()) {
         div.remove()
         resolve(
-          form.href.value
-            ? { href: form.href.value, title: form.title.value }
-            : null,
+          Object.fromEntries(
+            Object.keys(properties).map((name) => [name, form[name].value]),
+          ),
         )
       }
     })
     dialog.showModal()
   })
 }
+
+const linkDialog = updateAttrsDialog({
+  href: {
+    type: "string",
+    title: settings().messages.url,
+  },
+  title: {
+    type: "string",
+    title: settings().messages.title,
+  },
+})
 
 export const addLink = (state, dispatch) => {
   const { $from, empty } = state.selection
@@ -91,49 +110,19 @@ export const removeLink = (state, dispatch) => {
   return false
 }
 
-const htmlDialog = (html) => {
-  const { messages } = settings()
-  return new Promise((resolve) => {
-    const div = document.createElement("div")
-    div.innerHTML = `
-  <dialog class="prose-editor-dialog">
-  <form>
-  <p><textarea name="html" cols="80" rows="30"></textarea></p>
-  <button type="submit">${messages.update}</button>
-  <button type="button" value="cancel">${messages.cancel}</button>
-  </form>
-  </dialog>
-  `
-    document.body.append(div)
-    const dialog = div.querySelector("dialog")
-    const form = div.querySelector("form")
-    form.html.value = html
-
-    dialog
-      .querySelector("button[value=cancel]")
-      .addEventListener("click", () => {
-        dialog.close()
-      })
-    dialog.addEventListener("close", () => {
-      div.remove()
-      resolve(null)
-    })
-    div.querySelector("button[type=submit]").addEventListener("click", (e) => {
-      e.preventDefault()
-      if (form.reportValidity()) {
-        div.remove()
-        resolve(form.html.value)
-      }
-    })
-    dialog.showModal()
-  })
-}
+const htmlDialog = updateAttrsDialog({
+  html: {
+    type: "string",
+    title: "HTML",
+    format: "textarea",
+  },
+})
 
 export const updateHTML = (state, dispatch) => {
   if (dispatch) {
-    htmlDialog(getHTML(state)).then((html) => {
-      if (html) {
-        const doc = parseHTML(state.schema, html)
+    htmlDialog({ html: getHTML(state) }).then((attrs) => {
+      if (attrs) {
+        const doc = parseHTML(state.schema, attrs.html)
         dispatch(state.tr.replaceWith(0, state.tr.doc.content.size, doc))
       }
     })
