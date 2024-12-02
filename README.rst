@@ -91,40 +91,68 @@ above.
 Customization
 =============
 
-It's possible to slightly customize the field or widget by passing an optional
-``config`` dictionary. The default configuration is:
+**NOTE!** The previous way of customizing the editor is still supported, but
+it's not recommended (and documented) anymore.
+
+The editor can be customized using presets; the way to do this is by adding a list of presets to your Django settings:
 
 .. code-block:: python
 
-    config = {
-        "types": None,        # Allow all nodes and marks
-        "history": True,      # Enable undo and redo
-        "html": True,         # Add a button which allows editing the raw HTML
-        "typographic": True,  # Highlight typographic characters
-        "headingLevels": [1, 2, 3, 4, 5],  # Available heading levels
+    DJANGO_PROSE_EDITOR_PRESETS = {
+        "announcements": {
+            "script": "prose-editors/announcements.js",
+        },
     }
 
-If you only want to support paragraphs, strong, emphasis, sub- and superset and
-no history or HTML editing you could add the following field:
+The preset can be selected when instantiating the field:
 
 .. code-block:: python
 
-    text = SanitizedProseEditorField(
-        config={"types": ["strong", "em", "sub", "sup"]},
-    )
+    text = ProseEditorField(_("text"), preset="announcements")
 
-Paragraphs cannot be removed at the moment. Note that the backend doesn't
-sanitize the content to ensure that the HTML doesn't contain only the provided
-tags, that's out of scope for now.
+The announcements file is expected to initialize the editor by using the
+``DjangoProseEditor`` library which is available on the browser ``window``
+global. The example looks a bit involved, and it is -- but, this unlocks the
+capability to add project-specific extensions without having to rebuild the
+editor foundations:
 
-``doc``, ``paragraph`` and ``text`` are always in the allowlist.
+.. code-block:: javascript
 
-The supported node types are ``heading``, ``blockquote``, ``horizontal_rule``
-and ``hard_break``. List nodes are ``ordered_list``, ``bullet_list`` and
-``list_item``.
+    // "announcements" is the name of the preset.
+    const marker = "data-django-prose-editor-announcements"
 
-The supported mark types are ``link``, ``strong``, ``em``, ``underline``,
-``strikethrough``, ``sub`` and ``sup``
+    function createEditor(textarea) {
+      if (textarea.closest(".prose-editor")) return
+      const config = JSON.parse(textarea.getAttribute(marker))
+
+      const {
+        // Always recommended:
+        Document, Dropcursor, Gapcursor, Paragraph, HardBreak, Text,
+
+        // Add support for a few marks:
+        Bold, Italic, Subscript, Superscript, Link,
+
+        // A menu is always nice:
+        Menu,
+
+        // Helper which knows how to attach a prose editor to a textarea,
+        // either textareas which exist already on page load and also those
+        // added through the Django admin's inlines mechanism:
+        createTextareaEditor,
+      } = window.DjangoProseEditor
+
+      const extensions = [
+        Document, Dropcursor, Gapcursor, Paragraph, HardBreak, Text,
+
+        Bold, Italic, Subscript, Superscript, Link.configure({ openOnClick: false }),
+
+        Menu.configure({ config }),
+      ]
+
+      return createTextareaEditor(textarea, extensions)
+    }
+
+    window.DjangoProseEditor.initializeEditors(createEditor, `[${marker}]`)
 
 
 Usage outside the Django admin
