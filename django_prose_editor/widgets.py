@@ -2,8 +2,52 @@ import json
 
 from django import forms
 from django.conf import settings
+from django.forms.utils import flatatt
+from django.templatetags.static import static
+from django.utils.html import format_html, json_script, mark_safe
 from django.utils.translation import gettext
-from js_asset.js import JS
+
+
+class JS:
+    def __init__(self, src, attrs):
+        self.src = src
+        self.attrs = attrs
+
+    def __html__(self):
+        return format_html(
+            '<script src="{}"{}></script>',
+            self.src
+            if self.src.startswith(("http://", "https://", "/"))
+            else static(self.src),
+            mark_safe(flatatt(self.attrs)),
+        )
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, JS)
+            and self.src == other.src
+            and self.attrs == other.attrs
+        )
+
+    def __hash__(self):
+        return hash(self.__str__())
+
+
+class JSON:
+    def __init__(self, id, data):
+        self.id = id
+        self.data = data
+
+    def __html__(self):
+        return json_script(self.data, self.id)
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, JSON) and self.id == other.id and self.data == other.data
+        )
+
+    def __hash__(self):
+        return hash(self.__str__())
 
 
 def _get_presets():
@@ -35,22 +79,21 @@ class ProseEditorWidget(forms.Textarea):
                     "django_prose_editor/editor.js",
                     {"defer": True},
                 ),
+                JSON(
+                    "django-prose-editor-settings",
+                    {
+                        "messages": {
+                            "url": gettext("URL"),
+                            "title": gettext("Title"),
+                            "update": gettext("Update"),
+                            "cancel": gettext("Cancel"),
+                        },
+                    },
+                ),
                 *(
                     JS(
                         preset["script"],
-                        {
-                            "defer": True,
-                            "data-config": json.dumps(
-                                {
-                                    "messages": {
-                                        "url": gettext("URL"),
-                                        "title": gettext("Title"),
-                                        "update": gettext("Update"),
-                                        "cancel": gettext("Cancel"),
-                                    },
-                                }
-                            ),
-                        },
+                        {"defer": True},
                     )
                     for key, preset in _get_presets().items()
                 ),

@@ -46,3 +46,8 @@ export function markActive(state, type) {
   if (empty) return type.isInSet(state.storedMarks || $from.marks())
   return state.doc.rangeHasMark(from, to, type)
 }
+
+export function settings() {
+  const el = document.querySelector("#django-prose-editor-settings")
+  return el ? JSON.parse(el.textContent) : {}
+}

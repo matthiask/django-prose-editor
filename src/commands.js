@@ -1,8 +1,13 @@
 import { getMarkRange } from "./extendMarkRange.js"
-import { getHTML, parseHTML, trimmedRangeFromSelection } from "./utils.js"
+import {
+  getHTML,
+  parseHTML,
+  settings,
+  trimmedRangeFromSelection,
+} from "./utils.js"
 
 const linkDialog = (attrs) => {
-  const { messages } = window.__proseEditor
+  const { messages } = settings()
   return new Promise((resolve) => {
     const div = document.createElement("div")
     div.innerHTML = `
@@ -87,7 +92,7 @@ export const removeLink = (state, dispatch) => {
 }
 
 const htmlDialog = (html) => {
-  const { messages } = window.__proseEditor
+  const { messages } = settings()
   return new Promise((resolve) => {
     const div = document.createElement("div")
     div.innerHTML = `
