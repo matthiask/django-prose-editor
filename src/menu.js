@@ -79,10 +79,10 @@ function blockTypeMenuItems(schema, headingLevels) {
     },
   })
 
-  const _levels = headingLevels || [1, 2, 3, 4, 5]
+  const levels = headingLevels || [1, 2, 3, 4, 5]
 
   return [
-    ..._levels.map(heading),
+    ...levels.map(heading),
     {
       command: setBlockType(schema.nodes.paragraph),
       dom: materialButton("notes", "paragraph"),
