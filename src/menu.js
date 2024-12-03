@@ -6,19 +6,25 @@ import { Plugin } from "@tiptap/pm/state"
 const findExtension = (editor, extension) =>
   editor.extensionManager.extensions.find((e) => e.name === extension)
 
-export const menuItemsFromConfig = (config) => (editor) => {
+export const menuItemsFromEditor = (editor) => {
   return [
-    blockTypeMenuItems(editor, config.headingLevels),
+    blockTypeMenuItems(editor),
     listMenuItems(editor),
     linkMenuItems(editor),
     markMenuItems(editor),
-    findExtension(editor, "history") && historyMenuItems(),
-    config.html ? htmlMenuItem(editor) : null,
+    historyMenuItems(editor),
+    htmlMenuItem(editor),
   ].filter(Boolean)
 }
 
 export const Menu = Extension.create({
   name: "menu",
+
+  addOptions() {
+    return {
+      menuItems: menuItemsFromEditor,
+    }
+  },
 
   addProseMirrorPlugins() {
     const editor = this.editor
@@ -61,7 +67,7 @@ function materialButton(textContent, title) {
   })
 }
 
-function blockTypeMenuItems(editor, headingLevels) {
+function blockTypeMenuItems(editor) {
   if (!editor.schema.nodes.heading) return []
 
   const heading = (level) => ({
@@ -78,7 +84,7 @@ function blockTypeMenuItems(editor, headingLevels) {
   })
 
   const extension = findExtension(editor, "heading")
-  const levels = headingLevels || extension?.options?.levels || [1, 2, 3, 4, 5]
+  const levels = extension?.options?.levels || [1, 2, 3, 4, 5]
 
   return [
     ...levels.map(heading),
@@ -205,23 +211,25 @@ function linkMenuItems(editor) {
   ]
 }
 
-function historyMenuItems() {
-  return [
-    {
-      command: undo,
-      dom: materialButton("undo", "undo"),
-      active() {
-        return false
-      },
-    },
-    {
-      command: redo,
-      dom: materialButton("redo", "redo"),
-      active() {
-        return false
-      },
-    },
-  ]
+function historyMenuItems(editor) {
+  return findExtension(editor, "history")
+    ? [
+        {
+          command: undo,
+          dom: materialButton("undo", "undo"),
+          active() {
+            return false
+          },
+        },
+        {
+          command: redo,
+          dom: materialButton("redo", "redo"),
+          active() {
+            return false
+          },
+        },
+      ]
+    : null
 }
 
 function htmlMenuItem(editor) {
