@@ -1,4 +1,4 @@
-import { getHTML, parseHTML, settings } from "./utils.js"
+import { settings } from "./utils.js"
 
 const formFieldForProperty = ([name, config]) => {
   if (config.format === "textarea") {
@@ -63,22 +63,10 @@ export const linkDialog = updateAttrsDialog({
   },
 })
 
-const htmlDialog = updateAttrsDialog({
+export const htmlDialog = updateAttrsDialog({
   html: {
     type: "string",
     title: "HTML",
     format: "textarea",
   },
 })
-
-export const updateHTML = (state, dispatch) => {
-  if (dispatch) {
-    htmlDialog({ html: getHTML(state) }).then((attrs) => {
-      if (attrs) {
-        const doc = parseHTML(state.schema, attrs.html)
-        dispatch(state.tr.replaceWith(0, state.tr.doc.content.size, doc))
-      }
-    })
-  }
-  return true
-}

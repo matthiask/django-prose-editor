@@ -13,7 +13,7 @@ export const menuItemsFromConfig = (config) => (editor) => {
     linkMenuItems(editor),
     markMenuItems(editor),
     findExtension(editor, "history") && historyMenuItems(),
-    config.html ? htmlMenuItem() : null,
+    config.html ? htmlMenuItem(editor) : null,
   ].filter(Boolean)
 }
 
@@ -36,7 +36,6 @@ export const Menu = Extension.create({
   },
 })
 
-import { updateHTML } from "./commands.js"
 import { crel } from "./utils.js"
 
 function headingButton(level) {
@@ -225,14 +224,21 @@ function historyMenuItems() {
   ]
 }
 
-function htmlMenuItem() {
-  return [
-    {
-      command: updateHTML,
-      dom: materialButton("code", "edit HTML"),
-      active: () => false,
-    },
-  ]
+function htmlMenuItem(editor) {
+  return findExtension(editor, "html")
+    ? [
+        {
+          command: (_state, dispatch) => {
+            if (dispatch) {
+              editor.commands.editHTML()
+            }
+            return true
+          },
+          dom: materialButton("code", "edit HTML"),
+          active: () => false,
+        },
+      ]
+    : null
 }
 
 class MenuView {

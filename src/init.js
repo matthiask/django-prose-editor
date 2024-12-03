@@ -28,6 +28,7 @@ function createEditor(textarea) {
     Link,
     Menu,
     menuItemsFromConfig,
+    HTML,
     NoSpellCheck,
     Typographic,
     createTextareaEditor,
@@ -46,6 +47,7 @@ function createEditor(textarea) {
     Text,
     config.history && History,
     Menu.configure({ menuItems: menuItemsFromConfig(config) }),
+    HTML,
     NoSpellCheck,
     config.typographic && Typographic,
     // Nodes and marks

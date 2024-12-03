@@ -23,6 +23,7 @@ import { Superscript } from "@tiptap/extension-superscript"
 import { Underline } from "@tiptap/extension-underline"
 
 import { updateAttrsDialog } from "./commands.js"
+import { HTML } from "./html.js"
 import { Link } from "./link.js"
 import { NoSpellCheck } from "./nospellcheck.js"
 import { Typographic } from "./typographic.js"
@@ -61,6 +62,7 @@ export {
   Underline,
   Link,
   /* others */
+  HTML,
   NoSpellCheck,
   Typographic,
 }
