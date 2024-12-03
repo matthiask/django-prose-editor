@@ -36,7 +36,7 @@ export const Menu = Extension.create({
   },
 })
 
-import { updateHTML, insertHorizontalRule } from "./commands.js"
+import { updateHTML } from "./commands.js"
 import { crel } from "./utils.js"
 
 function headingButton(level) {
@@ -136,7 +136,12 @@ function listMenuItems(editor) {
   }
   if ((type = schema.nodes.horizontalRule)) {
     items.push({
-      command: insertHorizontalRule,
+      command: (_state, dispatch) => {
+        if (dispatch) {
+          editor.commands.setHorizontalRule()
+        }
+        return true
+      },
       dom: materialButton("horizontal_rule", "horizontal rule"),
       active(_editor) {
         return false

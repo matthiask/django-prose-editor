@@ -82,12 +82,3 @@ export const updateHTML = (state, dispatch) => {
   }
   return true
 }
-
-export const insertHorizontalRule = (state, dispatch) => {
-  if (dispatch) {
-    dispatch(
-      state.tr.replaceSelectionWith(state.schema.nodes.horizontalRule.create()),
-    )
-  }
-  return true
-}
