@@ -17,6 +17,7 @@ export const Link = BaseLink.extend({
 
   addCommands() {
     return {
+      ...this.parent?.(),
       addLink:
         () =>
         ({ editor }) => {
