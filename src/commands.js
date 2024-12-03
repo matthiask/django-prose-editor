@@ -1,10 +1,17 @@
 import { settings } from "./utils.js"
 
 const formFieldForProperty = ([name, config]) => {
+  let widget
+
   if (config.format === "textarea") {
-    return `<p><label>${config.title || name}</label> <textarea name="${name}" cols="80" rows="30"></textarea></p>`
+    widget = `<textarea name="${name}" cols="80" rows="30"></textarea>`
+  } else if (config.enum) {
+    widget = `<select name="${name}">${config.enum.map((value) => `<option>${value}</option>`).join("")}</select>`
+  } else {
+    widget = `<input type="${config.format || "text"}" name="${name}" size="50">`
   }
-  return `<p><label>${config.title || name}</label> <input type="${config.format || "text"}" name="${name}" size="50"></p>`
+
+  return `<p><label>${config.title || name}</label> ${widget}</p>`
 }
 
 export const updateAttrsDialog = (properties) => (attrs) => {
@@ -24,8 +31,8 @@ export const updateAttrsDialog = (properties) => (attrs) => {
     const dialog = div.querySelector("dialog")
     const form = div.querySelector("form")
 
-    for (const name of Object.keys(properties)) {
-      form[name].value = attrs[name] || ""
+    for (const [name, config] of Object.entries(properties)) {
+      form[name].value = attrs[name] || config.default || ""
     }
 
     dialog
