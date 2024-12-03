@@ -1,18 +1,18 @@
 import { Extension } from "@tiptap/core"
-
-import { toggleMark, setBlockType, wrapIn } from "@tiptap/pm/commands"
 import { undo, redo } from "@tiptap/pm/history"
 import { wrapInList } from "@tiptap/pm/schema-list"
 import { Plugin } from "@tiptap/pm/state"
 
+const findExtension = (editor, extension) =>
+  editor.extensionManager.extensions.find((e) => e.name === extension)
+
 export const menuItemsFromConfig = (config) => (editor) => {
-  const schema = editor.schema
   return [
-    blockTypeMenuItems(schema, config.headingLevels),
-    listMenuItems(schema),
-    linkMenuItems(schema),
-    markMenuItems(schema),
-    config.history ? historyMenuItems() : null,
+    blockTypeMenuItems(editor, config.headingLevels),
+    listMenuItems(editor),
+    linkMenuItems(editor),
+    markMenuItems(editor),
+    findExtension(editor, "history") && historyMenuItems(),
     config.html ? htmlMenuItem() : null,
   ].filter(Boolean)
 }
@@ -21,13 +21,14 @@ export const Menu = Extension.create({
   name: "menu",
 
   addProseMirrorPlugins() {
-    const menuItems = this.options.menuItems(this.editor)
+    const editor = this.editor
+    const menuItems = this.options.menuItems(editor)
 
     return [
       new Plugin({
-        view(editorView) {
-          const menuView = new MenuView(editorView, menuItems)
-          editorView.dom.parentNode.insertBefore(menuView.dom, editorView.dom)
+        view() {
+          const menuView = new MenuView(editor, menuItems)
+          editor.view.dom.parentNode.insertBefore(menuView.dom, editor.view.dom)
           return menuView
         },
       }),
@@ -41,7 +42,7 @@ import {
   updateHTML,
   insertHorizontalRule,
 } from "./commands.js"
-import { crel, markActive } from "./utils.js"
+import { crel } from "./utils.js"
 
 function headingButton(level) {
   const btn = crel("span", {
@@ -66,41 +67,51 @@ function materialButton(textContent, title) {
   })
 }
 
-function blockTypeMenuItems(schema, headingLevels) {
-  if (!schema.nodes.heading) return []
+function blockTypeMenuItems(editor, headingLevels) {
+  if (!editor.schema.nodes.heading) return []
 
   const heading = (level) => ({
-    command: setBlockType(schema.nodes.heading, { level }),
+    command: (_state, _dispatch) => {
+      if (_dispatch) {
+        editor.commands.toggleHeading({ level })
+      }
+      return true
+    },
     dom: headingButton(level),
-    active(state) {
-      return state.selection.$from.parent.hasMarkup(schema.nodes.heading, {
-        level,
-      })
+    active(editor) {
+      return editor.isActive("heading", { level })
     },
   })
 
-  const levels = headingLevels || [1, 2, 3, 4, 5]
+  const extension = findExtension(editor, "heading")
+  const levels = headingLevels || extension?.options?.levels || [1, 2, 3, 4, 5]
 
   return [
     ...levels.map(heading),
     {
-      command: setBlockType(schema.nodes.paragraph),
+      command: (_state, _dispatch) => {
+        if (_dispatch) {
+          editor.commands.setParagraph()
+        }
+        return true
+      },
       dom: materialButton("notes", "paragraph"),
-      active(state) {
-        return state.selection.$from.parent.hasMarkup(schema.nodes.paragraph)
+      active(editor) {
+        return editor.isActive("paragraph")
       },
     },
   ]
 }
 
-function listMenuItems(schema) {
+function listMenuItems(editor) {
+  const schema = editor.schema
   const items = []
   let type
   if ((type = schema.nodes.bulletList)) {
     items.push({
       command: wrapInList(type),
       dom: materialButton("format_list_bulleted", "unordered list"),
-      active(_state) {
+      active(_editor) {
         return false
       },
     })
@@ -109,17 +120,22 @@ function listMenuItems(schema) {
     items.push({
       command: wrapInList(type),
       dom: materialButton("format_list_numbered", "ordered list"),
-      active(_state) {
+      active(_editor) {
         return false
       },
     })
   }
   if ((type = schema.nodes.blockquote)) {
     items.push({
-      command: wrapIn(type),
+      command: (_state, _dispatch) => {
+        if (_dispatch) {
+          editor.commands.toggleBlockquote()
+        }
+        return true
+      },
       dom: materialButton("format_quote", "blockquote"),
-      active(_state) {
-        return false
+      active(editor) {
+        return editor.isActive("blockquote")
       },
     })
   }
@@ -127,7 +143,7 @@ function listMenuItems(schema) {
     items.push({
       command: insertHorizontalRule,
       dom: materialButton("horizontal_rule", "horizontal rule"),
-      active(_state) {
+      active(_editor) {
         return false
       },
     })
@@ -135,35 +151,40 @@ function listMenuItems(schema) {
   return items
 }
 
-function markMenuItems(schema) {
+function markMenuItems(editor) {
   const mark = (markType, textContent, title) =>
-    markType
+    markType in editor.schema.marks
       ? {
-          command: toggleMark(markType),
+          command: (_state, _dispatch) => {
+            if (_dispatch) {
+              editor.commands.toggleMark(markType)
+            }
+            return true
+          },
           dom: materialButton(textContent, title),
-          active: (state) => markActive(state, markType),
+          active: (editor) => editor.isActive(markType),
         }
       : null
 
   return [
-    mark(schema.marks.bold, "format_bold", "bold"),
-    mark(schema.marks.italic, "format_italic", "italic"),
-    mark(schema.marks.underline, "format_underline", "underline"),
-    mark(schema.marks.strike, "format_strikethrough", "strikethrough"),
-    mark(schema.marks.subscript, "subscript", "subscript"),
-    mark(schema.marks.superscript, "superscript", "superscript"),
+    mark("bold", "format_bold", "bold"),
+    mark("italic", "format_italic", "italic"),
+    mark("underline", "format_underline", "underline"),
+    mark("strikethrough", "format_strikethrough", "strikethrough"),
+    mark("subscript", "subscript", "subscript"),
+    mark("superscript", "superscript", "superscript"),
   ].filter(Boolean)
 }
 
-function linkMenuItems(schema) {
-  const mark = schema.marks.link
+function linkMenuItems(editor) {
+  const mark = editor.schema.marks.link
   if (!mark) return []
 
   return [
     {
       command: addLink,
       dom: materialButton("insert_link", "insert link"),
-      active: (state) => markActive(state, mark),
+      active: (editor) => editor.isActive(mark),
     },
     {
       command: removeLink,
@@ -180,14 +201,14 @@ function historyMenuItems() {
     {
       command: undo,
       dom: materialButton("undo", "undo"),
-      active(_state) {
+      active() {
         return false
       },
     },
     {
       command: redo,
       dom: materialButton("redo", "redo"),
-      active(_state) {
+      active() {
         return false
       },
     },
@@ -205,9 +226,9 @@ function htmlMenuItem() {
 }
 
 class MenuView {
-  constructor(editorView, itemGroups) {
+  constructor(editor, itemGroups) {
     this.items = itemGroups.flat()
-    this.editorView = editorView
+    this.editor = editor
 
     this.dom = crel("div", { className: "prose-menubar" })
 
@@ -223,10 +244,11 @@ class MenuView {
 
     this.dom.addEventListener("mousedown", (e) => {
       e.preventDefault()
-      editorView.focus()
+      editor.view.focus()
       this.items.forEach(({ command, dom }) => {
-        if (dom.contains(e.target))
-          command(editorView.state, editorView.dispatch, editorView)
+        if (dom.contains(e.target)) {
+          command(editor.view.state, editor.view.dispatch, editor.view)
+        }
       })
     })
   }
@@ -234,9 +256,9 @@ class MenuView {
   update() {
     this.items.forEach(({ command, dom, active }) => {
       // dispatch=null ==> dry run
-      const enabled = command(this.editorView.state, null, this.editorView)
+      const enabled = command(this.editor.view.state, null, this.editor.view)
       dom.classList.toggle("disabled", !enabled)
-      dom.classList.toggle("active", active(this.editorView.state) || false)
+      dom.classList.toggle("active", active(this.editor) || false)
     })
   }
 
