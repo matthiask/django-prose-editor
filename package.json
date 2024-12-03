@@ -8,6 +8,7 @@
     "@tiptap/extension-link": "^2.10.3",
     "@tiptap/extension-subscript": "^2.10.3",
     "@tiptap/extension-superscript": "^2.10.3",
+    "@tiptap/extension-text-align": "^2.10.3",
     "@tiptap/extension-underline": "^2.10.3",
     "@tiptap/pm": "^2.10.3",
     "@tiptap/starter-kit": "^2.10.3",

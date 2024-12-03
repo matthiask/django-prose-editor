@@ -1,71 +1,41 @@
 // All these classes and utilities are available on window.DjangoProseEditor
 
 import { Editor } from "@tiptap/core"
-import { Document } from "@tiptap/extension-document"
-import { Dropcursor } from "@tiptap/extension-dropcursor"
-import { Gapcursor } from "@tiptap/extension-gapcursor"
-import { History } from "@tiptap/extension-history"
-import { Paragraph } from "@tiptap/extension-paragraph"
-import { HardBreak } from "@tiptap/extension-hard-break"
-import { Text } from "@tiptap/extension-text"
+export { Document } from "@tiptap/extension-document"
+export { Dropcursor } from "@tiptap/extension-dropcursor"
+export { Gapcursor } from "@tiptap/extension-gapcursor"
+export { History } from "@tiptap/extension-history"
+export { Paragraph } from "@tiptap/extension-paragraph"
+export { HardBreak } from "@tiptap/extension-hard-break"
+export { Text } from "@tiptap/extension-text"
 
-import { Blockquote } from "@tiptap/extension-blockquote"
-import { Bold } from "@tiptap/extension-bold"
-import { BulletList } from "@tiptap/extension-bullet-list"
-import { Heading } from "@tiptap/extension-heading"
-import { HorizontalRule } from "@tiptap/extension-horizontal-rule"
-import { Italic } from "@tiptap/extension-italic"
-import { ListItem } from "@tiptap/extension-list-item"
-import { OrderedList } from "@tiptap/extension-ordered-list"
-import { Strike } from "@tiptap/extension-strike"
-import { Subscript } from "@tiptap/extension-subscript"
-import { Superscript } from "@tiptap/extension-superscript"
-import { Underline } from "@tiptap/extension-underline"
+export { Blockquote } from "@tiptap/extension-blockquote"
+export { Bold } from "@tiptap/extension-bold"
+export { BulletList } from "@tiptap/extension-bullet-list"
+export { Heading } from "@tiptap/extension-heading"
+export { HorizontalRule } from "@tiptap/extension-horizontal-rule"
+export { Italic } from "@tiptap/extension-italic"
+export { ListItem } from "@tiptap/extension-list-item"
+export { OrderedList } from "@tiptap/extension-ordered-list"
+export { Strike } from "@tiptap/extension-strike"
+export { Subscript } from "@tiptap/extension-subscript"
+export { Superscript } from "@tiptap/extension-superscript"
+export { Underline } from "@tiptap/extension-underline"
 
-import { updateAttrsDialog } from "./commands.js"
-import { HTML } from "./html.js"
-import { Link } from "./link.js"
-import { NoSpellCheck } from "./nospellcheck.js"
-import { Typographic } from "./typographic.js"
-import { crel } from "./utils.js"
-import { Plugin } from "@tiptap/pm/state"
+export { TextAlign } from "@tiptap/extension-text-align"
+
+export { updateAttrsDialog } from "./commands.js"
+export { HTML } from "./html.js"
+export { Link } from "./link.js"
+export { NoSpellCheck } from "./nospellcheck.js"
+export { Typographic } from "./typographic.js"
+export { Plugin } from "@tiptap/pm/state"
 
 export * from "./menu.js"
 export * from "./utils.js"
 export * from "@tiptap/core"
 
-export {
-  Editor,
-  Plugin,
-  updateAttrsDialog,
-  crel,
-  /* base extensions */
-  Document,
-  Dropcursor,
-  Gapcursor,
-  HardBreak,
-  History,
-  Paragraph,
-  Text,
-  /* nodes and marks */
-  Blockquote,
-  Bold,
-  BulletList,
-  Heading,
-  HorizontalRule,
-  Italic,
-  ListItem,
-  OrderedList,
-  Strike,
-  Subscript,
-  Superscript,
-  Underline,
-  Link,
-  /* others */
-  HTML,
-  NoSpellCheck,
-  Typographic,
-}
+import { crel } from "./utils.js"
 
 export function createTextareaEditor(textarea, extensions) {
   const editor = crel("div", { className: "prose-editor" })
