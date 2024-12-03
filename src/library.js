@@ -24,13 +24,14 @@ import { Underline } from "@tiptap/extension-underline"
 
 import { updateAttrsDialog } from "./commands.js"
 import { Link } from "./link.js"
-export * from "./menu.js"
 import { NoSpellCheck } from "./nospellcheck.js"
 import { Typographic } from "./typographic.js"
 import { crel } from "./utils.js"
-
-export * from "@tiptap/core"
 import { Plugin } from "@tiptap/pm/state"
+
+export * from "./menu.js"
+export * from "./utils.js"
+export * from "@tiptap/core"
 
 export {
   Editor,
