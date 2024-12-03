@@ -7,6 +7,11 @@ export const Link = BaseLink.extend({
     return {
       ...this.parent?.(),
       openOnClick: false,
+      HTMLAttributes: {
+        target: null,
+        rel: "noopener noreferrer nofollow",
+        class: null,
+      },
     }
   },
 
