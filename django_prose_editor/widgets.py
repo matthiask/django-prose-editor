@@ -119,5 +119,8 @@ class ProseEditorWidget(forms.Textarea):
 
 
 class AdminProseEditorWidget(ProseEditorWidget):
-    class Media:
-        css = {"all": ["django_prose_editor/overrides.css"]}
+    @property
+    def media(self):
+        return super().media + forms.Media(
+            css={"all": ["django_prose_editor/overrides.css"]}
+        )
