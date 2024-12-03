@@ -1,10 +1,4 @@
-import { getMarkRange } from "./extendMarkRange.js"
-import {
-  getHTML,
-  parseHTML,
-  settings,
-  trimmedRangeFromSelection,
-} from "./utils.js"
+import { getHTML, parseHTML, settings } from "./utils.js"
 
 const formFieldForProperty = ([name, config]) => {
   if (config.format === "textarea") {
@@ -58,7 +52,7 @@ export const updateAttrsDialog = (properties) => (attrs) => {
   })
 }
 
-const linkDialog = updateAttrsDialog({
+export const linkDialog = updateAttrsDialog({
   href: {
     type: "string",
     title: settings().messages.url,
@@ -68,47 +62,6 @@ const linkDialog = updateAttrsDialog({
     title: settings().messages.title,
   },
 })
-
-export const addLink = (state, dispatch) => {
-  const { $from, empty } = state.selection
-  const type = state.schema.marks.link
-
-  if (empty && !type.isInSet($from.marks())) return false
-
-  if (dispatch) {
-    const mark = $from.marks().find((mark) => mark.type === type)
-    linkDialog(mark?.attrs || {}).then((attrs) => {
-      if (attrs) {
-        let range
-        if (empty) {
-          range = getMarkRange($from, type)
-          dispatch(
-            state.tr
-              .removeMark(range.from, range.to, type)
-              .addMark(range.from, range.to, type.create(attrs)),
-          )
-        } else {
-          const { from, to } = trimmedRangeFromSelection(state.selection)
-          dispatch(state.tr.addMark(from, to, type.create(attrs)))
-        }
-      }
-    })
-  }
-  return true
-}
-
-export const removeLink = (state, dispatch) => {
-  const type = state.schema.marks.link
-  const { $from, from, to } = state.selection
-  const range = getMarkRange($from, type)
-  if (range && range.from <= from && range.to >= to) {
-    if (dispatch) {
-      dispatch(state.tr.removeMark(range.from, range.to, type))
-    }
-    return true
-  }
-  return false
-}
 
 const htmlDialog = updateAttrsDialog({
   html: {

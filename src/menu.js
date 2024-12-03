@@ -36,12 +36,7 @@ export const Menu = Extension.create({
   },
 })
 
-import {
-  addLink,
-  removeLink,
-  updateHTML,
-  insertHorizontalRule,
-} from "./commands.js"
+import { updateHTML, insertHorizontalRule } from "./commands.js"
 import { crel } from "./utils.js"
 
 function headingButton(level) {
@@ -182,12 +177,22 @@ function linkMenuItems(editor) {
 
   return [
     {
-      command: addLink,
+      command: (_state, dispatch) => {
+        if (dispatch) {
+          editor.commands.addLink()
+        }
+        return !editor.state.selection.empty || editor.isActive("link")
+      },
       dom: materialButton("insert_link", "insert link"),
       active: (editor) => editor.isActive(mark),
     },
     {
-      command: removeLink,
+      command: (_state, dispatch) => {
+        if (dispatch) {
+          editor.commands.unsetLink()
+        }
+        return editor.isActive("link")
+      },
       dom: materialButton("link_off", "remove link"),
       active() {
         return false

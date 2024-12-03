@@ -1,6 +1,6 @@
 import { Link as BaseLink } from "@tiptap/extension-link"
 
-import { addLink } from "./commands.js"
+import { linkDialog } from "./commands.js"
 
 export const Link = BaseLink.extend({
   addOptions() {
@@ -15,6 +15,32 @@ export const Link = BaseLink.extend({
     }
   },
 
+  addCommands() {
+    return {
+      addLink:
+        () =>
+        ({ editor }) => {
+          const attrs = editor.getAttributes(this.name)
+
+          linkDialog(attrs).then((attrs) => {
+            if (attrs) {
+              const cmd = editor
+                .chain()
+                .focus()
+                .extendMarkRange(this.name)
+                .unsetMark(this.name)
+
+              if (attrs.definition) {
+                cmd.setMark(this.name, attrs)
+              }
+
+              cmd.run()
+            }
+          })
+        },
+    }
+  },
+
   addKeyboardShortcuts() {
     return {
       "Mod-k": ({ editor }) => {
@@ -23,7 +49,7 @@ export const Link = BaseLink.extend({
           /* Disable browser behavior of focussing the search bar or whatever */
           e.preventDefault()
         }
-        addLink(editor.view.state, editor.view.dispatch)
+        editor.commands.addLink()
       },
     }
   },
