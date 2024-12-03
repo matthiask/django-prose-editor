@@ -24,7 +24,7 @@ import { Underline } from "@tiptap/extension-underline"
 
 import { updateAttrsDialog } from "./commands.js"
 import { Link } from "./link.js"
-import { Menu } from "./menu.js"
+export * from "./menu.js"
 import { NoSpellCheck } from "./nospellcheck.js"
 import { Typographic } from "./typographic.js"
 import { crel } from "./utils.js"
@@ -60,7 +60,6 @@ export {
   Underline,
   Link,
   /* others */
-  Menu,
   NoSpellCheck,
   Typographic,
 }

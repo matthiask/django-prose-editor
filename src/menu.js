@@ -5,33 +5,29 @@ import { undo, redo } from "@tiptap/pm/history"
 import { wrapInList } from "@tiptap/pm/schema-list"
 import { Plugin } from "@tiptap/pm/state"
 
+export const menuItemsFromConfig = (config) => (editor) => {
+  const schema = editor.schema
+  return [
+    blockTypeMenuItems(schema, config.headingLevels),
+    listMenuItems(schema),
+    linkMenuItems(schema),
+    markMenuItems(schema),
+    config.history ? historyMenuItems() : null,
+    config.html ? htmlMenuItem() : null,
+  ].filter(Boolean)
+}
+
 export const Menu = Extension.create({
   name: "menu",
 
   addProseMirrorPlugins() {
-    const schema = this.editor.schema
-    const config = this.options.config
-
-    // console.debug("this", this)
-    // console.debug("arguments", arguments)
-    // console.debug("schema", schema)
+    const menuItems = this.options.menuItems(this.editor)
 
     return [
       new Plugin({
         view(editorView) {
-          const menuView = new MenuView(
-            editorView,
-            [
-              blockTypeMenuItems(schema, config.headingLevels),
-              listMenuItems(schema),
-              linkMenuItems(schema),
-              markMenuItems(schema),
-              config.history ? historyMenuItems() : null,
-              config.html ? htmlMenuItem() : null,
-            ].filter(Boolean),
-          )
+          const menuView = new MenuView(editorView, menuItems)
           editorView.dom.parentNode.insertBefore(menuView.dom, editorView.dom)
-
           return menuView
         },
       }),
