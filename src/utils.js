@@ -9,7 +9,12 @@ export const crel = (tagName, attributes = null) => {
   return dom
 }
 
+let _settings
 export function settings() {
-  const el = document.querySelector("#django-prose-editor-settings")
-  return el ? JSON.parse(el.textContent) : {}
+  if (!_settings) {
+    _settings = JSON.parse(
+      document.querySelector("#django-prose-editor-settings").textContent,
+    )
+  }
+  return _settings
 }
