@@ -3,6 +3,13 @@ import { Link as BaseLink } from "@tiptap/extension-link"
 import { addLink } from "./commands.js"
 
 export const Link = BaseLink.extend({
+  addOptions() {
+    return {
+      ...this.parent?.(),
+      openOnClick: false,
+    }
+  },
+
   addKeyboardShortcuts() {
     return {
       "Mod-k": ({ editor }) => {
