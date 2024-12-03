@@ -12,6 +12,7 @@ export const menuItemsFromEditor = (editor) => {
     listMenuItems(editor),
     linkMenuItems(editor),
     markMenuItems(editor),
+    textAlignMenuItems(editor),
     historyMenuItems(editor),
     htmlMenuItem(editor),
   ].filter(Boolean)
@@ -228,6 +229,28 @@ function historyMenuItems(editor) {
             return false
           },
         },
+      ]
+    : null
+}
+
+function textAlignMenuItems(editor) {
+  const alignmentItem = (alignment) => ({
+    command: (_state, dispatch) => {
+      dispatch && editor.commands.setTextAlign(alignment)
+      return true
+    },
+    dom: materialButton(`format_align_${alignment}`, alignment),
+    active() {
+      return editor.isActive({ textAlign: alignment })
+    },
+  })
+
+  return findExtension(editor, "textAlign")
+    ? [
+        alignmentItem("left"),
+        alignmentItem("center"),
+        alignmentItem("right"),
+        alignmentItem("justify"),
       ]
     : null
 }
