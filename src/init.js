@@ -55,10 +55,7 @@ function createEditor(textarea) {
     isTypeEnabled("heading") && Heading,
     isTypeEnabled("horizontal_rule") && HorizontalRule,
     isTypeEnabled("em") && Italic,
-    isTypeEnabled("link") &&
-      Link.configure({
-        openOnClick: false,
-      }),
+    isTypeEnabled("link") && Link,
     (isTypeEnabled("bullet_list") || isTypeEnabled("ordered_list")) && ListItem,
     isTypeEnabled("ordered_list") && OrderedList,
     isTypeEnabled("strikethrough") && Strike,
