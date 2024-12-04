@@ -336,7 +336,7 @@ function tableMenuItems(editor) {
           editor
             .chain()
             .focus()
-            .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+            .insertTable({ rows: 3, cols: 3 /* , withHeaderRow: true */ })
             .run()
         }
         return true
@@ -345,16 +345,22 @@ function tableMenuItems(editor) {
     },
     tableManipulationItem(() => {
       editor.chain().focus().addColumnAfter().run()
-    }, textButton("+Column")),
+    }, textButton("+Col")),
     tableManipulationItem(() => {
       editor.chain().focus().deleteColumn().run()
-    }, textButton("-Column")),
+    }, textButton("-Col")),
     tableManipulationItem(() => {
       editor.chain().focus().addRowAfter().run()
     }, textButton("+Row")),
     tableManipulationItem(() => {
       editor.chain().focus().deleteRow().run()
     }, textButton("-Row")),
+    tableManipulationItem(() => {
+      editor.chain().focus().mergeCells().run()
+    }, textButton("Merge")),
+    tableManipulationItem(() => {
+      editor.chain().focus().splitCell().run()
+    }, textButton("Split")),
   ]
 }
 
