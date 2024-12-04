@@ -5,7 +5,7 @@ from django.conf import settings
 from django.forms.utils import flatatt
 from django.templatetags.static import static
 from django.utils.html import format_html, json_script, mark_safe
-from django.utils.translation import gettext
+from django.utils.translation import gettext_lazy
 
 
 class JS:
@@ -51,6 +51,32 @@ class JSON:
 
 
 class ProseEditorWidget(forms.Textarea):
+    base_media = forms.Media(
+        css={
+            "all": [
+                "django_prose_editor/material-icons.css",
+                "django_prose_editor/editor.css",
+            ]
+        },
+        js=[
+            JS(
+                "django_prose_editor/editor.js",
+                {"defer": True},
+            ),
+            JSON(
+                "django-prose-editor-settings",
+                {
+                    "messages": {
+                        "url": gettext_lazy("URL"),
+                        "title": gettext_lazy("Title"),
+                        "update": gettext_lazy("Update"),
+                        "cancel": gettext_lazy("Cancel"),
+                    },
+                },
+            ),
+        ],
+    )
+
     def __init__(self, *args, **kwargs):
         self.config = kwargs.pop("config", {})
         self.preset = kwargs.pop("preset", "default")
@@ -58,36 +84,13 @@ class ProseEditorWidget(forms.Textarea):
 
     @property
     def media(self):
-        return forms.Media(
-            css={
-                "all": [
-                    "django_prose_editor/material-icons.css",
-                    "django_prose_editor/editor.css",
-                ]
-            },
+        return self.base_media + forms.Media(
             js=[
                 JS(
-                    "django_prose_editor/editor.js",
+                    preset["script"],
                     {"defer": True},
-                ),
-                JSON(
-                    "django-prose-editor-settings",
-                    {
-                        "messages": {
-                            "url": gettext("URL"),
-                            "title": gettext("Title"),
-                            "update": gettext("Update"),
-                            "cancel": gettext("Cancel"),
-                        },
-                    },
-                ),
-                *(
-                    JS(
-                        preset["script"],
-                        {"defer": True},
-                    )
-                    for key, preset in self.get_presets().items()
-                ),
+                )
+                for key, preset in self.get_presets().items()
             ],
         )
 
