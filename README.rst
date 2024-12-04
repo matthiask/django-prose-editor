@@ -144,9 +144,9 @@ editor foundations:
       const extensions = [
         Document, Dropcursor, Gapcursor, Paragraph, HardBreak, Text,
 
-        Bold, Italic, Subscript, Superscript, Link.configure({ openOnClick: false }),
+        Bold, Italic, Subscript, Superscript, Link,
 
-        Menu.configure({ config }),
+        Menu,
       ]
 
       return createTextareaEditor(textarea, extensions)
