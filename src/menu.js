@@ -2,6 +2,7 @@ import { Extension } from "@tiptap/core"
 import { undo, redo } from "@tiptap/pm/history"
 import { wrapInList } from "@tiptap/pm/schema-list"
 import { Plugin } from "@tiptap/pm/state"
+import { crel } from "./utils.js"
 
 const findExtension = (editor, extension) =>
   editor.extensionManager.extensions.find((e) => e.name === extension)
@@ -9,7 +10,7 @@ const findExtension = (editor, extension) =>
 export const menuItemsFromEditor = (editor) => {
   return [
     blockTypeMenuItems(editor),
-    listMenuItems(editor),
+    nodesMenuItems(editor),
     linkMenuItems(editor),
     markMenuItems(editor),
     textAlignMenuItems(editor),
@@ -43,21 +44,47 @@ export const Menu = Extension.create({
   },
 })
 
-import { crel } from "./utils.js"
+class MenuView {
+  constructor(editor, itemGroups) {
+    this.items = itemGroups.flat()
+    this.editor = editor
 
-function headingButton(level) {
-  const btn = crel("span", {
-    className: "prose-menubar__button prose-menubar__button--heading",
-  })
-  btn.append(
-    crel("span", {
-      className: "material-icons",
-      textContent: "title",
-      title: `heading ${level}`,
-    }),
-    crel("span", { className: "level", textContent: `${level}` }),
-  )
-  return btn
+    this.dom = crel("div", { className: "prose-menubar" })
+
+    itemGroups
+      .filter((group) => group.length)
+      .forEach((group) => {
+        const groupDOM = crel("div", { className: "prose-menubar__group" })
+        this.dom.append(groupDOM)
+        group.forEach(({ dom }) => groupDOM.append(dom))
+      })
+
+    this.update()
+
+    this.dom.addEventListener("mousedown", (e) => {
+      e.preventDefault()
+      editor.view.focus()
+      this.items.forEach(({ command, dom }) => {
+        if (dom.contains(e.target)) {
+          command(editor.view.state, editor.view.dispatch, editor.view)
+        }
+      })
+    })
+  }
+
+  update() {
+    this.items.forEach(({ command, dom, active, hidden = () => false }) => {
+      // dispatch=null ==> dry run
+      const enabled = command(this.editor.view.state, null, this.editor.view)
+      dom.classList.toggle("disabled", !enabled)
+      dom.classList.toggle("active", !!active(this.editor))
+      dom.classList.toggle("hidden", !!hidden(this.editor))
+    })
+  }
+
+  destroy() {
+    this.dom.remove()
+  }
 }
 
 function materialButton(textContent, title) {
@@ -68,45 +95,40 @@ function materialButton(textContent, title) {
   })
 }
 
-function blockTypeMenuItems(editor) {
-  if (!editor.schema.nodes.heading) return []
+const headingMenuItem = (editor, level) => {
+  const dom = crel("span", {
+    className: "prose-menubar__button prose-menubar__button--heading",
+  })
+  dom.append(
+    crel("span", {
+      className: "material-icons",
+      textContent: "title",
+      title: `heading ${level}`,
+    }),
+    crel("span", { className: "level", textContent: `${level}` }),
+  )
 
-  const heading = (level) => ({
+  return {
     command: (_state, _dispatch) => {
       if (_dispatch) {
         editor.commands.toggleHeading({ level })
       }
       return true
     },
-    dom: headingButton(level),
+    dom,
     active(editor) {
       return editor.isActive("heading", { level })
     },
-  })
-
-  const extension = findExtension(editor, "heading")
-  const levels = extension?.options?.levels || [1, 2, 3, 4, 5]
-
-  return [
-    ...levels.map(heading),
-    {
-      command: (_state, _dispatch) => {
-        if (_dispatch) {
-          editor.commands.setParagraph()
-        }
-        return true
-      },
-      dom: materialButton("notes", "paragraph"),
-      active(editor) {
-        return editor.isActive("paragraph")
-      },
-    },
-  ]
+  }
 }
 
-function listMenuItems(editor) {
+function blockTypeMenuItems(editor) {
   const schema = editor.schema
-  const items = []
+
+  const extension = findExtension(editor, "heading")
+  const levels = extension ? extension.options.levels : []
+  const items = levels.map((level) => headingMenuItem(editor, level))
+
   let type
   if ((type = schema.nodes.bulletList)) {
     items.push({
@@ -126,6 +148,30 @@ function listMenuItems(editor) {
       },
     })
   }
+
+  if (!items.length) return []
+
+  return [
+    ...items,
+    {
+      command: (_state, _dispatch) => {
+        if (_dispatch) {
+          editor.commands.setParagraph()
+        }
+        return true
+      },
+      dom: materialButton("notes", "paragraph"),
+      active(editor) {
+        return editor.isActive("paragraph")
+      },
+    },
+  ]
+}
+
+function nodesMenuItems(editor) {
+  const schema = editor.schema
+  const items = []
+  let type
   if ((type = schema.nodes.blockquote)) {
     items.push({
       command: (_state, _dispatch) => {
@@ -208,6 +254,9 @@ function linkMenuItems(editor) {
       active() {
         return false
       },
+      hidden(editor) {
+        return !editor.isActive("link")
+      },
     },
   ]
 }
@@ -270,46 +319,4 @@ function htmlMenuItem(editor) {
         },
       ]
     : null
-}
-
-class MenuView {
-  constructor(editor, itemGroups) {
-    this.items = itemGroups.flat()
-    this.editor = editor
-
-    this.dom = crel("div", { className: "prose-menubar" })
-
-    itemGroups
-      .filter((group) => group.length)
-      .forEach((group) => {
-        const groupDOM = crel("div", { className: "prose-menubar__group" })
-        this.dom.append(groupDOM)
-        group.forEach(({ dom }) => groupDOM.append(dom))
-      })
-
-    this.update()
-
-    this.dom.addEventListener("mousedown", (e) => {
-      e.preventDefault()
-      editor.view.focus()
-      this.items.forEach(({ command, dom }) => {
-        if (dom.contains(e.target)) {
-          command(editor.view.state, editor.view.dispatch, editor.view)
-        }
-      })
-    })
-  }
-
-  update() {
-    this.items.forEach(({ command, dom, active }) => {
-      // dispatch=null ==> dry run
-      const enabled = command(this.editor.view.state, null, this.editor.view)
-      dom.classList.toggle("disabled", !enabled)
-      dom.classList.toggle("active", active(this.editor) || false)
-    })
-  }
-
-  destroy() {
-    this.dom.remove()
-  }
 }
