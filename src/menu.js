@@ -14,6 +14,7 @@ export const menuItemsFromEditor = (editor) => {
     linkMenuItems(editor),
     markMenuItems(editor),
     textAlignMenuItems(editor),
+    tableMenuItems(editor),
     historyMenuItems(editor),
     htmlMenuItem(editor),
   ].filter(Boolean)
@@ -73,18 +74,28 @@ class MenuView {
   }
 
   update() {
-    this.items.forEach(({ command, dom, active, hidden = () => false }) => {
-      // dispatch=null ==> dry run
-      const enabled = command(this.editor.view.state, null, this.editor.view)
-      dom.classList.toggle("disabled", !enabled)
-      dom.classList.toggle("active", !!active(this.editor))
-      dom.classList.toggle("hidden", !!hidden(this.editor))
-    })
+    this.items.forEach(
+      ({ command, dom, active = () => false, hidden = () => false }) => {
+        // dispatch=null ==> dry run
+        const enabled = command(this.editor.view.state, null, this.editor.view)
+        dom.classList.toggle("disabled", !enabled)
+        dom.classList.toggle("active", !!active(this.editor))
+        dom.classList.toggle("hidden", !!hidden(this.editor))
+      },
+    )
   }
 
   destroy() {
     this.dom.remove()
   }
+}
+
+function textButton(textContent, title = "") {
+  return crel("span", {
+    className: "prose-menubar__button",
+    textContent,
+    title,
+  })
 }
 
 function materialButton(textContent, title) {
@@ -302,6 +313,49 @@ function textAlignMenuItems(editor) {
         alignmentItem("justify"),
       ]
     : null
+}
+
+function tableMenuItems(editor) {
+  if (!findExtension(editor, "table")) return []
+
+  const tableManipulationItem = (command, dom) => ({
+    command: (_state, dispatch) => {
+      if (dispatch) command()
+      return true
+    },
+    dom,
+    hidden() {
+      return !editor.isActive("table")
+    },
+  })
+
+  return [
+    {
+      command(_state, dispatch, _view) {
+        if (dispatch) {
+          editor
+            .chain()
+            .focus()
+            .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+            .run()
+        }
+        return true
+      },
+      dom: materialButton("grid_on", "Insert table"),
+    },
+    tableManipulationItem(() => {
+      editor.chain().focus().addColumnAfter().run()
+    }, textButton("+Column")),
+    tableManipulationItem(() => {
+      editor.chain().focus().deleteColumn().run()
+    }, textButton("-Column")),
+    tableManipulationItem(() => {
+      editor.chain().focus().addRowAfter().run()
+    }, textButton("+Row")),
+    tableManipulationItem(() => {
+      editor.chain().focus().deleteRow().run()
+    }, textButton("-Row")),
+  ]
 }
 
 function htmlMenuItem(editor) {
