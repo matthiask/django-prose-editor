@@ -75,11 +75,13 @@
   border-bottom-left-radius: 4px;
 }
 
+/* Cancel rounded borders on the left side for second to last button in group */
 .prose-menubar__button:not(.hidden) ~ .prose-menubar__button:not(.hidden) {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
 
+/* Find last button in group (the button which doesn't have a following button) */
 .prose-menubar__button:not(.hidden):not(
     :has(~ .prose-menubar__button:not(.hidden))
   ) {
