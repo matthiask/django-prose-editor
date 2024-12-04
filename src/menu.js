@@ -1,6 +1,5 @@
 import { Extension } from "@tiptap/core"
 import { undo, redo } from "@tiptap/pm/history"
-import { wrapInList } from "@tiptap/pm/schema-list"
 import { Plugin } from "@tiptap/pm/state"
 import { crel } from "./utils.js"
 
@@ -143,7 +142,12 @@ function blockTypeMenuItems(editor) {
   let type
   if ((type = schema.nodes.bulletList)) {
     items.push({
-      command: wrapInList(type),
+      command: (_state, dispatch) => {
+        if (dispatch) {
+          editor.chain().focus().toggleBulletList().run()
+        }
+        return true
+      },
       dom: materialButton("format_list_bulleted", "unordered list"),
       active(_editor) {
         return false
@@ -152,7 +156,12 @@ function blockTypeMenuItems(editor) {
   }
   if ((type = schema.nodes.orderedList)) {
     items.push({
-      command: wrapInList(type),
+      command: (_state, dispatch) => {
+        if (dispatch) {
+          editor.chain().focus().toggleOrderedList().run()
+        }
+        return true
+      },
       dom: materialButton("format_list_numbered", "ordered list"),
       active(_editor) {
         return false
@@ -172,8 +181,8 @@ function blockTypeMenuItems(editor) {
         return true
       },
       dom: materialButton("notes", "paragraph"),
-      active(editor) {
-        return editor.isActive("paragraph")
+      active(_editor) {
+        return false
       },
     },
   ]
