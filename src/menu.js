@@ -1,5 +1,4 @@
 import { Extension } from "@tiptap/core"
-import { undo, redo } from "@tiptap/pm/history"
 import { Plugin } from "@tiptap/pm/state"
 import { crel } from "./utils.js"
 
@@ -66,7 +65,7 @@ class MenuView {
       editor.view.focus()
       this.items.forEach(({ command, dom }) => {
         if (dom.contains(e.target)) {
-          command(editor.view.state, editor.view.dispatch, editor.view)
+          command(editor)
         }
       })
     })
@@ -74,10 +73,13 @@ class MenuView {
 
   update() {
     this.items.forEach(
-      ({ command, dom, active = () => false, hidden = () => false }) => {
-        // dispatch=null ==> dry run
-        const enabled = command(this.editor.view.state, null, this.editor.view)
-        dom.classList.toggle("disabled", !enabled)
+      ({
+        dom,
+        enabled = () => true,
+        active = () => false,
+        hidden = () => false,
+      }) => {
+        dom.classList.toggle("disabled", !enabled(this.editor))
         dom.classList.toggle("active", !!active(this.editor))
         dom.classList.toggle("hidden", !!hidden(this.editor))
       },
@@ -105,7 +107,7 @@ function materialButton(textContent, title) {
   })
 }
 
-const headingMenuItem = (editor, level) => {
+const headingMenuItem = (_editor, level) => {
   const dom = crel("span", {
     className: "prose-menubar__button prose-menubar__button--heading",
   })
@@ -119,11 +121,8 @@ const headingMenuItem = (editor, level) => {
   )
 
   return {
-    command: (_state, _dispatch) => {
-      if (_dispatch) {
-        editor.commands.toggleHeading({ level })
-      }
-      return true
+    command: (editor) => {
+      editor.chain().focus().toggleHeading({ level }).run()
     },
     dom,
     active(editor) {
@@ -142,11 +141,8 @@ function blockTypeMenuItems(editor) {
   let type
   if ((type = schema.nodes.bulletList)) {
     items.push({
-      command: (_state, dispatch) => {
-        if (dispatch) {
-          editor.chain().focus().toggleBulletList().run()
-        }
-        return true
+      command(editor) {
+        editor.chain().focus().toggleBulletList().run()
       },
       dom: materialButton("format_list_bulleted", "unordered list"),
       active(_editor) {
@@ -156,11 +152,8 @@ function blockTypeMenuItems(editor) {
   }
   if ((type = schema.nodes.orderedList)) {
     items.push({
-      command: (_state, dispatch) => {
-        if (dispatch) {
-          editor.chain().focus().toggleOrderedList().run()
-        }
-        return true
+      command(editor) {
+        editor.chain().focus().toggleOrderedList().run()
       },
       dom: materialButton("format_list_numbered", "ordered list"),
       active(_editor) {
@@ -174,11 +167,8 @@ function blockTypeMenuItems(editor) {
   return [
     ...items,
     {
-      command: (_state, _dispatch) => {
-        if (_dispatch) {
-          editor.commands.setParagraph()
-        }
-        return true
+      command(editor) {
+        editor.chain().focus().setParagraph().run()
       },
       dom: materialButton("notes", "paragraph"),
       active(_editor) {
@@ -194,11 +184,8 @@ function nodesMenuItems(editor) {
   let type
   if ((type = schema.nodes.blockquote)) {
     items.push({
-      command: (_state, _dispatch) => {
-        if (_dispatch) {
-          editor.commands.toggleBlockquote()
-        }
-        return true
+      command(editor) {
+        editor.chain().focus().toggleBlockquote().run()
       },
       dom: materialButton("format_quote", "blockquote"),
       active(editor) {
@@ -208,11 +195,8 @@ function nodesMenuItems(editor) {
   }
   if ((type = schema.nodes.horizontalRule)) {
     items.push({
-      command: (_state, dispatch) => {
-        if (dispatch) {
-          editor.commands.setHorizontalRule()
-        }
-        return true
+      command(editor) {
+        editor.chain().focus().setHorizontalRule().run()
       },
       dom: materialButton("horizontal_rule", "horizontal rule"),
       active(_editor) {
@@ -227,11 +211,8 @@ function markMenuItems(editor) {
   const mark = (markType, textContent, title) =>
     markType in editor.schema.marks
       ? {
-          command: (_state, _dispatch) => {
-            if (_dispatch) {
-              editor.commands.toggleMark(markType)
-            }
-            return true
+          command(editor) {
+            editor.chain().focus().toggleMark(markType).run()
           },
           dom: materialButton(textContent, title),
           active: (editor) => editor.isActive(markType),
@@ -254,26 +235,22 @@ function linkMenuItems(editor) {
 
   return [
     {
-      command: (_state, dispatch) => {
-        if (dispatch) {
-          editor.commands.addLink()
-        }
+      command(editor) {
+        editor.chain().addLink().focus().run()
+      },
+      enabled(editor) {
         return !editor.state.selection.empty || editor.isActive("link")
       },
       dom: materialButton("insert_link", "insert link"),
-      active: (editor) => editor.isActive(mark),
+      active(editor) {
+        return editor.isActive(mark)
+      },
     },
     {
-      command: (_state, dispatch) => {
-        if (dispatch) {
-          editor.commands.unsetLink()
-        }
-        return editor.isActive("link")
+      command(editor) {
+        editor.chain().focus().unsetLink().run()
       },
       dom: materialButton("link_off", "remove link"),
-      active() {
-        return false
-      },
       hidden(editor) {
         return !editor.isActive("link")
       },
@@ -285,14 +262,24 @@ function historyMenuItems(editor) {
   return findExtension(editor, "history")
     ? [
         {
-          command: undo,
+          command(editor) {
+            editor.commands.undo()
+          },
+          enabled(editor) {
+            return editor.can().undo()
+          },
           dom: materialButton("undo", "undo"),
           active() {
             return false
           },
         },
         {
-          command: redo,
+          command(editor) {
+            editor.commands.redo()
+          },
+          enabled(editor) {
+            return editor.can().redo()
+          },
           dom: materialButton("redo", "redo"),
           active() {
             return false
@@ -304,9 +291,8 @@ function historyMenuItems(editor) {
 
 function textAlignMenuItems(editor) {
   const alignmentItem = (alignment) => ({
-    command: (_state, dispatch) => {
-      dispatch && editor.commands.setTextAlign(alignment)
-      return true
+    command(editor) {
+      editor.chain().focus().setTextAlign(alignment).run()
     },
     dom: materialButton(`format_align_${alignment}`, alignment),
     active() {
@@ -328,10 +314,7 @@ function tableMenuItems(editor) {
   if (!findExtension(editor, "table")) return []
 
   const tableManipulationItem = (command, dom) => ({
-    command: (_state, dispatch) => {
-      if (dispatch) command()
-      return true
-    },
+    command,
     dom,
     hidden() {
       return !editor.isActive("table")
@@ -340,34 +323,31 @@ function tableMenuItems(editor) {
 
   return [
     {
-      command(_state, dispatch, _view) {
-        if (dispatch) {
-          editor
-            .chain()
-            .focus()
-            .insertTable({ rows: 3, cols: 3 /* , withHeaderRow: true */ })
-            .run()
-        }
-        return true
+      command(editor) {
+        editor
+          .chain()
+          .focus()
+          .insertTable({ rows: 3, cols: 3 /* , withHeaderRow: true */ })
+          .run()
       },
       dom: materialButton("grid_on", "Insert table"),
     },
-    tableManipulationItem(() => {
+    tableManipulationItem((editor) => {
       editor.chain().focus().addColumnAfter().run()
     }, textButton("+Col")),
-    tableManipulationItem(() => {
+    tableManipulationItem((editor) => {
       editor.chain().focus().deleteColumn().run()
     }, textButton("-Col")),
-    tableManipulationItem(() => {
+    tableManipulationItem((editor) => {
       editor.chain().focus().addRowAfter().run()
     }, textButton("+Row")),
-    tableManipulationItem(() => {
+    tableManipulationItem((editor) => {
       editor.chain().focus().deleteRow().run()
     }, textButton("-Row")),
-    tableManipulationItem(() => {
+    tableManipulationItem((editor) => {
       editor.chain().focus().mergeCells().run()
     }, textButton("Merge")),
-    tableManipulationItem(() => {
+    tableManipulationItem((editor) => {
       editor.chain().focus().splitCell().run()
     }, textButton("Split")),
   ]
@@ -377,14 +357,10 @@ function htmlMenuItem(editor) {
   return findExtension(editor, "html")
     ? [
         {
-          command: (_state, dispatch) => {
-            if (dispatch) {
-              editor.commands.editHTML()
-            }
-            return true
+          command(editor) {
+            editor.commands.editHTML()
           },
           dom: materialButton("code", "edit HTML"),
-          active: () => false,
         },
       ]
     : null
