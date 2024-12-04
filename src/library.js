@@ -42,12 +42,12 @@ export * from "@tiptap/core"
 import { crel } from "./utils.js"
 
 export function createTextareaEditor(textarea, extensions) {
-  const editor = crel("div", { className: "prose-editor" })
-  textarea.before(editor)
-  editor.append(textarea)
+  const element = crel("div", { className: "prose-editor" })
+  textarea.before(element)
+  element.append(textarea)
 
-  const editorInstance = new Editor({
-    element: editor,
+  const editor = new Editor({
+    element,
     editable: !textarea.hasAttribute("disabled"),
     extensions,
     content: textarea.value,
@@ -56,13 +56,11 @@ export function createTextareaEditor(textarea, extensions) {
       textarea.dispatchEvent(new Event("input", { bubbles: true }))
     },
     onDestroy() {
-      editor.replaceWith(textarea)
+      element.replaceWith(textarea)
     },
   })
 
-  return () => {
-    editorInstance.destroy()
-  }
+  return editor
 }
 
 export function initializeEditors(create, selector) {
