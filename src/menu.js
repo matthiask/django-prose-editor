@@ -208,24 +208,24 @@ function nodesMenuItems(editor) {
 }
 
 function markMenuItems(editor) {
-  const mark = (markType, textContent, title) =>
+  const mark = (markType, dom) =>
     markType in editor.schema.marks
       ? {
           command(editor) {
             editor.chain().focus().toggleMark(markType).run()
           },
-          dom: materialButton(textContent, title),
+          dom,
           active: (editor) => editor.isActive(markType),
         }
       : null
 
   return [
-    mark("bold", "format_bold", "bold"),
-    mark("italic", "format_italic", "italic"),
-    mark("underline", "format_underline", "underline"),
-    mark("strikethrough", "format_strikethrough", "strikethrough"),
-    mark("subscript", "subscript", "subscript"),
-    mark("superscript", "superscript", "superscript"),
+    mark("bold", materialButton("format_bold", "bold")),
+    mark("italic", materialButton("format_italic", "italic")),
+    mark("underline", materialButton("format_underline", "underline")),
+    mark("strike", materialButton("format_strikethrough", "strike")),
+    mark("subscript", materialButton("subscript", "subscript")),
+    mark("superscript", materialButton("superscript", "superscript")),
   ].filter(Boolean)
 }
 
