@@ -28,8 +28,8 @@
   opacity: 0;
 }
 
-.prose-editor > textarea {
-  display: none !important; /* I don't think there exists a scenario when we'd want to show the textarea */
+.prose-editor-wrapper + textarea {
+  display: none !important;
 }
 
 .prose-menubar {

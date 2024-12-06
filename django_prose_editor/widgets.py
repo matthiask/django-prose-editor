@@ -66,6 +66,10 @@ class ProseEditorWidget(forms.Textarea):
             JSON(
                 "django-prose-editor-settings",
                 {
+                    "stylesheets": [
+                        static("django_prose_editor/material-icons.css"),
+                        static("django_prose_editor/editor.css"),
+                    ],
                     "messages": {
                         "url": gettext_lazy("URL"),
                         "title": gettext_lazy("Title"),
