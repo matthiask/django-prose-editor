@@ -10,7 +10,7 @@ export const HTML = Extension.create({
       editHTML:
         () =>
         ({ editor }) => {
-          htmlDialog({ html: editor.getHTML() }).then((attrs) => {
+          htmlDialog(editor, { html: editor.getHTML() }).then((attrs) => {
             if (attrs) {
               editor.chain().focus().setContent(attrs.html).run()
             }

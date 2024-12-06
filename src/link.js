@@ -23,7 +23,7 @@ export const Link = BaseLink.extend({
         ({ editor }) => {
           const attrs = editor.getAttributes(this.name)
 
-          linkDialog(attrs).then((attrs) => {
+          linkDialog(editor, attrs).then((attrs) => {
             if (attrs) {
               const cmd = editor
                 .chain()

@@ -14,7 +14,7 @@ const formFieldForProperty = ([name, config]) => {
   return `<p><label>${config.title || name}</label> ${widget}</p>`
 }
 
-export const updateAttrsDialog = (properties) => (attrs) => {
+export const updateAttrsDialog = (properties) => (editor, attrs) => {
   const { messages } = settings()
   return new Promise((resolve) => {
     const div = document.createElement("div")
@@ -27,7 +27,8 @@ export const updateAttrsDialog = (properties) => (attrs) => {
   </form>
   </dialog>
   `
-    document.body.append(div)
+
+    editor.view.dom.closest(".prose-editor").append(div)
     const dialog = div.querySelector("dialog")
     const form = div.querySelector("form")
 
