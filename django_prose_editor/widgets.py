@@ -1,4 +1,5 @@
 import json
+from functools import cached_property
 
 from django import forms
 from django.conf import settings
@@ -51,35 +52,37 @@ class JSON:
 
 
 class ProseEditorWidget(forms.Textarea):
-    base_media = forms.Media(
-        css={
-            "all": [
-                "django_prose_editor/material-icons.css",
-                "django_prose_editor/editor.css",
-            ]
-        },
-        js=[
-            JS(
-                "django_prose_editor/editor.js",
-                {"defer": True},
-            ),
-            JSON(
-                "django-prose-editor-settings",
-                {
-                    "stylesheets": [
-                        static("django_prose_editor/material-icons.css"),
-                        static("django_prose_editor/editor.css"),
-                    ],
-                    "messages": {
-                        "url": gettext_lazy("URL"),
-                        "title": gettext_lazy("Title"),
-                        "update": gettext_lazy("Update"),
-                        "cancel": gettext_lazy("Cancel"),
+    @cached_property
+    def base_media(self):
+        return forms.Media(
+            css={
+                "all": [
+                    "django_prose_editor/material-icons.css",
+                    "django_prose_editor/editor.css",
+                ]
+            },
+            js=[
+                JS(
+                    "django_prose_editor/editor.js",
+                    {"defer": True},
+                ),
+                JSON(
+                    "django-prose-editor-settings",
+                    {
+                        "stylesheets": [
+                            static("django_prose_editor/material-icons.css"),
+                            static("django_prose_editor/editor.css"),
+                        ],
+                        "messages": {
+                            "url": gettext_lazy("URL"),
+                            "title": gettext_lazy("Title"),
+                            "update": gettext_lazy("Update"),
+                            "cancel": gettext_lazy("Cancel"),
+                        },
                     },
-                },
-            ),
-        ],
-    )
+                ),
+            ],
+        )
 
     def __init__(self, *args, **kwargs):
         self.config = kwargs.pop("config", {})
