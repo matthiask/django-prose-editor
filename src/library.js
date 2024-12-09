@@ -46,10 +46,14 @@ export function createTextareaEditor(
   extensions,
   { shadow = false } = {},
 ) {
+  const disabled = textarea.hasAttribute("disabled")
+
   const wrap = crel("div", { className: "prose-editor-wrapper" })
   textarea.before(wrap)
 
-  const element = crel("div", { className: "prose-editor" })
+  const element = crel("div", {
+    className: `prose-editor ${disabled ? "disabled" : ""}`,
+  })
 
   if (shadow) {
     const shadowElement = wrap.attachShadow({ mode: "open" })
@@ -69,7 +73,7 @@ export function createTextareaEditor(
 
   const editor = new Editor({
     element,
-    editable: !textarea.hasAttribute("disabled"),
+    editable: !disabled,
     extensions,
     content: textarea.value,
     onUpdate({ editor }) {
