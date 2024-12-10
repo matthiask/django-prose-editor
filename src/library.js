@@ -22,6 +22,8 @@ export { Subscript } from "@tiptap/extension-subscript"
 export { Superscript } from "@tiptap/extension-superscript"
 export { Underline } from "@tiptap/extension-underline"
 
+export { Code } from "@tiptap/extension-code"
+export { CodeBlock } from "@tiptap/extension-code-block"
 export { TextAlign } from "@tiptap/extension-text-align"
 export { Table } from "@tiptap/extension-table"
 export { TableCell } from "@tiptap/extension-table-cell"
