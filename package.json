@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@rslib/core": "^0.5.2",
     "@tiptap/core": "^2.11.5",
     "@tiptap/extension-code": "^2.11.5",
     "@tiptap/extension-code-block": "^2.11.5",
