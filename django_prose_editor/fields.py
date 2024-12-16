@@ -56,6 +56,14 @@ class ProseEditorField(models.TextField):
         return super().formfield(**defaults)
 
 
+def _is(widget, widget_class):
+    return (
+        issubclass(widget, widget_class)
+        if isinstance(widget, type)
+        else isinstance(widget, widget_class)
+    )
+
+
 class ProseEditorFormField(forms.CharField):
     widget = ProseEditorWidget
 
@@ -67,15 +75,9 @@ class ProseEditorFormField(forms.CharField):
         # We don't know if widget is set, and if it is, we do not know if it is
         # a class or an instance of the widget. The following if statement
         # should take all possibilities into account.
-        if widget and (
-            (
-                isinstance(widget, type)
-                and issubclass(widget, widgets.AdminTextareaWidget)
-            )
-            or isinstance(widget, widgets.AdminTextareaWidget)
-        ):
+        if widget and _is(widget, widgets.AdminTextareaWidget):
             kwargs["widget"] = AdminProseEditorWidget
-        else:
+        elif not widget or not _is(widget, ProseEditorWidget):
             kwargs["widget"] = ProseEditorWidget
 
         super().__init__(*args, **kwargs)
