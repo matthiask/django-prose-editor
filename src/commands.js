@@ -1,32 +1,48 @@
-import { settings } from "./utils.js"
+import { crel, settings } from "./utils.js"
 
 const formFieldForProperty = ([name, config]) => {
   let widget
 
   if (config.format === "textarea") {
-    widget = `<textarea name="${name}" cols="80" rows="30"></textarea>`
+    widget = crel("textarea", { name, cols: 80, rows: 30 })
   } else if (config.enum) {
-    widget = `<select name="${name}">${config.enum.map((value) => `<option>${value}</option>`).join("")}</select>`
+    widget = crel(
+      "select",
+      { name },
+      config.enum.map((value) => crel("option", { textContent: value })),
+    )
   } else {
-    widget = `<input type="${config.format || "text"}" name="${name}" size="50">`
+    widget = crel("input", { name, type: config.format || "text", size: 50 })
   }
 
-  return `<p><label>${config.title || name}</label> ${widget}</p>`
+  return crel("p", {}, [
+    crel("label", { textContent: config.title || name }),
+    widget,
+  ])
 }
 
 export const updateAttrsDialog = (properties) => (editor, attrs) => {
   const { messages } = settings()
   return new Promise((resolve) => {
-    const div = document.createElement("div")
-    div.innerHTML = `
-  <dialog class="prose-editor-dialog">
-  <form>
-  ${Object.entries(properties).map(formFieldForProperty).join("")}
-  <button type="submit">${messages.update}</button>
-  <button type="button" value="cancel">${messages.cancel}</button>
-  </form>
-  </dialog>
-  `
+    const submit = crel("button", {
+      type: "submit",
+      textContent: messages.update,
+    })
+    const cancel = crel("button", {
+      type: "button",
+      value: "cancel",
+      textContent: messages.cancel,
+    })
+
+    const div = crel("div", {}, [
+      crel("dialog", { className: "prose-editor-dialog" }, [
+        crel("form", {}, [
+          ...Object.entries(properties).map(formFieldForProperty),
+          submit,
+          cancel,
+        ]),
+      ]),
+    ])
 
     editor.view.dom.closest(".prose-editor").append(div)
     const dialog = div.querySelector("dialog")
@@ -36,16 +52,14 @@ export const updateAttrsDialog = (properties) => (editor, attrs) => {
       form[name].value = attrs[name] || config.default || ""
     }
 
-    dialog
-      .querySelector("button[value=cancel]")
-      .addEventListener("click", () => {
-        dialog.close()
-      })
+    cancel.addEventListener("click", () => {
+      dialog.close()
+    })
     dialog.addEventListener("close", () => {
       div.remove()
       resolve(null)
     })
-    div.querySelector("button[type=submit]").addEventListener("click", (e) => {
+    submit.addEventListener("click", (e) => {
       e.preventDefault()
       if (form.reportValidity()) {
         div.remove()
