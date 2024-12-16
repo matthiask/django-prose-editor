@@ -12,7 +12,7 @@ export const HTML = Extension.create({
         ({ editor }) => {
           htmlDialog(editor, { html: editor.getHTML() }).then((attrs) => {
             if (attrs) {
-              editor.chain().focus().setContent(attrs.html).run()
+              editor.chain().focus().setContent(attrs.html, true).run()
             }
           })
         },
