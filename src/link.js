@@ -31,10 +31,7 @@ export const Link = BaseLink.extend({
                 .extendMarkRange(this.name)
                 .unsetMark(this.name)
 
-              if (attrs.definition) {
-                cmd.setMark(this.name, attrs)
-              }
-
+              cmd.setMark(this.name, attrs)
               cmd.run()
             }
           })
