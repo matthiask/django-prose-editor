@@ -94,15 +94,16 @@ Customization
 **NOTE!** The previous way of customizing the editor is still supported, but
 it's not recommended (and documented) anymore.
 
-The editor can be customized using presets; the way to do this is by adding a list of presets to your Django settings:
+The editor can be customized using presets; the way to do this is by adding
+additional assets to load:
 
 .. code-block:: python
 
-    DJANGO_PROSE_EDITOR_PRESETS = {
-        "announcements": {
-            "script": "prose-editors/announcements.js",
-        },
-    }
+    from js_asset import JS
+
+    DJANGO_PROSE_EDITOR_ASSETS = [
+        JS("prose-editors/announcements.js", {"defer": True}),
+    ]
 
 The preset can be selected when instantiating the field:
 
