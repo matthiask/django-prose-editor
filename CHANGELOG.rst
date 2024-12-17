@@ -6,7 +6,10 @@ Next version
 
 - Changed the editor foundation to use `Tiptap <https://tiptap.dev/>__`. Tiptap
   uses ProseMirror under the hood, but offers an extension framework which I'd
-  have to reinvent and there's really no point to do that.
+  have to reinvent and there's really no point to do that. The change should be
+  backwards compatible if you only used the Python-level integration. The
+  JavaScript integration has changed a lot, ``DjangoProseEditor.createEditor``
+  doesn't exist anymore.
 
 
 0.9 (2024-10-30)

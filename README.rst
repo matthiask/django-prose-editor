@@ -114,7 +114,15 @@ The announcements file is expected to initialize the editor by using the
 ``DjangoProseEditor`` library which is available on the browser ``window``
 global. The example looks a bit involved, and it is -- but, this unlocks the
 capability to add project-specific extensions without having to rebuild the
-editor foundations:
+editor foundations.
+
+**Note:** If browser support for ES modules and multiple importmaps were better
+I would export a proper ES module instead of using this global variable, and
+I'd probably also split up the library a bit so that people who only want a
+restricted editor do not have to load and run the additional ~100KiB of
+JavaScript code for the more exotic extensions.
+
+Here's the example:
 
 .. code-block:: javascript
 
