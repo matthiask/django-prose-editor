@@ -4,12 +4,30 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
-- Changed the editor foundation to use `Tiptap <https://tiptap.dev/>__`. Tiptap
-  uses ProseMirror under the hood, but offers an extension framework which I'd
-  have to reinvent and there's really no point to do that. The change should be
-  backwards compatible if you only used the Python-level integration. The
-  JavaScript integration has changed a lot, ``DjangoProseEditor.createEditor``
-  doesn't exist anymore.
+
+0.10 (2024-12-17)
+~~~~~~~~~~~~~~~~~
+
+- Changed the editor foundation to use `Tiptap <https://tiptap.dev/>__` and
+  bundled many of the available extensions. Tiptap uses ProseMirror under the
+  hood, but offers an extension framework which I'd have to reinvent and
+  there's really no point to do that. The change should be backwards compatible
+  if you only used the Python-level integration. The JavaScript integration has
+  changed a lot, ``DjangoProseEditor.createEditor`` doesn't exist anymore.
+- Introduced support for presets. See the "Customization" heading in the
+  README.
+- Introduced hidden menu buttons; it's now possible to show and hide buttons
+  depending upon the editor selection.
+- Fixed a misbehavior where the ``ProseEditorFormField`` would override a
+  manually defined ``ProseEditorWidget``.
+- Added a dependency on `django-js-asset
+  <https://pypi.org/project/django-js-asset/>__` for our JavaScript and JSON
+  shipping needs.
+- Changed the way editor dialogs are built from unsafe ``innerHTML``
+  manipulation to proper DOM manipulation.
+- Updated the pre-commit hooks.
+- Updated the bundled material icons font.
+- Made the ESBuild watch mode report build successes again.
 
 
 0.9 (2024-10-30)
