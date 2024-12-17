@@ -36,7 +36,7 @@ class ProseEditorWidget(forms.Textarea):
                             "cancel": gettext_lazy("Cancel"),
                         },
                     },
-                    "django-prose-editor-settings",
+                    id="django-prose-editor-settings",
                 ),
                 JS("django_prose_editor/editor.js", {"defer": True}),
             ],
