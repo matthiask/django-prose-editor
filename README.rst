@@ -101,9 +101,11 @@ additional assets to load:
 
     from js_asset import JS
 
-    DJANGO_PROSE_EDITOR_ASSETS = [
-        JS("prose-editors/announcements.js", {"defer": True}),
-    ]
+    DJANGO_PROSE_EDITOR_PRESETS = {
+        "announcements": [
+            JS("prose-editors/announcements.js", {"defer": True}),
+        ],
+    }
 
 The preset can be selected when instantiating the field:
 

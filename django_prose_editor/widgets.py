@@ -23,7 +23,6 @@ class ProseEditorWidget(forms.Textarea):
                 ]
             },
             js=[
-                JS("django_prose_editor/editor.js", {"defer": True}),
                 JSON(
                     {
                         "stylesheets": [
@@ -39,17 +38,26 @@ class ProseEditorWidget(forms.Textarea):
                     },
                     "django-prose-editor-settings",
                 ),
-                JS("django_prose_editor/init.js", {"defer": True}),
+                JS("django_prose_editor/editor.js", {"defer": True}),
             ],
         )
 
     @property
     def media(self):
-        return (
-            (self.base_media + forms.Media(js=assets))
-            if (assets := getattr(settings, "DJANGO_PROSE_EDITOR_ASSETS", ()))
-            else self.base_media
+        return self.base_media + forms.Media(
+            js=[
+                JS("django_prose_editor/editor.js", {"defer": True}),
+                *self.get_presets()[self.preset],
+            ]
         )
+
+    def get_presets(self):
+        return {
+            "default": [
+                JS("django_prose_editor/editor.js", {"defer": True}),
+                JS("django_prose_editor/default.js", {"defer": True}),
+            ],
+        } | getattr(settings, "DJANGO_PROSE_EDITOR_PRESETS", {})
 
     def get_config(self):
         return self.config or {
