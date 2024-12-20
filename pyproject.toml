@@ -36,7 +36,7 @@ dynamic = [
 ]
 dependencies = [
   "django>=4.2",
-  "django-js-asset>=3",
+  "django-js-asset>=3.0.1",
 ]
 
 optional-dependencies.sanitize = [
