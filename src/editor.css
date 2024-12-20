@@ -115,6 +115,8 @@
 
 .prose-editor .ProseMirror {
   padding: 0 6px;
+  background: var(--_b);
+  color: var(--_f);
   border: 1px solid var(--_r);
   border-radius: 4px;
 }

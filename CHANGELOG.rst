@@ -4,6 +4,11 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+- Fixed a bug where the link mark wasn't applied correctly. The buggy 0.10.0
+  package has been yanked.
+- Applied the ``--prose-editor-background`` and ``--prose-editor-foreground``
+  CSS variables to the ProseMirror editing area.
+
 
 0.10 (2024-12-17)
 ~~~~~~~~~~~~~~~~~
