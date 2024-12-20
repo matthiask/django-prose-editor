@@ -155,7 +155,7 @@
 }
 
 /* content editor support */
-label:empty:has(+ .prose-editor) {
+label:empty:has(+ .prose-editor-wrapper) {
   display: none;
 }
 

@@ -8,6 +8,8 @@ Next version
   package has been yanked.
 - Applied the ``--prose-editor-background`` and ``--prose-editor-foreground``
   CSS variables to the ProseMirror editing area.
+- Fixed the django-content-editor support tweak where an empty label would make
+  the editor move to the left border.
 
 
 0.10 (2024-12-17)
