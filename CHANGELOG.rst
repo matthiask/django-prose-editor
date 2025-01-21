@@ -11,6 +11,7 @@ Next version
 - Fixed the django-content-editor support tweak where an empty label would make
   the editor move to the left border.
 - Updated Tiptap.
+- Added Django 5.2a1.
 
 
 0.10 (2024-12-17)
