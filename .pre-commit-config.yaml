@@ -19,7 +19,7 @@ repos:
       - id: django-upgrade
         args: [--target-version, "4.2"]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.8.6"
+    rev: "v0.9.2"
     hooks:
       - id: ruff
         args: [--unsafe-fixes]
