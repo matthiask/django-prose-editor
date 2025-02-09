@@ -61,7 +61,7 @@ Note! No migrations will be generated when switching from and to
 Security
 ========
 
-ProseMirror does a really good job of only allowing content which confirms to a
+ProseMirror does a really good job of only allowing content which conforms to a
 particular scheme. Of course users can submit what they want, they are not
 constrainted by the HTML widgets you're using. You should still always sanitize
 the HTML submitted on the server side. A good way to do this is by using the
