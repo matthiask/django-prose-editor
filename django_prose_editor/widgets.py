@@ -17,7 +17,13 @@ class ProseEditorWidget(forms.Textarea):
     @property
     def base_media(self):
         return ExtendedMedia(
-            [
+            css={
+                "all": [
+                    "django_prose_editor/material-icons.css",
+                    "django_prose_editor/editor.css",
+                ]
+            },
+            js=[
                 ImportMap(
                     {
                         "imports": {
@@ -27,15 +33,6 @@ class ProseEditorWidget(forms.Textarea):
                         }
                     }
                 ),
-            ]
-        ) + forms.Media(
-            css={
-                "all": [
-                    "django_prose_editor/material-icons.css",
-                    "django_prose_editor/editor.css",
-                ]
-            },
-            js=[
                 JSON(
                     {
                         "stylesheets": [
