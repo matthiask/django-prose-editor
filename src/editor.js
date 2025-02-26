@@ -1,5 +1,5 @@
 import "./editor.css"
 
-import * as library from "./library.js"
+export * from "./library.js"
 
-window.DjangoProseEditor = library
+// window.DjangoProseEditor = library

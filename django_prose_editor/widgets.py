@@ -1,5 +1,6 @@
 import json
 from dataclasses import dataclass
+from typing import Any
 
 from django import forms
 from django.conf import settings
@@ -24,13 +25,11 @@ forms.Media.__add__ = forms_media_add
 
 @html_safe
 @dataclass(eq=True)
-class ImportMapImport:
-    key: str
-    value: str
-    scope: str | None = None
+class ImportMap:
+    map: dict[str, Any]
 
     def __hash__(self):
-        return hash((self.key, self.value, self.scope))
+        return hash(json.dumps(self.map, sort_keys=True))
 
     def __str__(self):
         return ""
@@ -45,27 +44,29 @@ class ExtendedMedia(forms.Media):
     def render(self):
         assets = self.merge(*self._asset_lists)
 
-        import_map_entries = [
-            asset for asset in assets if isinstance(asset, ImportMapImport)
-        ]
+        importmaps = [asset for asset in assets if isinstance(asset, ImportMap)]
 
         return mark_safe(
-            self.render_import_map(import_map_entries)
+            self.render_importmap(importmaps)
             + "\n".join(asset.__html__() for asset in assets)
         )
 
-    def render_import_map(self, entries):
-        if not entries:
+    def render_importmap(self, maps):
+        if not maps:
             return ""
-        map = {"imports": {}}
-        for entry in entries:
-            if entry.scope:
-                scope = map.setdefault("scopes", {}).setdefault(entry.scope, {})
-                scope[entry.key] = entry.value
-            else:
-                map["imports"][entry.key] = entry.value
+        result = {}
+        for map in maps:
+            if imports := map.map.get("imports"):
+                result.setdefault("imports", {}).update(imports)
+            if integrity := map.map.get("integrity"):
+                result.setdefault("integrity", {}).update(integrity)
+            if scopes := map.map.get("scopes"):
+                for scope, imports in scopes.items():
+                    result.setdefault("scopes", {}).setdefault(scope, {}).update(
+                        imports
+                    )
         return (
-            json_script(map).replace('type="application/json"', 'type="importmap"')
+            json_script(result).replace('type="application/json"', 'type="importmap"')
             + "\n"
         )
 
@@ -126,7 +127,15 @@ class ProseEditorWidget(forms.Textarea):
     def base_media(self):
         return ExtendedMedia(
             [
-                ImportMapImport(key="square", value="./modules/shapes/square.js"),
+                ImportMap(
+                    {
+                        "imports": {
+                            "django-prose-editor/editor": static(
+                                "django_prose_editor/editor.js"
+                            )
+                        }
+                    }
+                ),
             ]
         ) + forms.Media(
             css={
@@ -151,7 +160,7 @@ class ProseEditorWidget(forms.Textarea):
                     },
                     id="django-prose-editor-settings",
                 ),
-                JS("django_prose_editor/editor.js", {"defer": True}),
+                JS("django_prose_editor/editor.js", {"type": "module"}),
             ],
         )
 
@@ -159,7 +168,7 @@ class ProseEditorWidget(forms.Textarea):
     def media(self):
         return self.base_media + forms.Media(
             js=[
-                JS("django_prose_editor/editor.js", {"defer": True}),
+                JS("django_prose_editor/editor.js", {"type": "module"}),
                 *self.get_presets()[self.preset],
             ]
         )
@@ -167,8 +176,8 @@ class ProseEditorWidget(forms.Textarea):
     def get_presets(self):
         return {
             "default": [
-                JS("django_prose_editor/editor.js", {"defer": True}),
-                JS("django_prose_editor/default.js", {"defer": True}),
+                JS("django_prose_editor/editor.js", {"type": "module"}),
+                JS("django_prose_editor/default.js", {"type": "module"}),
             ],
         } | getattr(settings, "DJANGO_PROSE_EDITOR_PRESETS", {})
 
