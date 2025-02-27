@@ -5,7 +5,7 @@ from django.conf import settings
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy
 from js_asset import JS, JSON
-from js_asset.media import ExtendedMedia, ImportMap
+from js_asset.media import ImportMap
 
 
 class ProseEditorWidget(forms.Textarea):
@@ -16,7 +16,7 @@ class ProseEditorWidget(forms.Textarea):
 
     @property
     def base_media(self):
-        return ExtendedMedia(
+        return forms.Media(
             css={
                 "all": [
                     "django_prose_editor/material-icons.css",
