@@ -4,8 +4,12 @@ from django import forms
 from django.conf import settings
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy
-from js_asset import JS, JSON
-from js_asset.media import ImportMap
+from js_asset import JS, JSON, importmap
+
+
+importmap.update(
+    {"imports": {"django-prose-editor/editor": static("django_prose_editor/editor.js")}}
+)
 
 
 class ProseEditorWidget(forms.Textarea):
@@ -24,15 +28,6 @@ class ProseEditorWidget(forms.Textarea):
                 ]
             },
             js=[
-                ImportMap(
-                    {
-                        "imports": {
-                            "django-prose-editor/editor": static(
-                                "django_prose_editor/editor.js"
-                            )
-                        }
-                    }
-                ),
                 JSON(
                     {
                         "stylesheets": [
