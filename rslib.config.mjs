@@ -4,9 +4,9 @@ export default {
       // init: "./src/init.js",
       overrides: "./src/overrides.css",
       editor: "./src/editor.js",
-      code: "./src/ext-code.js",
-      style: "./src/ext-style.js",
-      tables: "./src/ext-tables.js",
+      "ext-code": "./src/ext-code.js",
+      "ext-style": "./src/ext-style.js",
+      "ext-tables": "./src/ext-tables.js",
     },
   },
   lib: [
