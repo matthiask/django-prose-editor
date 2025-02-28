@@ -8,7 +8,14 @@ from js_asset import JS, JSON, importmap
 
 
 importmap.update(
-    {"imports": {"django-prose-editor/editor": static("django_prose_editor/editor.js")}}
+    {
+        "imports": {
+            "django-prose-editor/editor": static("django_prose_editor/editor.js"),
+            "django-prose-editor/code": static("django_prose_editor/code.js"),
+            "django-prose-editor/style": static("django_prose_editor/style.js"),
+            "django-prose-editor/tables": static("django_prose_editor/tables.js"),
+        }
+    }
 )
 
 
