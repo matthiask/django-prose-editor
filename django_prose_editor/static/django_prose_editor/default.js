@@ -29,10 +29,8 @@ import {
 
 const marker = "data-django-prose-editor-default"
 
-function createEditor(textarea) {
+function createEditor(textarea, config) {
   if (textarea.closest(".prose-editor")) return
-
-  const config = JSON.parse(textarea.getAttribute(marker))
 
   const createIsTypeEnabled = (types) => (type) =>
     types?.length ? types.includes(type) : true
@@ -70,4 +68,10 @@ function createEditor(textarea) {
   return createTextareaEditor(textarea, extensions)
 }
 
-initializeEditors(createEditor, `[${marker}]`)
+initializeEditors((textarea) => {
+  const config = JSON.parse(textarea.getAttribute(marker))
+  return createEditor(textarea, config)
+}, `[${marker}]`)
+
+// Backwards compatibility shim for django-prose-editor < 0.10
+window.DjangoProseEditor = { createEditor }
