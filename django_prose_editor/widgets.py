@@ -28,6 +28,7 @@ class ProseEditorWidget(forms.Textarea):
                 ]
             },
             js=[
+                importmap,
                 JSON(
                     {
                         "stylesheets": [
