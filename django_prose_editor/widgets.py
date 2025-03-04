@@ -2,13 +2,16 @@ import json
 
 from django import forms
 from django.conf import settings
-from django.templatetags.static import static
 from django.utils.translation import gettext_lazy
-from js_asset import JS, JSON, importmap
+from js_asset import JS, JSON, importmap, static, static_lazy
 
 
 importmap.update(
-    {"imports": {"django-prose-editor/editor": static("django_prose_editor/editor.js")}}
+    {
+        "imports": {
+            "django-prose-editor/editor": static_lazy("django_prose_editor/editor.js")
+        }
+    }
 )
 
 
