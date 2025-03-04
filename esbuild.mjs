@@ -3,9 +3,10 @@ import postcss from "esbuild-postcss"
 
 const devMode = process.argv.includes("watch")
 const ctx = await esbuild.context({
-  entryPoints: ["./src/default.js", "./src/overrides.css", "./src/editor.js"],
+  entryPoints: ["./src/overrides.css", "./src/editor.js"],
   minify: true,
   bundle: true,
+  format: "esm",
   target: "es6",
   plugins: [
     postcss(),

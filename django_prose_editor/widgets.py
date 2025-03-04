@@ -4,7 +4,12 @@ from django import forms
 from django.conf import settings
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy
-from js_asset import JS, JSON
+from js_asset import JS, JSON, importmap
+
+
+importmap.update(
+    {"imports": {"django-prose-editor/editor": static("django_prose_editor/editor.js")}}
+)
 
 
 class ProseEditorWidget(forms.Textarea):
@@ -38,7 +43,7 @@ class ProseEditorWidget(forms.Textarea):
                     },
                     id="django-prose-editor-settings",
                 ),
-                JS("django_prose_editor/editor.js", {"defer": True}),
+                JS("django_prose_editor/editor.js", {"type": "module"}),
             ],
         )
 
@@ -46,7 +51,7 @@ class ProseEditorWidget(forms.Textarea):
     def media(self):
         return self.base_media + forms.Media(
             js=[
-                JS("django_prose_editor/editor.js", {"defer": True}),
+                JS("django_prose_editor/editor.js", {"type": "module"}),
                 *self.get_presets()[self.preset],
             ]
         )
@@ -54,8 +59,8 @@ class ProseEditorWidget(forms.Textarea):
     def get_presets(self):
         return {
             "default": [
-                JS("django_prose_editor/editor.js", {"defer": True}),
-                JS("django_prose_editor/default.js", {"defer": True}),
+                JS("django_prose_editor/editor.js", {"type": "module"}),
+                JS("django_prose_editor/default.js", {"type": "module"}),
             ],
         } | getattr(settings, "DJANGO_PROSE_EDITOR_PRESETS", {})
 

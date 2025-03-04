@@ -1,1 +1,73 @@
-(()=>{var i="data-django-prose-editor-default";function q(o){if(o.closest(".prose-editor"))return;let r=JSON.parse(o.getAttribute(i)),{Document:n,Dropcursor:l,Gapcursor:s,Paragraph:a,HardBreak:d,Text:c,History:u,Blockquote:g,Bold:p,BulletList:h,Heading:b,HorizontalRule:k,Italic:E,ListItem:T,OrderedList:f,Strike:L,Subscript:m,Superscript:B,Underline:H,Link:S,Menu:_,HTML:D,NoSpellCheck:I,Typographic:j,createTextareaEditor:y}=DjangoProseEditor,e=(t=>P=>t!=null&&t.length?t.includes(P):!0)(r.types),z=[n,l,s,a,d,c,r.history&&u,_,r.html&&D,I,r.typographic&&j,e("blockquote")&&g,e("strong")&&p,e("bullet_list")&&h,e("heading")&&b.configure({levels:r.headingLevels||[1,2,3,4,5]}),e("horizontal_rule")&&k,e("em")&&E,e("link")&&S,(e("bullet_list")||e("ordered_list"))&&T,e("ordered_list")&&f,e("strikethrough")&&L,e("sub")&&m,e("sup")&&B,e("underline")&&H].filter(Boolean);return y(o,z)}DjangoProseEditor.initializeEditors(q,`[${i}]`);})();
+import {
+  Document,
+  Dropcursor,
+  Gapcursor,
+  Paragraph,
+  HardBreak,
+  Text,
+  History,
+  Blockquote,
+  Bold,
+  BulletList,
+  Heading,
+  HorizontalRule,
+  Italic,
+  ListItem,
+  OrderedList,
+  Strike,
+  Subscript,
+  Superscript,
+  Underline,
+  Link,
+  Menu,
+  HTML,
+  NoSpellCheck,
+  Typographic,
+  createTextareaEditor,
+  initializeEditors,
+} from "django-prose-editor/editor"
+
+const marker = "data-django-prose-editor-default"
+
+function createEditor(textarea) {
+  if (textarea.closest(".prose-editor")) return
+
+  const config = JSON.parse(textarea.getAttribute(marker))
+
+  const createIsTypeEnabled = (types) => (type) =>
+    types?.length ? types.includes(type) : true
+  const isTypeEnabled = createIsTypeEnabled(config.types)
+
+  const extensions = [
+    Document,
+    Dropcursor,
+    Gapcursor,
+    Paragraph,
+    HardBreak,
+    Text,
+    config.history && History,
+    Menu,
+    config.html && HTML,
+    NoSpellCheck,
+    config.typographic && Typographic,
+    // Nodes and marks
+    isTypeEnabled("blockquote") && Blockquote,
+    isTypeEnabled("strong") && Bold,
+    isTypeEnabled("bullet_list") && BulletList,
+    isTypeEnabled("heading") &&
+      Heading.configure({ levels: config.headingLevels || [1, 2, 3, 4, 5] }),
+    isTypeEnabled("horizontal_rule") && HorizontalRule,
+    isTypeEnabled("em") && Italic,
+    isTypeEnabled("link") && Link,
+    (isTypeEnabled("bullet_list") || isTypeEnabled("ordered_list")) && ListItem,
+    isTypeEnabled("ordered_list") && OrderedList,
+    isTypeEnabled("strikethrough") && Strike,
+    isTypeEnabled("sub") && Subscript,
+    isTypeEnabled("sup") && Superscript,
+    isTypeEnabled("underline") && Underline,
+  ].filter(Boolean)
+
+  return createTextareaEditor(textarea, extensions)
+}
+
+initializeEditors(createEditor, `[${marker}]`)
