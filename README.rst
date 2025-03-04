@@ -45,6 +45,10 @@ Add ``django_prose_editor`` to ``INSTALLED_APPS``:
         "django_prose_editor",
     ]
 
+Add the importmap by adding the ``js_asset.context_processors.importmap``
+context processor and inserting ``{{ importmap }}`` somewhere in your base
+template, above all other scripts.
+
 Replace ``models.TextField`` with ``ProseEditorField`` where appropriate:
 
 .. code-block:: python
@@ -103,7 +107,7 @@ additional assets to load:
 
     DJANGO_PROSE_EDITOR_PRESETS = {
         "announcements": [
-            JS("prose-editors/announcements.js", {"defer": True}),
+            JS("prose-editors/announcements.js", {"type": "module"}),
         ],
     }
 
@@ -129,28 +133,31 @@ Here's the example:
 
 .. code-block:: javascript
 
+    import {
+      // Always recommended:
+      Document, Dropcursor, Gapcursor, Paragraph, HardBreak, Text,
+
+      // Add support for a few marks:
+      Bold, Italic, Subscript, Superscript, Link,
+
+      // A menu is always nice:
+      Menu,
+
+      // Helper which knows how to attach a prose editor to a textarea:
+      createTextareaEditor,
+
+      // Helper which runs the initialization on page load and when
+      // new textareas are added through Django admin inlines:
+      initializeEditors,
+    } from "django-prose-editor/editor"
+
+
     // "announcements" is the name of the preset.
     const marker = "data-django-prose-editor-announcements"
 
     function createEditor(textarea) {
       if (textarea.closest(".prose-editor")) return
       const config = JSON.parse(textarea.getAttribute(marker))
-
-      const {
-        // Always recommended:
-        Document, Dropcursor, Gapcursor, Paragraph, HardBreak, Text,
-
-        // Add support for a few marks:
-        Bold, Italic, Subscript, Superscript, Link,
-
-        // A menu is always nice:
-        Menu,
-
-        // Helper which knows how to attach a prose editor to a textarea,
-        // either textareas which exist already on page load and also those
-        // added through the Django admin's inlines mechanism:
-        createTextareaEditor,
-      } = window.DjangoProseEditor
 
       const extensions = [
         Document, Dropcursor, Gapcursor, Paragraph, HardBreak, Text,
@@ -163,7 +170,7 @@ Here's the example:
       return createTextareaEditor(textarea, extensions)
     }
 
-    window.DjangoProseEditor.initializeEditors(createEditor, `[${marker}]`)
+    initializeEditors(createEditor, `[${marker}]`)
 
 
 Usage outside the Django admin

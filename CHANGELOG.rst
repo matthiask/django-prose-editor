@@ -12,6 +12,9 @@ Next version
   the editor move to the left border.
 - Updated Tiptap.
 - Added Django 5.2a1.
+- Switched the JavaScript to use ES modules and importmaps. If you've been
+  using 0.10 you have to update your code to use ES modules (``<script
+  type="module">``) instead of deferred scripts. Sorry for the churn.
 
 
 0.10 (2024-12-17)
