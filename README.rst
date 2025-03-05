@@ -117,17 +117,11 @@ The preset can be selected when instantiating the field:
 
     text = ProseEditorField(_("text"), preset="announcements")
 
-The announcements file is expected to initialize the editor by using the
-``DjangoProseEditor`` library which is available on the browser ``window``
-global. The example looks a bit involved, and it is -- but, this unlocks the
-capability to add project-specific extensions without having to rebuild the
-editor foundations.
-
-**Note:** If browser support for ES modules and multiple importmaps were better
-I would export a proper ES module instead of using this global variable, and
-I'd probably also split up the library a bit so that people who only want a
-restricted editor do not have to load and run the additional ~100KiB of
-JavaScript code for the more exotic extensions.
+The editor uses ES modules and importmaps; you can import extensions and
+utilities from the `django-prose-editor/editor` module. The importmap support
+is provided by `django-js-asset
+<https://github.com/matthiask/django-js-asset/>`_, check it's README to learn
+more.
 
 Here's the example:
 
@@ -171,6 +165,29 @@ Here's the example:
     }
 
     initializeEditors(createEditor, `[${marker}]`)
+
+
+Customization with JavaScript bundlers
+======================================
+
+If you're using a bundler such as esbuild, rspack or webpack you have to ensure
+that the django-prose-editor JavaScript library is treated as an external. In
+the case of rspack this means adding the following lines to your rspack
+configuration:
+
+.. code-block:: javascript
+
+    module.exports = {
+        // ...
+        experiments: { outputModule: true },
+        externals: {
+            "django-prose-editor/editor": "import django-prose-editor/editor",
+        },
+    }
+
+This makes rspack emit ES modules and preserves imports of
+``django-prose-editor/editor`` in the output instead of trying to bundle the
+library.
 
 
 Usage outside the Django admin

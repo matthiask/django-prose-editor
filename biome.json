@@ -42,7 +42,7 @@
     "formatter": {
       "semicolons": "asNeeded"
     },
-    "globals": ["DjangoProseEditor"]
+    "globals": []
   },
   "css": {
     "formatter": {
