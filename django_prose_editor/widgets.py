@@ -3,7 +3,7 @@ import json
 from django import forms
 from django.conf import settings
 from django.utils.translation import gettext_lazy
-from js_asset import JS, JSON, importmap, static, static_lazy
+from js_asset import JS, JSON, importmap, static_lazy
 
 
 importmap.update(
@@ -34,10 +34,6 @@ class ProseEditorWidget(forms.Textarea):
                 importmap,
                 JSON(
                     {
-                        "stylesheets": [
-                            static("django_prose_editor/material-icons.css"),
-                            static("django_prose_editor/editor.css"),
-                        ],
                         "messages": {
                             "url": gettext_lazy("URL"),
                             "title": gettext_lazy("Title"),

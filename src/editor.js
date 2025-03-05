@@ -46,37 +46,15 @@ export * from "./menu.js"
 export * from "./utils.js"
 export * from "@tiptap/core"
 
-import { crel, settings } from "./utils.js"
+import { crel } from "./utils.js"
 
-export function createTextareaEditor(
-  textarea,
-  extensions,
-  { shadow = false } = {},
-) {
+export function createTextareaEditor(textarea, extensions) {
   const disabled = textarea.hasAttribute("disabled")
-
-  const wrap = crel("div", { className: "prose-editor-wrapper" })
-  textarea.before(wrap)
 
   const element = crel("div", {
     className: `prose-editor ${disabled ? "disabled" : ""}`,
   })
-
-  if (shadow) {
-    const shadowElement = wrap.attachShadow({ mode: "open" })
-    for (const href of settings().stylesheets) {
-      shadowElement.append(
-        crel("link", {
-          rel: "stylesheet",
-          href,
-        }),
-      )
-    }
-
-    shadowElement.append(element)
-  } else {
-    wrap.append(element)
-  }
+  textarea.before(element)
 
   const editor = new Editor({
     element,
@@ -88,7 +66,7 @@ export function createTextareaEditor(
       textarea.dispatchEvent(new Event("input", { bubbles: true }))
     },
     onDestroy() {
-      wrap.remove()
+      element.remove()
     },
   })
 
