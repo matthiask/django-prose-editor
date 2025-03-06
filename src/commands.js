@@ -1,4 +1,4 @@
-import { crel, settings } from "./utils.js"
+import { crel, gettext } from "./utils.js"
 
 const formFieldForProperty = ([name, config]) => {
   let widget
@@ -22,16 +22,15 @@ const formFieldForProperty = ([name, config]) => {
 }
 
 export const updateAttrsDialog = (properties) => (editor, attrs) => {
-  const { messages } = settings()
   return new Promise((resolve) => {
     const submit = crel("button", {
       type: "submit",
-      textContent: messages.update,
+      textContent: gettext("Update"),
     })
     const cancel = crel("button", {
       type: "button",
       value: "cancel",
-      textContent: messages.cancel,
+      textContent: gettext("Cancel"),
     })
 
     const div = crel("div", {}, [
@@ -77,11 +76,11 @@ export const updateAttrsDialog = (properties) => (editor, attrs) => {
 export const linkDialog = updateAttrsDialog({
   href: {
     type: "string",
-    title: settings().messages.url,
+    title: gettext("URL"),
   },
   title: {
     type: "string",
-    title: settings().messages.title,
+    title: gettext("Title"),
   },
 })
 

@@ -2,8 +2,7 @@ import json
 
 from django import forms
 from django.conf import settings
-from django.utils.translation import gettext_lazy
-from js_asset import JS, JSON, importmap, static_lazy
+from js_asset import JS, importmap, static_lazy
 
 
 importmap.update(
@@ -32,17 +31,6 @@ class ProseEditorWidget(forms.Textarea):
             },
             js=[
                 importmap,
-                JSON(
-                    {
-                        "messages": {
-                            "url": gettext_lazy("URL"),
-                            "title": gettext_lazy("Title"),
-                            "update": gettext_lazy("Update"),
-                            "cancel": gettext_lazy("Cancel"),
-                        },
-                    },
-                    id="django-prose-editor-settings",
-                ),
                 # We don't really need this since editor.js will be loaded
                 # in default.js (or other preset's modules) anyway, but keeping
                 # the tag around helps the browser discover and load this

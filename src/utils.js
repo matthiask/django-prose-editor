@@ -10,12 +10,4 @@ export const crel = (tagName, attributes = null, children = []) => {
   return dom
 }
 
-let _settings
-export function settings() {
-  if (!_settings) {
-    _settings = JSON.parse(
-      document.querySelector("#django-prose-editor-settings").textContent,
-    )
-  }
-  return _settings
-}
+export const gettext = window.gettext || ((s) => s)
