@@ -181,7 +181,7 @@ configuration:
         // ...
         experiments: { outputModule: true },
         externals: {
-            "django-prose-editor/editor": "import django-prose-editor/editor",
+            "django-prose-editor/editor": "module django-prose-editor/editor",
         },
     }
 
