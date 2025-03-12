@@ -30,7 +30,6 @@ class ProseEditorWidget(forms.Textarea):
                 ]
             },
             js=[
-                importmap,
                 # We don't really need this since editor.js will be loaded
                 # in default.js (or other preset's modules) anyway, but keeping
                 # the tag around helps the browser discover and load this
@@ -84,5 +83,9 @@ class AdminProseEditorWidget(ProseEditorWidget):
                     "django_prose_editor/editor.css",  # For the ordering
                     "django_prose_editor/overrides.css",
                 ]
-            }
+            },
+            js=[
+                importmap,
+                JS("django_prose_editor/editor.js", {"type": "module"}),
+            ],
         )
