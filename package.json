@@ -21,8 +21,8 @@
     "@tiptap/extension-underline": "^2.11.5",
     "@tiptap/pm": "^2.11.5",
     "@tiptap/starter-kit": "^2.11.5",
-    "autoprefixer": "^10.4.20",
-    "esbuild": "^0.25.0",
+    "autoprefixer": "^10.4.21",
+    "esbuild": "^0.25.1",
     "esbuild-postcss": "^0.0.4",
     "postcss": "^8.5.3"
   },
