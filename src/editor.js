@@ -40,6 +40,7 @@ export { HTML } from "./html.js"
 export { Link } from "./link.js"
 export { NoSpellCheck } from "./nospellcheck.js"
 export { Typographic } from "./typographic.js"
+export { Fullscreen } from "./fullscreen.js"
 export { Plugin } from "@tiptap/pm/state"
 
 export * from "./menu.js"

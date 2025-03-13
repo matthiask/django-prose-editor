@@ -15,6 +15,7 @@ export const menuItemsFromEditor = (editor) => {
     tableMenuItems(editor),
     historyMenuItems(editor),
     htmlMenuItem(editor),
+    fullscreenMenuItem(editor),
   ].filter(Boolean)
 }
 
@@ -361,6 +362,19 @@ function htmlMenuItem(editor) {
             editor.commands.editHTML()
           },
           dom: materialButton("code", "edit HTML"),
+        },
+      ]
+    : null
+}
+
+function fullscreenMenuItem(editor) {
+  return findExtension(editor, "fullscreen")
+    ? [
+        {
+          command(editor) {
+            editor.commands.toggleFullscreen()
+          },
+          dom: materialButton("fullscreen", "Toggle fullscreen"),
         },
       ]
     : null

@@ -16,6 +16,7 @@ Next version
   using 0.10 you have to update your code to use ES modules (``<script
   type="module">``) instead of deferred scripts. Sorry for the churn.
 - Modified the ``HTML`` extension to prettify the HTML code somewhat.
+- Added a new ``Fullscreen`` extension.
 
 
 0.10 (2024-12-17)
