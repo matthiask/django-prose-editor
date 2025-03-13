@@ -63,7 +63,6 @@
 
 .ProseMirror ol {
   padding-left: 0px !important;
-  list-style-type: decimal !important;
 }
 
 .ProseMirror ol li::marker {
@@ -73,25 +72,21 @@
 .ProseMirror ol > li > ol {
   padding-left: 10px !important;
   margin-left: 10px !important;
-  list-style-type: lower-latin !important;
 }
 
 .ProseMirror ol > li > ol > li > ol {
   padding-left: 10px !important;
   margin-left: 10px !important;
-  list-style-type: lower-roman !important;
 }
 
 .ProseMirror ol > li > ol > li > ol > li > ol {
   padding-left: 10px !important;
   margin-left: 10px !important;
-  list-style-type: upper-latin !important;
 }
 
 .ProseMirror ol > li > ol > li > ol > li > ol > li > ol {
   padding-left: 10px !important;
   margin-left: 10px !important;
-  list-style-type: upper-roman !important;
 }
 
 .ProseMirror ul {

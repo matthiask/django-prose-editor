@@ -1,15 +1,18 @@
 import { crel, gettext } from "./utils.js"
 
-const formFieldForProperty = ([name, config]) => {
+const formFieldForProperty = ([name, config], dynamicEnums = {}) => {
   let widget
 
   if (config.format === "textarea") {
     widget = crel("textarea", { name, cols: 80, rows: 30 })
   } else if (config.enum) {
+    // Use dynamic enum if provided, otherwise use the static one from config
+    const enumValues = dynamicEnums[name] || config.enum
+
     widget = crel(
       "select",
       { name },
-      config.enum.map((value) => crel("option", { textContent: value })),
+      enumValues.map((value) => crel("option", { textContent: value })),
     )
   } else {
     // Create input with appropriate attributes
@@ -35,7 +38,7 @@ const formFieldForProperty = ([name, config]) => {
 
 export const updateAttrsDialog =
   (properties, options = {}) =>
-  (editor, attrs) => {
+  (editor, attrs, dynamicOptions = {}) => {
     return new Promise((resolve) => {
       const submit = crel("button", {
         type: "submit",
@@ -60,8 +63,12 @@ export const updateAttrsDialog =
         )
       }
 
-      // Add form fields
-      formElements.push(...Object.entries(properties).map(formFieldForProperty))
+      // Add form fields with dynamic enum support
+      formElements.push(
+        ...Object.entries(properties).map((entry) =>
+          formFieldForProperty(entry, dynamicOptions.enums || {}),
+        ),
+      )
 
       // Add buttons
       formElements.push(submit, cancel)
@@ -158,5 +165,28 @@ export const tableDialog = updateAttrsDialog(
   {
     title: gettext("Table Properties"),
     submitText: gettext("Insert Table"),
+  },
+)
+
+// Will be populated from menu.js when used
+export const listPropertiesDialog = updateAttrsDialog(
+  {
+    start: {
+      type: "number",
+      title: gettext("Start at"),
+      format: "number",
+      default: "1",
+      min: "1",
+    },
+    listType: {
+      title: gettext("List type"),
+      // enum will be updated dynamically when the dialog is called
+      enum: [],
+      default: "",
+    },
+  },
+  {
+    title: gettext("List Properties"),
+    submitText: gettext("Update"),
   },
 )
