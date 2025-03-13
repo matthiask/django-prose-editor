@@ -28,6 +28,11 @@ export const Fullscreen = Extension.create({
           const editorContainer =
             editor.options.element.closest(".prose-editor")
 
+          // Force the menu to update after state change
+          setTimeout(() => {
+            editor.view.update([])
+          }, 0)
+
           if (editor.storage.fullscreen.fullscreen) {
             editorContainer.classList.add(this.options.fullscreenClass)
             // Store the scroll position

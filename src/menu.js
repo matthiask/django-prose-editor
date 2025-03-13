@@ -149,10 +149,16 @@ class MenuView {
         enabled = () => true,
         active = () => false,
         hidden = () => false,
+        updateContent = null,
       }) => {
         dom.classList.toggle("disabled", !enabled(this.editor))
         dom.classList.toggle("active", !!active(this.editor))
         dom.classList.toggle("hidden", !!hidden(this.editor))
+
+        // Call updateContent if provided to update dynamic content
+        if (typeof updateContent === "function") {
+          updateContent(this.editor)
+        }
       },
     )
   }
@@ -182,6 +188,21 @@ function materialButton(textContent, title) {
     textContent,
     title,
   })
+}
+
+function dynamicMaterialButton(getTextContent, title) {
+  const dom = crel("span", {
+    className: "prose-menubar__button material-icons",
+    title,
+  })
+
+  // The getTextContent function will be called during update
+  return {
+    dom,
+    updateContent: (editor) => {
+      dom.textContent = getTextContent(editor)
+    },
+  }
 }
 
 const headingMenuItem = (_editor, level) => {
@@ -443,11 +464,22 @@ function utilityMenuItems(editor) {
   }
 
   if (findExtension(editor, "fullscreen")) {
+    // Create button with dynamic content based on fullscreen state
+    const button = dynamicMaterialButton((editor) => {
+      return editor.storage.fullscreen?.fullscreen
+        ? "fullscreen_exit"
+        : "fullscreen"
+    }, "Toggle fullscreen")
+
     items.push({
       command(editor) {
         editor.commands.toggleFullscreen()
       },
-      dom: materialButton("fullscreen", "Toggle fullscreen"),
+      dom: button.dom,
+      updateContent: button.updateContent,
+      active(editor) {
+        return editor.storage.fullscreen?.fullscreen
+      },
     })
   }
 
