@@ -15,6 +15,7 @@ Next version
 - Switched the JavaScript to use ES modules and importmaps. If you've been
   using 0.10 you have to update your code to use ES modules (``<script
   type="module">``) instead of deferred scripts. Sorry for the churn.
+- Modified the ``HTML`` extension to prettify the HTML code somewhat.
 
 
 0.10 (2024-12-17)
