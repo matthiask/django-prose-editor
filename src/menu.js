@@ -570,6 +570,10 @@ function tableMenuItems(editor) {
     tableManipulationItem((editor) => {
       editor.chain().focus().splitCell().run()
     }, textButton("Split")),
+    // Toggle header cell (works on selected cells or current cell)
+    tableManipulationItem((editor) => {
+      editor.chain().focus().toggleHeaderCell().run()
+    }, textButton("Header")),
   ]
 }
 
