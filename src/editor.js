@@ -16,7 +16,8 @@ export { Heading } from "@tiptap/extension-heading"
 export { HorizontalRule } from "@tiptap/extension-horizontal-rule"
 export { Italic } from "@tiptap/extension-italic"
 export { ListItem } from "@tiptap/extension-list-item"
-export { OrderedList } from "@tiptap/extension-ordered-list"
+// We're replacing the default OrderedList with our custom version below
+// export { OrderedList } from "@tiptap/extension-ordered-list"
 export { Strike } from "@tiptap/extension-strike"
 export { Subscript } from "@tiptap/extension-subscript"
 export { Superscript } from "@tiptap/extension-superscript"
@@ -46,6 +47,9 @@ export { Plugin } from "@tiptap/pm/state"
 export * from "./menu.js"
 export * from "./utils.js"
 export * from "@tiptap/core"
+
+// Import our custom OrderedList
+export { OrderedList } from "./orderedList.js"
 
 import { crel } from "./utils.js"
 
