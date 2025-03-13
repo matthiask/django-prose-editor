@@ -1,12 +1,17 @@
 import { Extension } from "@tiptap/core"
 import { Plugin } from "@tiptap/pm/state"
 import { crel, gettext } from "./utils.js"
-import { tableDialog, listPropertiesDialog } from "./commands.js"
+import {
+  tableDialog,
+  listPropertiesDialog,
+  updateAttrsDialog,
+} from "./commands.js"
 
 const findExtension = (editor, extension) =>
   editor.extensionManager.extensions.find((e) => e.name === extension)
 
 export const menuItemsFromEditor = (editor) => {
+  // Basic menu items
   return [
     blockTypeMenuItems(editor),
     nodesMenuItems(editor),
@@ -420,6 +425,225 @@ function nodesMenuItems(editor) {
       dom: materialButton("horizontal_rule", "horizontal rule"),
       active(_editor) {
         return false
+      },
+    })
+  }
+  if ((type = schema.nodes.figure)) {
+    items.push({
+      command(editor) {
+        // Check if a figure is currently selected
+        const isEditingFigure = editor.isActive("figure")
+
+        // Get current figure data if we're editing
+        let currentImageSrc = ""
+        let currentCaption = ""
+        let currentAlignment = "center"
+
+        if (isEditingFigure) {
+          // Get the selected figure node
+          const { state } = editor
+          const { selection } = state
+          const { $from } = selection
+
+          // Try to find the figure node in the ancestors
+          let figureNode = null
+          let captionNode = null
+          let imageNode = null
+
+          for (let depth = $from.depth; depth > 0; depth--) {
+            const node = $from.node(depth)
+            if (node.type.name === "figure") {
+              figureNode = node
+
+              // Find the child nodes (image and caption)
+              node.forEach((child, _, _i) => {
+                if (child.type.name === "image") {
+                  imageNode = child
+                } else if (child.type.name === "caption") {
+                  captionNode = child
+                }
+              })
+
+              break
+            }
+          }
+
+          if (figureNode && imageNode) {
+            currentImageSrc = imageNode.attrs.src || ""
+            currentAlignment = figureNode.attrs.align || "center"
+
+            if (captionNode) {
+              // Extract caption text
+              const textContent = []
+              captionNode.descendants((node) => {
+                if (node.isText) {
+                  textContent.push(node.text)
+                }
+                return true
+              })
+              currentCaption = textContent.join("")
+            }
+          }
+        }
+
+        // Define dialog properties
+        const figureDialogProperties = {
+          imageUrl: {
+            type: "string",
+            title: gettext("Image URL"),
+            format: "url",
+            required: true,
+          },
+          caption: {
+            type: "string",
+            title: gettext("Caption"),
+          },
+          alignment: {
+            title: gettext("Alignment"),
+            enum: [gettext("Center"), gettext("Left"), gettext("Right")],
+            default: gettext("Center"),
+          },
+        }
+
+        // Define dialog options
+        const dialogOptions = {
+          title: isEditingFigure
+            ? gettext("Edit Figure")
+            : gettext("Insert Figure"),
+          submitText: isEditingFigure ? gettext("Update") : gettext("Insert"),
+        }
+
+        // Convert alignment to localized text
+        function alignValueToText(value) {
+          const map = {
+            center: gettext("Center"),
+            left: gettext("Left"),
+            right: gettext("Right"),
+          }
+          return map[value] || gettext("Center")
+        }
+
+        // Convert localized text back to alignment value
+        function alignTextToValue(text) {
+          const map = {
+            [gettext("Center")]: "center",
+            [gettext("Left")]: "left",
+            [gettext("Right")]: "right",
+          }
+          return map[text] || "center"
+        }
+
+        // Create initial attrs based on current values
+        const initialAttrs = {
+          imageUrl: currentImageSrc,
+          caption: currentCaption,
+          alignment: alignValueToText(currentAlignment),
+        }
+
+        // Use the updateAttrsDialog helper
+        const dialogFn = updateAttrsDialog(
+          figureDialogProperties,
+          dialogOptions,
+        )
+
+        dialogFn(editor, initialAttrs).then((attrs) => {
+          if (!attrs) return // Cancelled
+
+          const imageUrl = attrs.imageUrl.trim()
+          const captionText = attrs.caption.trim() || gettext("Figure caption")
+          const alignment = alignTextToValue(attrs.alignment)
+
+          if (imageUrl) {
+            if (isEditingFigure) {
+              // Update the existing figure
+              // First update the figure's alignment
+              editor
+                .chain()
+                .focus()
+                .updateAttributes("figure", {
+                  align: alignment,
+                })
+                .run()
+
+              // Then update the image source - find the image node within the figure
+              const { state } = editor
+              const { selection } = state
+              const { $from } = selection
+
+              for (let depth = $from.depth; depth > 0; depth--) {
+                const node = $from.node(depth)
+                if (node.type.name === "figure") {
+                  // Find positions of image and caption
+                  let imagePos = null
+                  let captionPos = null
+                  const pos = $from.start(depth)
+
+                  node.forEach((child, offset) => {
+                    if (child.type.name === "image") {
+                      imagePos = pos + offset
+                    } else if (child.type.name === "caption") {
+                      captionPos = pos + offset
+                    }
+                  })
+
+                  // Update image source
+                  if (imagePos !== null) {
+                    editor
+                      .chain()
+                      .setNodeSelection(imagePos)
+                      .updateAttributes("image", {
+                        src: imageUrl,
+                      })
+                      .run()
+                  }
+
+                  // Update caption text by replacing its content
+                  if (captionPos !== null) {
+                    editor
+                      .chain()
+                      .setNodeSelection(captionPos)
+                      .insertContent({
+                        type: "caption",
+                        content: [{ type: "text", text: captionText }],
+                      })
+                      .run()
+                  }
+
+                  break
+                }
+              }
+            } else {
+              // Insert a new figure
+              editor
+                .chain()
+                .focus()
+                .insertContent({
+                  type: "figure",
+                  attrs: { align: alignment },
+                  content: [
+                    {
+                      type: "image",
+                      attrs: { src: imageUrl },
+                    },
+                    {
+                      type: "caption",
+                      content: [
+                        {
+                          type: "text",
+                          text: captionText,
+                        },
+                      ],
+                    },
+                  ],
+                })
+                .run()
+            }
+          }
+        })
+      },
+      dom: materialButton("image", "figure"),
+      active(editor) {
+        return editor.isActive("figure")
       },
     })
   }
