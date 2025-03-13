@@ -283,3 +283,15 @@ label:empty:has(+ .prose-editor) {
   border: 1px solid var(--_r) !important;
   border-radius: 4px !important;
 }
+
+/* SVG button styling */
+.prose-menubar__button svg {
+  display: inline-block;
+  vertical-align: middle;
+  width: 20px;
+  height: 20px;
+}
+
+.prose-menubar__button svg * {
+  color: inherit;
+}

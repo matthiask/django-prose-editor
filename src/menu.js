@@ -175,6 +175,7 @@ class MenuView {
   }
 }
 
+/*
 function textButton(textContent, title = "") {
   return crel("span", {
     className: "prose-menubar__button",
@@ -182,6 +183,7 @@ function textButton(textContent, title = "") {
     title,
   })
 }
+*/
 
 function materialButton(textContent, title) {
   return crel("span", {
@@ -189,6 +191,15 @@ function materialButton(textContent, title) {
     textContent,
     title,
   })
+}
+
+function svgButton(svgContent, title = "") {
+  const dom = crel("span", {
+    className: "prose-menubar__button",
+    title,
+  })
+  dom.innerHTML = svgContent
+  return dom
 }
 
 function dynamicMaterialButton(getTextContent, title) {
@@ -552,18 +563,64 @@ function tableMenuItems(editor) {
       },
       dom: materialButton("grid_on", "Insert table"),
     },
-    tableManipulationItem((editor) => {
-      editor.chain().focus().addColumnAfter().run()
-    }, textButton("+Col")),
-    tableManipulationItem((editor) => {
-      editor.chain().focus().deleteColumn().run()
-    }, textButton("-Col")),
-    tableManipulationItem((editor) => {
-      editor.chain().focus().addRowAfter().run()
-    }, textButton("+Row")),
-    tableManipulationItem((editor) => {
-      editor.chain().focus().deleteRow().run()
-    }, textButton("-Row")),
+    tableManipulationItem(
+      (editor) => {
+        editor.chain().focus().addColumnAfter().run()
+      },
+      svgButton(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+      <line x1="9" y1="3" x2="9" y2="21"/>
+      <rect x="15" y="3" width="6" height="18" rx="1" fill="#4CAF50" fill-opacity="0.3" stroke="#4CAF50"/>
+      <line x1="18" y1="9" x2="18" y2="15" stroke="#4CAF50" stroke-width="2"/>
+      <line x1="15" y1="12" x2="21" y2="12" stroke="#4CAF50" stroke-width="2"/>
+    </svg>`,
+        "Add column",
+      ),
+    ),
+    tableManipulationItem(
+      (editor) => {
+        editor.chain().focus().deleteColumn().run()
+      },
+      svgButton(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+      <line x1="9" y1="3" x2="9" y2="21"/>
+      <rect x="15" y="3" width="6" height="18" rx="1" fill="#F44336" fill-opacity="0.3" stroke="#F44336"/>
+      <line x1="15" y1="12" x2="21" y2="12" stroke="#F44336" stroke-width="2"/>
+    </svg>`,
+        "Delete column",
+      ),
+    ),
+    tableManipulationItem(
+      (editor) => {
+        editor.chain().focus().addRowAfter().run()
+      },
+      svgButton(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+      <line x1="3" y1="9" x2="21" y2="9"/>
+      <rect x="3" y="15" width="18" height="6" rx="1" fill="#4CAF50" fill-opacity="0.3" stroke="#4CAF50"/>
+      <line x1="12" y1="15" x2="12" y2="21" stroke="#4CAF50" stroke-width="2"/>
+      <line x1="9" y1="18" x2="15" y2="18" stroke="#4CAF50" stroke-width="2"/>
+    </svg>`,
+        "Add row",
+      ),
+    ),
+    tableManipulationItem(
+      (editor) => {
+        editor.chain().focus().deleteRow().run()
+      },
+      svgButton(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+      <line x1="3" y1="9" x2="21" y2="9"/>
+      <rect x="3" y="15" width="18" height="6" rx="1" fill="#F44336" fill-opacity="0.3" stroke="#F44336"/>
+      <line x1="9" y1="18" x2="15" y2="18" stroke="#F44336" stroke-width="2"/>
+    </svg>`,
+        "Delete row",
+      ),
+    ),
     tableManipulationItem(
       (editor) => {
         editor.chain().focus().mergeCells().run()
@@ -577,9 +634,21 @@ function tableMenuItems(editor) {
       materialButton("call_split", "Split cell"),
     ),
     // Toggle header cell (works on selected cells or current cell)
-    tableManipulationItem((editor) => {
-      editor.chain().focus().toggleHeaderCell().run()
-    }, textButton("Header")),
+    tableManipulationItem(
+      (editor) => {
+        editor.chain().focus().toggleHeaderCell().run()
+      },
+      svgButton(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+      <rect x="3" y="3" width="18" height="6" rx="1" fill="#2196F3" fill-opacity="0.3" stroke="#2196F3"/>
+      <line x1="3" y1="9" x2="21" y2="9" stroke-width="2"/>
+      <line x1="9" y1="3" x2="9" y2="21"/>
+      <line x1="15" y1="3" x2="15" y2="21"/>
+    </svg>`,
+        "Toggle header cell",
+      ),
+    ),
   ]
 }
 
