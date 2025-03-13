@@ -1,6 +1,7 @@
 import { Extension } from "@tiptap/core"
 import { Plugin } from "@tiptap/pm/state"
 import { crel } from "./utils.js"
+import { tableDialog } from "./commands.js"
 
 const findExtension = (editor, extension) =>
   editor.extensionManager.extensions.find((e) => e.name === extension)
@@ -422,11 +423,23 @@ function tableMenuItems(editor) {
   return [
     {
       command(editor) {
-        editor
-          .chain()
-          .focus()
-          .insertTable({ rows: 3, cols: 3, withHeaderRow: false })
-          .run()
+        // Show table configuration dialog
+        tableDialog(editor, {
+          rows: "3",
+          cols: "3",
+          withHeaderRow: "No",
+        }).then((attrs) => {
+          if (attrs) {
+            const config = {
+              rows: Number.parseInt(attrs.rows, 10) || 3,
+              cols: Number.parseInt(attrs.cols, 10) || 3,
+              withHeaderRow: attrs.withHeaderRow === "Yes",
+            }
+
+            // Insert table with the configured options
+            editor.chain().focus().insertTable(config).run()
+          }
+        })
       },
       dom: materialButton("grid_on", "Insert table"),
     },

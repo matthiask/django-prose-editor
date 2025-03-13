@@ -154,18 +154,41 @@
   color: var(--_f);
   border: 1px solid var(--_r);
   border-radius: 4px;
+  padding: 1em;
+  min-width: 300px;
+}
+
+.prose-editor-dialog-title {
+  font-size: 1.25em;
+  font-weight: bold;
+  margin: 0 0 1em 0 !important;
+  padding: 0 0 0.5em 0 !important;
+  border-bottom: 1px solid var(--_r);
 }
 
 .prose-editor-dialog label {
   display: block;
+  margin-bottom: 0.5em;
+  font-weight: bold;
+}
+
+.prose-editor-dialog input,
+.prose-editor-dialog select {
+  width: 100%;
+  padding: 0.5em;
+  border: 1px solid var(--_r);
+  border-radius: 4px;
+  margin-bottom: 1em;
+}
+
+.prose-editor-dialog input[type="number"] {
+  width: 5em;
 }
 
 .prose-editor-dialog button {
   all: unset;
-
   cursor: pointer;
-  padding: 0.25em 0.5em;
-  min-width: 2em;
+  padding: 0.5em 1em;
   transition: all 0.25s;
   background: var(--_b);
   color: var(--_f);
@@ -174,11 +197,13 @@
   text-align: center;
   display: inline-flex;
   position: relative;
+  margin-right: 0.5em;
+  margin-top: 0.5em;
 }
 
 .prose-editor-dialog button:active,
 .prose-editor-dialog button:hover {
-  background: var(--_a);
+  filter: brightness(1.1);
 }
 
 /* content editor support */
