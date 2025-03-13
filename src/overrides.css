@@ -24,6 +24,7 @@
   margin-inline-start: 0px !important;
   margin-inline-end: 0px !important;
   font-weight: bold !important;
+  line-height: 1.2 !important;
 }
 
 .ProseMirror h2 {
@@ -36,6 +37,7 @@
   margin-inline-end: 0px !important;
   font-weight: bold !important;
   background: white !important;
+  line-height: 1.2 !important;
 }
 
 .ProseMirror h3 {
@@ -47,6 +49,7 @@
   margin-inline-end: 0px !important;
   font-weight: bold !important;
   padding: 0 !important;
+  line-height: 1.2 !important;
 }
 
 .ProseMirror > * + * {
@@ -61,50 +64,32 @@
   height: 0;
 }
 
-.ProseMirror ol {
-  padding-left: 0px !important;
-}
-
-.ProseMirror ol li::marker {
-  font-size: 16px !important;
-}
-
-.ProseMirror ol > li > ol {
-  padding-left: 10px !important;
-  margin-left: 10px !important;
-}
-
-.ProseMirror ol > li > ol > li > ol {
-  padding-left: 10px !important;
-  margin-left: 10px !important;
-}
-
-.ProseMirror ol > li > ol > li > ol > li > ol {
-  padding-left: 10px !important;
-  margin-left: 10px !important;
-}
-
-.ProseMirror ol > li > ol > li > ol > li > ol > li > ol {
-  padding-left: 10px !important;
-  margin-left: 10px !important;
-}
-
+/* List styling improvements */
+.ProseMirror ol,
 .ProseMirror ul {
-  list-style-type: disc !important;
-  margin-block-start: 0 !important;
-  margin-block-end: 0 !important;
-  margin-inline-start: 0px !important;
-  margin-inline-end: 0px !important;
+  padding-left: 2.5em !important; /* Bring markers closer to content area */
+  margin: 0.3em 0 !important; /* Reduce vertical margins */
 }
 
+.ProseMirror ol li,
 .ProseMirror ul li {
-  list-style: disc !important;
+  position: relative !important;
+  margin: 0.1em 0 !important; /* Reduced space between list items */
+  padding-left: 0 !important; /* No extra padding after marker */
 }
 
-.ProseMirror ul > li > ul {
-  padding-left: 10px !important;
-  margin-left: 10px !important;
-  list-style-type: disc !important;
+.ProseMirror ol li::marker,
+.ProseMirror ul li::marker {
+  font-size: 15px !important;
+  color: var(--body-fg) !important;
+}
+
+/* Nested list styling */
+.ProseMirror ol ol,
+.ProseMirror ul ul,
+.ProseMirror ol ul,
+.ProseMirror ul ol {
+  margin: 0.1em 0 0.1em 0.5em !important; /* Tighter nested lists with less indent */
 }
 
 .ProseMirror {
