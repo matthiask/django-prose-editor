@@ -111,15 +111,6 @@ export const Figure = Node.create({
         },
     }
   },
-
-  addKeyboardShortcuts() {
-    return {
-      // Mod+Alt+F for inserting figures
-      "Mod-Alt-f": () => this.editor.commands.insertFigure(),
-      // Mod+Alt+I as an alternative (common for images)
-      "Mod-Alt-i": () => this.editor.commands.insertFigure(),
-    }
-  },
 })
 
 /**
