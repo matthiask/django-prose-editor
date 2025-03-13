@@ -14,8 +14,7 @@ export const menuItemsFromEditor = (editor) => {
     textAlignMenuItems(editor),
     tableMenuItems(editor),
     historyMenuItems(editor),
-    htmlMenuItem(editor),
-    fullscreenMenuItem(editor),
+    utilityMenuItems(editor),
   ].filter(Boolean)
 }
 
@@ -354,28 +353,26 @@ function tableMenuItems(editor) {
   ]
 }
 
-function htmlMenuItem(editor) {
-  return findExtension(editor, "html")
-    ? [
-        {
-          command(editor) {
-            editor.commands.editHTML()
-          },
-          dom: materialButton("code", "edit HTML"),
-        },
-      ]
-    : null
-}
+function utilityMenuItems(editor) {
+  const items = []
 
-function fullscreenMenuItem(editor) {
-  return findExtension(editor, "fullscreen")
-    ? [
-        {
-          command(editor) {
-            editor.commands.toggleFullscreen()
-          },
-          dom: materialButton("fullscreen", "Toggle fullscreen"),
-        },
-      ]
-    : null
+  if (findExtension(editor, "html")) {
+    items.push({
+      command(editor) {
+        editor.commands.editHTML()
+      },
+      dom: materialButton("code", "edit HTML"),
+    })
+  }
+
+  if (findExtension(editor, "fullscreen")) {
+    items.push({
+      command(editor) {
+        editor.commands.toggleFullscreen()
+      },
+      dom: materialButton("fullscreen", "Toggle fullscreen"),
+    })
+  }
+
+  return items.length ? items : null
 }
