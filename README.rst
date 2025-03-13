@@ -241,3 +241,82 @@ django-prose-editor outside the admin in your site.
 
 In addition, you may optionally set a ``--prose-editor-typographic`` property
 to control the color of typographic characters when shown.
+
+
+Testing
+=======
+
+Django-prose-editor uses pytest with Playwright for comprehensive testing, including UI tests.
+
+Running the tests
+----------------
+
+1. Install test dependencies:
+
+.. code-block:: shell
+
+    pip install -e ".[tests]"
+
+2. Install Playwright browsers:
+
+.. code-block:: shell
+
+    python scripts/setup_playwright.py
+
+3. Run all tests with coverage:
+
+.. code-block:: shell
+
+    pytest
+
+Running browser tests
+--------------------
+
+For UI tests specifically:
+
+.. code-block:: shell
+
+    pytest tests/testapp/test_playwright.py
+
+You can specify which browser to use:
+
+.. code-block:: shell
+
+    pytest tests/testapp/test_playwright.py --browser chromium
+    pytest tests/testapp/test_playwright.py --browser firefox
+    pytest tests/testapp/test_playwright.py --browser webkit
+
+For visual debugging, run tests in headed mode:
+
+.. code-block:: shell
+
+    pytest tests/testapp/test_playwright.py --headed
+
+Using tox
+--------
+
+To run tests against multiple Python and Django versions:
+
+.. code-block:: shell
+
+    tox
+
+To run tests for a specific environment:
+
+.. code-block:: shell
+
+    tox -e py312-dj50
+
+For Playwright browser tests specifically:
+
+.. code-block:: shell
+
+    tox -e playwright
+
+You can also skip browser tests when running tests directly:
+
+.. code-block:: shell
+
+    pytest -k "not browser"
+
+The project automatically sets the `DJANGO_ALLOW_ASYNC_UNSAFE` environment variable during tests to avoid `SynchronousOnlyOperation` errors when using database operations with Playwright.

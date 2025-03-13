@@ -45,6 +45,11 @@ optional-dependencies.sanitize = [
 optional-dependencies.tests = [
   "coverage",
   "nh3",
+  "playwright>=1.42",
+  "pytest>=7.4",
+  "pytest-cov>=4.1",
+  "pytest-django>=4.8",
+  "pytest-playwright>=0.4",
 ]
 urls.Documentation = "https://django-prose-editor.readthedocs.io/"
 
@@ -116,3 +121,29 @@ lint.per-file-ignores."*/migrat*/*" = [
 lint.isort.combine-as-imports = true
 lint.isort.lines-after-imports = 2
 lint.mccabe.max-complexity = 15
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "testapp.settings"
+python_files = "test_*.py"
+testpaths = [ "tests" ]
+markers = [
+  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+  "browsers: specify which browsers to use for testing",
+]
+# Always run with coverage
+addopts = "--cov=django_prose_editor --cov-report=term-missing"
+django_debug_mode = true
+
+[tool.coverage.run]
+source = [ "django_prose_editor" ]
+omit = [ "*/migrations/*", "*/tests/*" ]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "def __repr__",
+  "raise NotImplementedError",
+  "if __name__ == .__main__.:",
+  "pass",
+  "raise ImportError",
+]
