@@ -36,6 +36,22 @@ export const Fullscreen = Extension.create({
             document.body.style.overflow = "hidden"
             // Focus the editor after going fullscreen
             editor.commands.focus()
+
+            // Ensure our floating menubar is reset when entering fullscreen
+            const menubar = editorContainer.querySelector(".prose-menubar")
+            if (menubar) {
+              menubar.classList.remove("prose-menubar--floating")
+              menubar.style.width = ""
+              menubar.style.left = ""
+              menubar.style.top = ""
+            }
+            // Hide the placeholder
+            const placeholder = editorContainer.querySelector(
+              ".prose-menubar-placeholder",
+            )
+            if (placeholder) {
+              placeholder.classList.remove("prose-menubar-placeholder--active")
+            }
           } else {
             editorContainer.classList.remove(this.options.fullscreenClass)
             // Restore body scrolling

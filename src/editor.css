@@ -39,6 +39,33 @@
   gap: 8px;
   flex-wrap: wrap;
   margin-bottom: 2px;
+  background: var(--_b);
+  padding: 4px;
+  width: 100%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--_r);
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+/* Class added when the menubar is floating */
+.prose-menubar--floating {
+  position: fixed;
+  margin: 0;
+  border-radius: 0;
+}
+
+/* Placeholder to prevent content jump when menubar is fixed */
+.prose-menubar-placeholder {
+  display: none;
+  height: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.prose-menubar-placeholder--active {
+  display: block;
+  height: var(--menubar-height, 45px);
 }
 
 .prose-menubar__group {
@@ -185,6 +212,20 @@ label:empty:has(+ .prose-editor) {
   overflow-y: auto !important;
   display: flex !important;
   flex-direction: column !important;
+}
+
+.prose-editor-fullscreen .prose-menubar {
+  padding: 8px 20px !important;
+  border-radius: 0 !important;
+  width: 100% !important;
+}
+
+.prose-editor-fullscreen .prose-menubar--floating {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 10000 !important;
 }
 
 .prose-editor-fullscreen .ProseMirror {
