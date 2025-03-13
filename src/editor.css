@@ -173,12 +173,22 @@
 }
 
 .prose-editor-dialog input,
-.prose-editor-dialog select {
+.prose-editor-dialog select,
+.prose-editor-dialog textarea {
   width: 100%;
   padding: 0.5em;
   border: 1px solid var(--_r);
   border-radius: 4px;
   margin-bottom: 1em;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.prose-editor-dialog input:focus,
+.prose-editor-dialog select:focus,
+.prose-editor-dialog textarea:focus {
+  outline: none;
+  border-color: var(--_a);
+  box-shadow: 0 0 0 2px rgba(121, 174, 200, 0.25);
 }
 
 .prose-editor-dialog input[type="number"] {
@@ -201,9 +211,20 @@
   margin-top: 0.5em;
 }
 
-.prose-editor-dialog button:active,
 .prose-editor-dialog button:hover {
   filter: brightness(1.1);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.prose-editor-dialog button:active {
+  filter: brightness(0.95);
+}
+
+.prose-editor-dialog button:focus {
+  outline: 2px solid var(--_a);
+  outline-offset: 2px;
+  position: relative;
+  z-index: 1;
 }
 
 /* content editor support */
