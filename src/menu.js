@@ -564,12 +564,18 @@ function tableMenuItems(editor) {
     tableManipulationItem((editor) => {
       editor.chain().focus().deleteRow().run()
     }, textButton("-Row")),
-    tableManipulationItem((editor) => {
-      editor.chain().focus().mergeCells().run()
-    }, textButton("Merge")),
-    tableManipulationItem((editor) => {
-      editor.chain().focus().splitCell().run()
-    }, textButton("Split")),
+    tableManipulationItem(
+      (editor) => {
+        editor.chain().focus().mergeCells().run()
+      },
+      materialButton("call_merge", "Merge cells"),
+    ),
+    tableManipulationItem(
+      (editor) => {
+        editor.chain().focus().splitCell().run()
+      },
+      materialButton("call_split", "Split cell"),
+    ),
     // Toggle header cell (works on selected cells or current cell)
     tableManipulationItem((editor) => {
       editor.chain().focus().toggleHeaderCell().run()
