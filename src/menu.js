@@ -437,7 +437,6 @@ function nodesMenuItems(editor) {
         // Get current figure data if we're editing
         let currentImageSrc = ""
         let currentCaption = ""
-        let currentAlignment = "center"
 
         if (isEditingFigure) {
           // Get the selected figure node
@@ -470,7 +469,6 @@ function nodesMenuItems(editor) {
 
           if (figureNode && imageNode) {
             currentImageSrc = imageNode.attrs.src || ""
-            currentAlignment = figureNode.attrs.align || "center"
 
             if (captionNode) {
               // Extract caption text
@@ -498,11 +496,6 @@ function nodesMenuItems(editor) {
             type: "string",
             title: gettext("Caption"),
           },
-          alignment: {
-            title: gettext("Alignment"),
-            enum: [gettext("Center"), gettext("Left"), gettext("Right")],
-            default: gettext("Center"),
-          },
         }
 
         // Define dialog options
@@ -513,31 +506,10 @@ function nodesMenuItems(editor) {
           submitText: isEditingFigure ? gettext("Update") : gettext("Insert"),
         }
 
-        // Convert alignment to localized text
-        function alignValueToText(value) {
-          const map = {
-            center: gettext("Center"),
-            left: gettext("Left"),
-            right: gettext("Right"),
-          }
-          return map[value] || gettext("Center")
-        }
-
-        // Convert localized text back to alignment value
-        function alignTextToValue(text) {
-          const map = {
-            [gettext("Center")]: "center",
-            [gettext("Left")]: "left",
-            [gettext("Right")]: "right",
-          }
-          return map[text] || "center"
-        }
-
         // Create initial attrs based on current values
         const initialAttrs = {
           imageUrl: currentImageSrc,
           caption: currentCaption,
-          alignment: alignValueToText(currentAlignment),
         }
 
         // Use the updateAttrsDialog helper
@@ -551,20 +523,9 @@ function nodesMenuItems(editor) {
 
           const imageUrl = attrs.imageUrl.trim()
           const captionText = attrs.caption.trim() || gettext("Figure caption")
-          const alignment = alignTextToValue(attrs.alignment)
 
           if (imageUrl) {
             if (isEditingFigure) {
-              // Update the existing figure
-              // First update the figure's alignment
-              editor
-                .chain()
-                .focus()
-                .updateAttributes("figure", {
-                  align: alignment,
-                })
-                .run()
-
               // Then update the image source - find the image node within the figure
               const { state } = editor
               const { selection } = state
@@ -619,7 +580,6 @@ function nodesMenuItems(editor) {
                 .focus()
                 .insertContent({
                   type: "figure",
-                  attrs: { align: alignment },
                   content: [
                     {
                       type: "image",

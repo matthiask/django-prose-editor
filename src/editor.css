@@ -305,22 +305,6 @@ label:empty:has(+ .prose-editor) {
   position: relative;
 }
 
-.ProseMirror .figure--left {
-  align-items: flex-start;
-  margin-right: auto;
-}
-
-.ProseMirror .figure--center {
-  align-items: center;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.ProseMirror .figure--right {
-  align-items: flex-end;
-  margin-left: auto;
-}
-
 .ProseMirror .figure figcaption.figure-caption {
   padding: 0.5rem 0;
   color: #555;
@@ -333,18 +317,4 @@ label:empty:has(+ .prose-editor) {
 .ProseMirror .figure img {
   max-width: 100%;
   height: auto;
-}
-
-.ProseMirror .figure--left figcaption {
-  text-align: left;
-}
-
-.ProseMirror .figure--right figcaption {
-  text-align: right;
-}
-
-/* Limit the width of figures based on alignment */
-.ProseMirror .figure--left,
-.ProseMirror .figure--right {
-  max-width: 50%;
 }

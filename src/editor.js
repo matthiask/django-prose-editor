@@ -25,7 +25,6 @@ export { Underline } from "@tiptap/extension-underline"
 
 export { Code } from "@tiptap/extension-code"
 export { CodeBlock } from "@tiptap/extension-code-block"
-export { Image } from "@tiptap/extension-image"
 
 export { Color } from "@tiptap/extension-color"
 export { Highlight } from "@tiptap/extension-highlight"
@@ -53,7 +52,8 @@ export * from "@tiptap/core"
 export { OrderedList } from "./orderedList.js"
 
 // Import Figure extension
-export { Figure, Caption, figureCss, insertFigureItem } from "./figure.js"
+export { Image } from "@tiptap/extension-image"
+export { Figure, Caption } from "./figure.js"
 
 import { crel } from "./utils.js"
 
