@@ -148,15 +148,15 @@ class MenuView {
         enabled = () => true,
         active = () => false,
         hidden = () => false,
-        onUpdate = null,
+        update = null,
       }) => {
         dom.classList.toggle("disabled", !enabled(this.editor))
         dom.classList.toggle("active", !!active(this.editor))
         dom.classList.toggle("hidden", !!hidden(this.editor))
 
-        // Call onUpdate if provided to update dynamic content
-        if (onUpdate) {
-          onUpdate(this.editor)
+        // Call update if provided to update dynamic content
+        if (update) {
+          update(this.editor)
         }
       },
     )
@@ -553,7 +553,7 @@ function utilityMenuItems(editor) {
         editor.commands.toggleFullscreen()
       },
       dom,
-      onUpdate: (editor) => {
+      update: (editor) => {
         dom.textContent = editor.storage.fullscreen?.fullscreen
           ? "fullscreen_exit"
           : "fullscreen"
