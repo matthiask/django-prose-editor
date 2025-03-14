@@ -85,7 +85,7 @@ class AdminProseEditorWidget(ProseEditorWidget):
                 ]
             },
             js=[
-                importmap,
+                importmap,  # Sneak the importmap into the admin <head>
                 JS("django_prose_editor/editor.js", {"type": "module"}),
             ],
         )
