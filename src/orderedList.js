@@ -57,7 +57,6 @@ export const listPropertiesDialog = updateAttrsDialog(
     },
     listType: {
       title: gettext("List type"),
-      // enum will be updated dynamically when the dialog is called
       enum: LIST_TYPES.map((item) => item.label),
       default: "",
     },
@@ -116,7 +115,6 @@ export const OrderedList = TiptapOrderedList.configure({
           const start = listNode?.attrs?.start || 1
           const type = listNode?.attrs?.type || "1"
 
-          // Show properties dialog with dynamic enum options
           listPropertiesDialog(editor, {
             start: String(start),
             listType: htmlTypeToListType(type),
