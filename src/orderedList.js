@@ -43,9 +43,6 @@ const htmlTypeToListType = (htmlType) => {
   return found ? found.label : LIST_TYPES[0].label // Default to first option
 }
 
-// Get array of list type labels for dropdown options
-const _getListTypeOptions = () => LIST_TYPES.map((item) => item.label)
-
 export const listPropertiesDialog = updateAttrsDialog(
   {
     start: {
