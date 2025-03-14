@@ -1,7 +1,6 @@
 import { mergeAttributes, Node } from "@tiptap/core"
 
-import { updateAttrsDialog } from "./commands.js"
-import { gettext } from "./utils.js"
+import { gettext, updateAttrsDialog } from "./utils.js"
 
 /**
  * Extension for adding figures with images and captions

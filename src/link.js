@@ -1,6 +1,22 @@
 import { Link as BaseLink } from "@tiptap/extension-link"
 
-import { linkDialog } from "./commands.js"
+import { gettext, updateAttrsDialog } from "./utils.js"
+
+const linkDialog = updateAttrsDialog(
+  {
+    href: {
+      type: "string",
+      title: gettext("URL"),
+    },
+    title: {
+      type: "string",
+      title: gettext("Title"),
+    },
+  },
+  {
+    title: gettext("Edit Link"),
+  },
+)
 
 export const Link = BaseLink.extend({
   addOptions() {

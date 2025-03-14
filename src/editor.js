@@ -36,7 +36,6 @@ export { TableCell } from "@tiptap/extension-table-cell"
 export { TableHeader } from "@tiptap/extension-table-header"
 export { TableRow } from "@tiptap/extension-table-row"
 
-export { updateAttrsDialog } from "./commands.js"
 export { HTML } from "./html.js"
 export { Link } from "./link.js"
 export { NoSpellCheck } from "./nospellcheck.js"

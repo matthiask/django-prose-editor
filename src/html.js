@@ -1,6 +1,19 @@
 import { Extension } from "@tiptap/core"
 
-import { htmlDialog } from "./commands.js"
+import { gettext, updateAttrsDialog } from "./utils.js"
+
+const htmlDialog = updateAttrsDialog(
+  {
+    html: {
+      type: "string",
+      title: "HTML",
+      format: "textarea",
+    },
+  },
+  {
+    title: gettext("Edit HTML"),
+  },
+)
 
 const areArraysEqual = (arr1, arr2) =>
   Array.isArray(arr1) &&
