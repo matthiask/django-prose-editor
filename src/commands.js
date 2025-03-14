@@ -30,26 +30,3 @@ export const tableDialog = updateAttrsDialog(
     submitText: gettext("Insert Table"),
   },
 )
-
-// Will be populated from menu.js when used
-export const listPropertiesDialog = updateAttrsDialog(
-  {
-    start: {
-      type: "number",
-      title: gettext("Start at"),
-      format: "number",
-      default: "1",
-      min: "1",
-    },
-    listType: {
-      title: gettext("List type"),
-      // enum will be updated dynamically when the dialog is called
-      enum: [],
-      default: "",
-    },
-  },
-  {
-    title: gettext("List Properties"),
-    submitText: gettext("Update"),
-  },
-)

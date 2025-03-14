@@ -12,19 +12,16 @@ export const crel = (tagName, attributes = null, children = []) => {
 
 export const gettext = window.gettext || ((s) => s)
 
-const formFieldForProperty = ([name, config], dynamicEnums = {}) => {
+const formFieldForProperty = ([name, config]) => {
   let widget
 
   if (config.format === "textarea") {
     widget = crel("textarea", { name, cols: 80, rows: 30 })
   } else if (config.enum) {
-    // Use dynamic enum if provided, otherwise use the static one from config
-    const enumValues = dynamicEnums[name] || config.enum
-
     widget = crel(
       "select",
       { name },
-      enumValues.map((value) => crel("option", { textContent: value })),
+      config.enum.map((value) => crel("option", { textContent: value })),
     )
   } else {
     // Create input with appropriate attributes
@@ -50,7 +47,7 @@ const formFieldForProperty = ([name, config], dynamicEnums = {}) => {
 
 export const updateAttrsDialog =
   (properties, options = {}) =>
-  (editor, attrs, dynamicOptions = {}) => {
+  (editor, attrs) => {
     return new Promise((resolve) => {
       const submit = crel("button", {
         type: "submit",
@@ -78,7 +75,7 @@ export const updateAttrsDialog =
       // Add form fields with dynamic enum support
       formElements.push(
         ...Object.entries(properties).map((entry) =>
-          formFieldForProperty(entry, dynamicOptions.enums || {}),
+          formFieldForProperty(entry),
         ),
       )
 
