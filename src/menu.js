@@ -70,8 +70,6 @@ class MenuView {
         group.forEach(({ dom }) => groupDOM.append(dom))
       })
 
-    // Placeholder will be inserted in the plugin view function
-
     // Initial update of button states
     this.update()
 
@@ -150,15 +148,15 @@ class MenuView {
         enabled = () => true,
         active = () => false,
         hidden = () => false,
-        updateContent = null,
+        onUpdate = null,
       }) => {
         dom.classList.toggle("disabled", !enabled(this.editor))
         dom.classList.toggle("active", !!active(this.editor))
         dom.classList.toggle("hidden", !!hidden(this.editor))
 
-        // Call updateContent if provided to update dynamic content
-        if (typeof updateContent === "function") {
-          updateContent(this.editor)
+        // Call onUpdate if provided to update dynamic content
+        if (onUpdate) {
+          onUpdate(this.editor)
         }
       },
     )
@@ -200,21 +198,6 @@ function svgButton(svgContent, title = "") {
   })
   dom.innerHTML = svgContent
   return dom
-}
-
-function dynamicMaterialButton(getTextContent, title) {
-  const dom = crel("span", {
-    className: "prose-menubar__button material-icons",
-    title,
-  })
-
-  // The getTextContent function will be called during update
-  return {
-    dom,
-    updateContent: (editor) => {
-      dom.textContent = getTextContent(editor)
-    },
-  }
 }
 
 const headingMenuItem = (_editor, level) => {
@@ -563,18 +546,18 @@ function utilityMenuItems(editor) {
 
   if (findExtension(editor, "fullscreen")) {
     // Create button with dynamic content based on fullscreen state
-    const button = dynamicMaterialButton((editor) => {
-      return editor.storage.fullscreen?.fullscreen
-        ? "fullscreen_exit"
-        : "fullscreen"
-    }, "Toggle fullscreen")
+    const dom = materialButton("", gettext("Toggle fullscreen"))
 
     items.push({
       command(editor) {
         editor.commands.toggleFullscreen()
       },
-      dom: button.dom,
-      updateContent: button.updateContent,
+      dom,
+      onUpdate: (editor) => {
+        dom.textContent = editor.storage.fullscreen?.fullscreen
+          ? "fullscreen_exit"
+          : "fullscreen"
+      },
       active(editor) {
         return editor.storage.fullscreen?.fullscreen
       },
