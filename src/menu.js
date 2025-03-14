@@ -191,25 +191,21 @@ function materialButton(textContent, title) {
   })
 }
 
-function svgButton(svgContent, title = "") {
-  const dom = crel("span", {
+function svgButton(innerHTML, title = "") {
+  return crel("span", {
     className: "prose-menubar__button",
+    innerHTML,
     title,
   })
-  dom.innerHTML = svgContent
-  return dom
 }
 
 const headingButton = (level) => {
   const dom = crel("span", {
     className: "prose-menubar__button prose-menubar__button--heading",
+    title: `heading ${level}`,
   })
   dom.append(
-    crel("span", {
-      className: "material-icons",
-      textContent: "title",
-      title: `heading ${level}`,
-    }),
+    crel("span", { className: "material-icons", textContent: "title" }),
     crel("span", { className: "level", textContent: `${level}` }),
   )
 
@@ -266,7 +262,7 @@ function blockTypeMenuItems(editor) {
     })
   }
 
-  if (!items.length) return []
+  if (!items.length) return null
 
   return [
     ...items,
@@ -346,7 +342,7 @@ function markMenuItems(editor) {
 
 function linkMenuItems(editor) {
   const mark = editor.schema.marks.link
-  if (!mark) return []
+  if (!mark) return null
 
   return [
     {
@@ -426,7 +422,7 @@ function textAlignMenuItems(editor) {
 }
 
 function tableMenuItems(editor) {
-  if (!findExtension(editor, "table")) return []
+  if (!findExtension(editor, "table")) return null
 
   const tableManipulationItem = (command, dom) => ({
     command,
@@ -564,5 +560,5 @@ function utilityMenuItems(editor) {
     })
   }
 
-  return items.length ? items : null
+  return items
 }
