@@ -161,7 +161,7 @@
 .prose-editor-dialog-title {
   font-size: 1.25em;
   font-weight: bold;
-  margin: 0 0 1em 0 !important;
+  margin: 0 !important;
   padding: 0 0 0.5em 0 !important;
   border-bottom: 1px solid var(--_r);
 }
