@@ -8,7 +8,7 @@ import { gettext, updateAttrsDialog } from "./utils.js"
 export const Figure = Node.create({
   name: "figure",
   group: "block",
-  content: "image caption",
+  content: "image caption?",
   draggable: true,
   isolating: true,
 
@@ -45,17 +45,9 @@ export const Figure = Node.create({
         }
       })
 
-      // Content element
-      const content = document.createElement("div")
-      content.className = "figure-content"
-      content.contentEditable = "false"
-
-      // Append content to figure
-      dom.appendChild(content)
-
       return {
         dom,
-        contentDOM: content,
+        contentDOM: dom,
         update: (updatedNode) => {
           if (updatedNode.type.name !== "figure") {
             return false
@@ -170,8 +162,7 @@ export const Figure = Node.create({
 
             const imageUrl = attrs.imageUrl.trim()
             const imageAlt = attrs.altText.trim()
-            const captionText =
-              attrs.caption.trim() || gettext("Figure caption")
+            const captionText = attrs.caption.trim()
 
             if (imageUrl) {
               if (isEditingFigure) {
@@ -196,55 +187,67 @@ export const Figure = Node.create({
                       }
                     })
 
+                    let chain = editor.chain()
+
                     // Update image source
                     if (imagePos !== null) {
-                      editor
-                        .chain()
+                      chain = chain
                         .setNodeSelection(imagePos)
                         .updateAttributes("image", {
                           src: imageUrl,
                           alt: imageAlt,
                         })
-                        .run()
                     }
 
-                    // Update caption text by replacing its content
-                    if (captionPos !== null) {
-                      editor
-                        .chain()
+                    if (captionText) {
+                      const content = {
+                        type: "caption",
+                        content: [{ type: "text", text: captionText }],
+                      }
+                      if (captionPos) {
+                        chain = chain
+                          .setNodeSelection(captionPos)
+                          .insertContent(content)
+                      } else {
+                        chain = chain.insertContentAt(imagePos + 1, content)
+                      }
+                    } else if (captionPos) {
+                      chain = chain
                         .setNodeSelection(captionPos)
-                        .insertContent({
-                          type: "caption",
-                          content: [{ type: "text", text: captionText }],
-                        })
-                        .run()
+                        .deleteSelection()
                     }
+
+                    chain.run()
 
                     break
                   }
                 }
               } else {
                 // Insert a new figure
+                const content = [
+                  {
+                    type: "image",
+                    attrs: { src: imageUrl, alt: imageAlt },
+                  },
+                ]
+                if (captionText) {
+                  content.push({
+                    type: "caption",
+                    content: [
+                      {
+                        type: "text",
+                        text: captionText,
+                      },
+                    ],
+                  })
+                }
+
                 editor
                   .chain()
                   .focus()
                   .insertContent({
                     type: "figure",
-                    content: [
-                      {
-                        type: "image",
-                        attrs: { src: imageUrl, alt: imageAlt },
-                      },
-                      {
-                        type: "caption",
-                        content: [
-                          {
-                            type: "text",
-                            text: captionText,
-                          },
-                        ],
-                      },
-                    ],
+                    content,
                   })
                   .run()
               }
