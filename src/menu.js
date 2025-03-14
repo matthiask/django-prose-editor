@@ -200,7 +200,7 @@ function svgButton(svgContent, title = "") {
   return dom
 }
 
-const headingMenuItem = (_editor, level) => {
+const headingButton = (level) => {
   const dom = crel("span", {
     className: "prose-menubar__button prose-menubar__button--heading",
   })
@@ -229,7 +229,7 @@ function blockTypeMenuItems(editor) {
 
   const extension = findExtension(editor, "heading")
   const levels = extension ? extension.options.levels : []
-  const items = levels.map((level) => headingMenuItem(editor, level))
+  const items = levels.map((level) => headingButton(level))
 
   let type
   if ((type = schema.nodes.bulletList)) {
