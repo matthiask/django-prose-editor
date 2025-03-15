@@ -14,7 +14,9 @@ Next version
 - Added Django 5.2a1.
 - Switched the JavaScript to use ES modules and importmaps. If you've been
   using 0.10 you have to update your code to use ES modules (``<script
-  type="module">``) instead of deferred scripts. Sorry for the churn.
+  type="module">``) instead of deferred scripts. Sorry for the churn. Also
+  check the import locations, ProseMirror functions have been moved into the
+  ``pm.*`` namespace.
 - Modified the ``HTML`` extension to prettify the HTML code somewhat.
 - Added a new ``Fullscreen`` extension.
 

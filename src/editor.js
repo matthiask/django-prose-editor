@@ -47,6 +47,8 @@ export * from "./menu.js"
 export * from "./utils.js"
 export * from "@tiptap/core"
 
+export * as pm from "./pm.js"
+
 // Import our custom OrderedList
 export { OrderedList } from "./orderedList.js"
 
