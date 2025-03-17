@@ -1,4 +1,4 @@
-exclude: ".yarn/|yarn.lock|\\.min\\.(css|js)$|static"
+exclude: ".yarn/|yarn.lock|\\.min\\.(css|js)$"
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
@@ -13,6 +13,14 @@ repos:
       - id: end-of-file-fixer
       - id: mixed-line-ending
       - id: trailing-whitespace
+  - repo: local
+    hooks:
+      - id: forbid-sourcemap
+        name: Check for sourceMappingURL
+        description: Ensures no files containing sourceMappingURL are committed
+        entry: sourceMappingURL
+        language: pygrep
+        types_or: [javascript, css]
   - repo: https://github.com/adamchainz/django-upgrade
     rev: 1.23.1
     hooks:
@@ -30,6 +38,7 @@ repos:
       - id: biome-check
         additional_dependencies: ["@biomejs/biome@1.9.4"]
         args: [--unsafe]
+        exclude: "static"
   - repo: https://github.com/tox-dev/pyproject-fmt
     rev: v2.5.1
     hooks:
