@@ -88,7 +88,7 @@ export const updateAttrsDialog =
         ]),
       ])
 
-      editor.view.dom.closest(".prose-editor").append(div)
+      editor.view.dom.parentElement.append(div)
       const dialog = div.querySelector("dialog")
       const form = div.querySelector("form")
 

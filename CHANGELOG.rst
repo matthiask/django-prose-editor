@@ -19,6 +19,10 @@ Next version
   ``pm.*`` namespace.
 - Modified the ``HTML`` extension to prettify the HTML code somewhat.
 - Added a new ``Fullscreen`` extension.
+- Changed the ``updateAttrsDialog`` to insert the dialog element into the
+  parent element of the ``EditorView`` DOM element instead of searching for an
+  element with a ``prose-editor`` class. This makes the function more reusable
+  for even more exotic customizations of the editor.
 
 
 0.10 (2024-12-17)
