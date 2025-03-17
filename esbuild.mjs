@@ -4,7 +4,7 @@ import postcss from "esbuild-postcss"
 const devMode = process.argv.includes("watch")
 const ctx = await esbuild.context({
   entryPoints: ["./src/overrides.css", "./src/editor.js"],
-  minify: true,
+  minify: !devMode,
   bundle: true,
   format: "esm",
   target: "es6",
@@ -26,7 +26,7 @@ const ctx = await esbuild.context({
   outdir: "django_prose_editor/static/django_prose_editor/",
   // I really like sourcemaps, but I don't want to distribute them here.
   // People can check the open source package after all.
-  // sourcemap: true,
+  sourcemap: devMode,
 })
 
 if (devMode) {
