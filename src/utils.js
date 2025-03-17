@@ -1,32 +1,40 @@
 export const crel = (tagName, attributes = null, children = []) => {
   const dom = document.createElement(tagName)
+  dom.append(...children)
   if (attributes) {
     for (const [name, value] of Object.entries(attributes)) {
       if (/^data-|^aria-|^role/.test(name)) dom.setAttribute(name, value)
       else dom[name] = value
     }
   }
-  dom.append(...children)
   return dom
 }
 
 export const gettext = window.gettext || ((s) => s)
 
-const formFieldForProperty = ([name, config]) => {
+const formFieldForProperty = (name, config, value) => {
+  const label = crel("label", { textContent: config.title || name })
   let widget
 
+  if (config.type === "boolean") {
+    return crel("label", {}, [
+      crel("input", { name, type: "checkbox", checked: !!value }),
+      config.title || name,
+    ])
+  }
   if (config.format === "textarea") {
-    widget = crel("textarea", { name, cols: 80, rows: 30 })
+    widget = crel("textarea", { name, value, cols: 80, rows: 30 })
   } else if (config.enum) {
     widget = crel(
       "select",
-      { name },
-      config.enum.map((value) => crel("option", { textContent: value })),
+      { name, value },
+      config.enum.map((option) => crel("option", { textContent: option })),
     )
   } else {
     // Create input with appropriate attributes
     const attrs = {
       name,
+      value,
       type: config.format || "text",
       size: 50,
     }
@@ -39,10 +47,14 @@ const formFieldForProperty = ([name, config]) => {
     widget = crel("input", attrs)
   }
 
-  return crel("p", {}, [
-    crel("label", { textContent: config.title || name }),
-    widget,
-  ])
+  return crel("p", {}, [label, widget])
+}
+
+const valueForFormField = (name, config, form) => {
+  if (config.type === "boolean") {
+    return !!form[name].checked
+  }
+  return form[name].value
 }
 
 export const updateAttrsDialog =
@@ -74,8 +86,8 @@ export const updateAttrsDialog =
 
       // Add form fields with dynamic enum support
       formElements.push(
-        ...Object.entries(properties).map((entry) =>
-          formFieldForProperty(entry),
+        ...Object.entries(properties).map(([name, config]) =>
+          formFieldForProperty(name, config, attrs[name]),
         ),
       )
 
@@ -92,10 +104,6 @@ export const updateAttrsDialog =
       const dialog = div.querySelector("dialog")
       const form = div.querySelector("form")
 
-      for (const [name, config] of Object.entries(properties)) {
-        form[name].value = attrs[name] || config.default || ""
-      }
-
       cancel.addEventListener("click", () => {
         dialog.close()
       })
@@ -109,7 +117,10 @@ export const updateAttrsDialog =
           div.remove()
           resolve(
             Object.fromEntries(
-              Object.keys(properties).map((name) => [name, form[name].value]),
+              Object.entries(properties).map(([name, config]) => [
+                name,
+                valueForFormField(name, config, form),
+              ]),
             ),
           )
         }

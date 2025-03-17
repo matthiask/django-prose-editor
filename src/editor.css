@@ -166,13 +166,20 @@
   border-bottom: 1px solid var(--_r);
 }
 
+.prose-editor-dialog input[type="checkbox"],
+.prose-editor-dialog input[type="radio"] {
+  margin-right: 4px;
+}
+
 .prose-editor-dialog label {
   display: block;
   margin-bottom: 0.5em;
   font-weight: bold;
+  width: auto;
+  min-width: 0;
 }
 
-.prose-editor-dialog input,
+.prose-editor-dialog input:not([type="checkbox"], [type="radio"]),
 .prose-editor-dialog select,
 .prose-editor-dialog textarea {
   width: 100%;
