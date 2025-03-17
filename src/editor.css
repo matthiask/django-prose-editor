@@ -171,6 +171,11 @@
   margin-right: 4px;
 }
 
+.prose-editor-dialog p {
+  padding: 0;
+  margin: 0;
+}
+
 .prose-editor-dialog label {
   display: block;
   margin-bottom: 0.5em;

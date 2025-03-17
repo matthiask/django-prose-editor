@@ -208,6 +208,13 @@
   pointer-events: none;
 }
 
+.ProseMirror label {
+  display: inline;
+  max-width: auto;
+  min-width: 0;
+  width: auto;
+}
+
 .tableWrapper {
   overflow-x: auto;
 }
