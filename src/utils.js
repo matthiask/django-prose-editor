@@ -12,8 +12,9 @@ export const crel = (tagName, attributes = null, children = []) => {
 
 export const gettext = window.gettext || ((s) => s)
 
-const formFieldForProperty = (name, config, value) => {
+const formFieldForProperty = (name, config, attrValue) => {
   const label = crel("label", { textContent: config.title || name })
+  const value = attrValue || config.default || ""
   let widget
 
   if (config.type === "boolean") {
