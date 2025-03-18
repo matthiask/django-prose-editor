@@ -65,6 +65,16 @@
 }
 
 /* List styling improvements */
+.ProseMirror ul {
+  list-style-type: disc;
+}
+
+.ProseMirror li {
+  list-style: inherit !important;
+  padding: 0;
+  margin: 0;
+}
+
 .ProseMirror ol,
 .ProseMirror ul {
   padding-left: 2.5em !important; /* Bring markers closer to content area */
