@@ -2,9 +2,14 @@ from django_prose_editor.fields import ProseEditorField, _actually_empty
 
 
 def _nh3_sanitizer():
-    from nh3 import clean
+    from copy import deepcopy
 
-    return lambda x: _actually_empty(clean(x))
+    import nh3
+
+    attributes = deepcopy(nh3.ALLOWED_ATTRIBUTES)
+    attributes["a"].add("target")
+
+    return lambda x: _actually_empty(nh3.clean(x, attributes=attributes))
 
 
 class SanitizedProseEditorField(ProseEditorField):
