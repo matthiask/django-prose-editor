@@ -23,6 +23,7 @@ Next version
   parent element of the ``EditorView`` DOM element instead of searching for an
   element with a ``prose-editor`` class. This makes the function more reusable
   for even more exotic customizations of the editor.
+- Added a "open in new window" checkbox to the link dialog.
 
 
 0.10 (2024-12-17)

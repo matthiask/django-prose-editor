@@ -2,7 +2,7 @@ import { Link as BaseLink } from "@tiptap/extension-link"
 
 import { gettext, updateAttrsDialog } from "./utils.js"
 
-const linkDialog = updateAttrsDialog(
+const linkDialogImpl = updateAttrsDialog(
   {
     href: {
       type: "string",
@@ -12,11 +12,26 @@ const linkDialog = updateAttrsDialog(
       type: "string",
       title: gettext("Title"),
     },
+    openInNewWindow: {
+      type: "boolean",
+      title: gettext("Open in new window"),
+    },
   },
   {
     title: gettext("Edit Link"),
   },
 )
+const linkDialog = async (editor, attrs) => {
+  attrs = attrs || {}
+  attrs.openInNewWindow = attrs.target === "_blank"
+  attrs = await linkDialogImpl(editor, attrs)
+  if (attrs) {
+    if (attrs.openInNewWindow) {
+      attrs.target = "_blank"
+    }
+    return attrs
+  }
+}
 
 export const Link = BaseLink.extend({
   addOptions() {
