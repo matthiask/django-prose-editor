@@ -59,7 +59,7 @@ export const listPropertiesDialog = updateAttrsDialog(
     },
   },
   {
-    title: gettext("List Properties"),
+    title: gettext("List properties"),
     submitText: gettext("Update"),
   },
 )
