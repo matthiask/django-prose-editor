@@ -24,6 +24,9 @@ Next version
   element with a ``prose-editor`` class. This makes the function more reusable
   for even more exotic customizations of the editor.
 - Added a "open in new window" checkbox to the link dialog.
+- Added integration testing using playwright.
+- Pruned the CI matrix a bit, stopped running tests using Python 3.11 and
+  Django 5.0. Python 3.10 and Django 4.2 are still tested so we should be safe.
 
 
 0.10 (2024-12-17)
