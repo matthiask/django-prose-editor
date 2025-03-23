@@ -62,6 +62,8 @@ const classes = {
 
 const typographicDecorationsForNode = (node, position) => {
   const decorations = []
+
+  // For text nodes, look for special characters
   if (node.text) {
     // Create a regex pattern from all character keys in the classes object
     const pattern = new RegExp(`([${Object.keys(classes).join("")}])`, "g")
@@ -74,6 +76,16 @@ const typographicDecorationsForNode = (node, position) => {
       )
     }
   }
+
+  // For hard break nodes (i.e., <br>), add a decoration to make them visible
+  if (node.type.name === "hardBreak") {
+    decorations.push(
+      Decoration.node(position, position + node.nodeSize, {
+        class: "prose-editor-br",
+      }),
+    )
+  }
+
   return decorations
 }
 

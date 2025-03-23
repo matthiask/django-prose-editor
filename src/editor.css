@@ -339,6 +339,18 @@ label:empty:has(+ .prose-editor) {
   font-size: 0.8em;
 }
 
+/* Visualization for HTML line breaks (<br> elements) */
+.prose-editor-br {
+  position: relative;
+}
+.prose-editor-br::after {
+  content: "↵";
+  display: inline-block;
+  color: var(--_t);
+  font-size: 1em;
+  margin-left: 0.2em;
+}
+
 /* Em space */
 .prose-editor-emsp {
   background: var(--_t);
