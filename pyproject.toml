@@ -43,8 +43,13 @@ optional-dependencies.sanitize = [
   "nh3",
 ]
 optional-dependencies.tests = [
+  "asgiref",
   "coverage",
   "nh3",
+  "pytest",
+  "pytest-asyncio",
+  "pytest-django",
+  "pytest-playwright",
 ]
 urls.Documentation = "https://django-prose-editor.readthedocs.io/"
 
@@ -116,3 +121,14 @@ lint.per-file-ignores."*/migrat*/*" = [
 lint.isort.combine-as-imports = true
 lint.isort.lines-after-imports = 2
 lint.mccabe.max-complexity = 15
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "testapp.settings"
+python_files = "test_*.py"
+addopts = "--strict-markers"
+testpaths = [ "tests" ]
+asyncio_mode = "strict"
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+  "e2e: End-to-end browser tests",
+]
