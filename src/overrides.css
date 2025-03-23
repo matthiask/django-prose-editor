@@ -66,7 +66,32 @@
 
 /* List styling improvements */
 .ProseMirror ul {
-  list-style-type: disc;
+  list-style-type: disc !important;
+}
+
+/* Fix for grappelli removing list styles */
+.ProseMirror ul {
+  list-style-type: disc !important;
+}
+
+.ProseMirror ol:not([type]) {
+  list-style-type: decimal !important;
+}
+
+.ProseMirror ol[type="a"] {
+  list-style-type: lower-alpha !important;
+}
+
+.ProseMirror ol[type="A"] {
+  list-style-type: upper-alpha !important;
+}
+
+.ProseMirror ol[type="i"] {
+  list-style-type: lower-roman !important;
+}
+
+.ProseMirror ol[type="I"] {
+  list-style-type: upper-roman !important;
 }
 
 .ProseMirror li {
@@ -86,6 +111,7 @@
   position: relative !important;
   margin: 0.1em 0 !important; /* Reduced space between list items */
   padding-left: 0 !important; /* No extra padding after marker */
+  display: list-item !important; /* Explicit display for list items */
 }
 
 .ProseMirror ol li::marker,

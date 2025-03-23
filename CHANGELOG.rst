@@ -27,6 +27,8 @@ Next version
 - Added integration testing using playwright.
 - Pruned the CI matrix a bit, stopped running tests using Python 3.11 and
   Django 5.0. Python 3.10 and Django 4.2 are still tested so we should be safe.
+- Added list style overrides to hopefully make lists usable with the Grappelli
+  admin skin.
 
 
 0.10 (2024-12-17)
