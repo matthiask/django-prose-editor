@@ -273,6 +273,32 @@ The pre-commit configuration includes a hook that prevents committing files
 with source map references, ensuring that development artifacts don't make it
 into the repository.
 
+Browser Testing with Playwright
+------------------------------
+
+This project uses Playwright for browser-based testing of the prose editor.
+
+To run the browser tests:
+
+1. Install the dependencies:
+
+   .. code-block:: shell
+
+       pip install -e ".[tests]"
+       playwright install
+
+2. Run the tests using tox:
+
+   .. code-block:: shell
+
+       tox -e playwright
+
+   Or directly with pytest:
+
+   .. code-block:: shell
+
+       pytest tests/testapp/test_prose_editor_e2e.py -v --browser chromium
+
 Code Style and Linting
 ---------------------
 
