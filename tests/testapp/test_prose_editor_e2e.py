@@ -1,31 +1,17 @@
-import importlib.util
 import os
 
 import pytest
+from playwright.sync_api import expect
 
 from testapp.models import ProseEditorModel
-
-
-# Check if playwright is installed
-playwright_available = importlib.util.find_spec("playwright") is not None
-
-# Only import playwright modules if available
-if playwright_available:
-    from playwright.sync_api import expect
 
 
 # Set Django async unsafe to allow database operations in tests
 os.environ.setdefault("DJANGO_ALLOW_ASYNC_UNSAFE", "true")
 
-# Skip reason for when playwright is not available
-requires_playwright = pytest.mark.skipif(
-    not playwright_available, reason="Playwright not installed, skipping browser tests"
-)
-
 
 @pytest.mark.django_db
 @pytest.mark.e2e
-@requires_playwright
 def test_prose_editor_admin_form(page, live_server):
     """Test that the prose editor loads and works in the admin."""
     # Login first
@@ -76,7 +62,6 @@ def test_prose_editor_admin_form(page, live_server):
 
 @pytest.mark.django_db
 @pytest.mark.e2e
-@requires_playwright
 def test_prose_editor_formatting(page, live_server):
     """Test formatting functionality in the prose editor."""
     # Login first
