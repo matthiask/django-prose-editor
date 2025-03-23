@@ -254,6 +254,291 @@ label:empty:has(+ .prose-editor) {
   box-shadow: 0 2px 0 1px var(--_t), 0 -2px 0 1px var(--_t);
 }
 
+/* Zero-width space - dot in the middle */
+.prose-editor-zwsp {
+  position: relative;
+}
+.prose-editor-zwsp::after {
+  content: "·";
+  position: absolute;
+  color: var(--_t);
+  font-weight: bold;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.8em;
+}
+
+/* Zero-width non-joiner - circle with slash */
+.prose-editor-zwnj {
+  position: relative;
+}
+.prose-editor-zwnj::after {
+  content: "⊘";
+  position: absolute;
+  color: var(--_t);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.8em;
+}
+
+/* Zero-width joiner - circle with link */
+.prose-editor-zwj {
+  position: relative;
+}
+.prose-editor-zwj::after {
+  content: "⊙";
+  position: absolute;
+  color: var(--_t);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.8em;
+}
+
+/* Word joiner - double arrow */
+.prose-editor-wj {
+  position: relative;
+}
+.prose-editor-wj::after {
+  content: "↔";
+  position: absolute;
+  color: var(--_t);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.8em;
+}
+
+/* Line separator - slash + nl */
+.prose-editor-ls {
+  position: relative;
+}
+.prose-editor-ls::after {
+  content: "↲";
+  position: absolute;
+  color: var(--_t);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.8em;
+}
+
+/* Paragraph separator - double slash + nl */
+.prose-editor-ps {
+  position: relative;
+}
+.prose-editor-ps::after {
+  content: "⁋";
+  position: absolute;
+  color: var(--_t);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.8em;
+}
+
+/* Em space */
+.prose-editor-emsp {
+  background: var(--_t);
+  box-shadow: 0 2px 0 0 var(--_t), 0 -2px 0 0 var(--_t);
+  position: relative;
+}
+.prose-editor-emsp::after {
+  content: "em";
+  position: absolute;
+  color: #fff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.5em;
+  font-weight: bold;
+}
+
+/* Thin space */
+.prose-editor-thinsp {
+  background: var(--_t);
+  box-shadow: 0 2px 0 0 var(--_t), 0 -2px 0 0 var(--_t);
+  position: relative;
+}
+.prose-editor-thinsp::after {
+  content: "thin";
+  position: absolute;
+  color: #fff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.4em;
+  font-weight: bold;
+}
+
+/* Narrow no-break space */
+.prose-editor-nnbsp {
+  background: var(--_t);
+  box-shadow: 0 2px 0 0 var(--_t), 0 -2px 0 0 var(--_t);
+  position: relative;
+}
+.prose-editor-nnbsp::after {
+  content: "nnbsp";
+  position: absolute;
+  color: #fff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.4em;
+  font-weight: bold;
+}
+
+/* En space */
+.prose-editor-ensp {
+  background: var(--_t);
+  box-shadow: 0 2px 0 0 var(--_t), 0 -2px 0 0 var(--_t);
+  position: relative;
+}
+.prose-editor-ensp::after {
+  content: "en";
+  position: absolute;
+  color: #fff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.5em;
+  font-weight: bold;
+}
+
+/* Three-per-em space */
+.prose-editor-3persp {
+  background: var(--_t);
+  box-shadow: 0 2px 0 0 var(--_t), 0 -2px 0 0 var(--_t);
+  position: relative;
+}
+.prose-editor-3persp::after {
+  content: "3/em";
+  position: absolute;
+  color: #fff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.4em;
+  font-weight: bold;
+}
+
+/* Four-per-em space */
+.prose-editor-4persp {
+  background: var(--_t);
+  box-shadow: 0 2px 0 0 var(--_t), 0 -2px 0 0 var(--_t);
+  position: relative;
+}
+.prose-editor-4persp::after {
+  content: "4/em";
+  position: absolute;
+  color: #fff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.4em;
+  font-weight: bold;
+}
+
+/* Six-per-em space */
+.prose-editor-6persp {
+  background: var(--_t);
+  box-shadow: 0 2px 0 0 var(--_t), 0 -2px 0 0 var(--_t);
+  position: relative;
+}
+.prose-editor-6persp::after {
+  content: "6/em";
+  position: absolute;
+  color: #fff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.4em;
+  font-weight: bold;
+}
+
+/* Figure space */
+.prose-editor-figsp {
+  background: var(--_t);
+  box-shadow: 0 2px 0 0 var(--_t), 0 -2px 0 0 var(--_t);
+  position: relative;
+}
+.prose-editor-figsp::after {
+  content: "fig";
+  position: absolute;
+  color: #fff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.4em;
+  font-weight: bold;
+}
+
+/* Punctuation space */
+.prose-editor-psp {
+  background: var(--_t);
+  box-shadow: 0 2px 0 0 var(--_t), 0 -2px 0 0 var(--_t);
+  position: relative;
+}
+.prose-editor-psp::after {
+  content: "punct";
+  position: absolute;
+  color: #fff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.4em;
+  font-weight: bold;
+}
+
+/* Medium mathematical space */
+.prose-editor-mmsp {
+  background: var(--_t);
+  box-shadow: 0 2px 0 0 var(--_t), 0 -2px 0 0 var(--_t);
+  position: relative;
+}
+.prose-editor-mmsp::after {
+  content: "math";
+  position: absolute;
+  color: #fff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.4em;
+  font-weight: bold;
+}
+
+/* Mongolian vowel separator */
+.prose-editor-mvs {
+  position: relative;
+}
+.prose-editor-mvs::after {
+  content: "mvs";
+  position: absolute;
+  color: var(--_t);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.5em;
+  font-weight: bold;
+}
+
+/* Byte order mark */
+.prose-editor-bom {
+  position: relative;
+}
+.prose-editor-bom::after {
+  content: "BOM";
+  position: absolute;
+  color: var(--_t);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.5em;
+  font-weight: bold;
+}
+
 /* Fullscreen mode styles */
 .prose-editor-fullscreen {
   position: fixed !important;
