@@ -48,6 +48,7 @@ optional-dependencies.tests = [
   "nh3",
   "pytest",
   "pytest-asyncio",
+  "pytest-cov",
   "pytest-django",
   "pytest-playwright",
 ]
