@@ -9,7 +9,7 @@
 }
 
 .ProseMirror * {
-  color: var(--body-fg) !important;
+  color: var(--body-fg);
 }
 
 .ProseMirror p {
@@ -126,10 +126,6 @@
 .ProseMirror ol ul,
 .ProseMirror ul ol {
   margin: 0.1em 0 0.1em 0.5em !important; /* Tighter nested lists with less indent */
-}
-
-.ProseMirror {
-  margin: 1rem 0;
 }
 
 .ProseMirror h1,
