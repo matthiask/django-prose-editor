@@ -540,6 +540,29 @@ function utilityMenuItems(editor) {
     })
   }
 
+  if (findExtension(editor, "typographic")) {
+    // Create button with dynamic content based on typographic visibility state
+    const dom = materialButton(
+      "visibility",
+      gettext("Toggle special characters"),
+    )
+
+    items.push({
+      command(editor) {
+        editor.commands.toggleTypographic()
+      },
+      dom,
+      update: (editor) => {
+        dom.textContent = editor.storage.typographic?.active
+          ? "visibility"
+          : "visibility_off"
+      },
+      active(editor) {
+        return editor.storage.typographic?.active
+      },
+    })
+  }
+
   if (findExtension(editor, "fullscreen")) {
     // Create button with dynamic content based on fullscreen state
     const dom = materialButton("", gettext("Toggle fullscreen"))

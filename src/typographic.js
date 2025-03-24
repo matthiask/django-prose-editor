@@ -2,14 +2,160 @@
 
 import { Extension } from "@tiptap/core"
 
-import { Plugin } from "@tiptap/pm/state"
+import { Plugin, PluginKey } from "@tiptap/pm/state"
 import { Decoration, DecorationSet } from "@tiptap/pm/view"
 
 export const Typographic = Extension.create({
   name: "typographic",
 
+  addStorage() {
+    return {
+      active: true, // Track the active state in storage for user toggling
+    }
+  },
+
+  addCommands() {
+    return {
+      // Implement toggleTypographic as a simple wrapper around setTypographic
+      toggleTypographic:
+        () =>
+        ({ editor }) => {
+          // Get the current state and toggle it
+          const newState = !editor.storage.typographic.active
+
+          // Call setTypographic with the new state
+          return editor.commands.setTypographic(newState)
+        },
+
+      // Primary command for changing the typographic state
+      setTypographic:
+        (active) =>
+        ({ editor }) => {
+          // Update the state in storage
+          editor.storage.typographic.active = active
+
+          // Force a re-render by dispatching a transaction with metadata
+          editor.view.dispatch(
+            editor.state.tr.setMeta("toggleTypographic", active),
+          )
+
+          // Force an update of hard breaks
+          updateHardBreaks(editor.view, active)
+
+          return true
+        },
+    }
+  },
+
   addProseMirrorPlugins() {
-    return [typographicPlugin, hardBreakPlugin]
+    const extension = this
+
+    // Create a plugin key for special character decorations
+    const typographicPluginKey = new PluginKey("typographic")
+
+    // Create a typographic plugin with dynamic visibility
+    const typographicPluginWithToggle = new Plugin({
+      key: typographicPluginKey,
+      state: {
+        init(_, { doc }) {
+          return typographicDecorations(doc)
+        },
+        apply(tr, set, _oldState) {
+          // Always recalculate decorations when the document changes
+          if (tr.docChanged) {
+            return typographicDecorations(tr.doc)
+          }
+          return set.map(tr.mapping, tr.doc)
+        },
+      },
+      props: {
+        decorations(state) {
+          // Only return decorations if the feature is enabled
+          if (extension.editor?.storage.typographic.active) {
+            return typographicPluginKey.getState(state)
+          }
+          return null
+        },
+      },
+    })
+
+    // Create a plugin for hard breaks that respects the toggle
+    const hardBreakPluginWithToggle = new Plugin({
+      key: hardBreakPluginKey,
+
+      // Store the last known toggle state per editor instance
+      state: {
+        init() {
+          // Default to true (visible)
+          return { lastKnownState: true }
+        },
+        apply(tr, pluginState) {
+          // Check if we have a toggle change in the transaction
+          const meta = tr.getMeta("toggleTypographic")
+          if (meta !== undefined) {
+            // Update our plugin state with the new toggle value
+            return { lastKnownState: meta }
+          }
+          return pluginState
+        },
+      },
+
+      props: {
+        // Completely replace the default node view handling for hard breaks
+        nodeViews: {
+          hardBreak: (node, _view, _getPos) => {
+            // Get the current active state from the editor
+            const isActive = extension.editor?.storage.typographic.active
+
+            // Only return the custom node view if toggled on
+            if (isActive) {
+              return new HardBreakView(node)
+            }
+
+            // Return a simple BR node when toggled off
+            // This effectively removes the highlighting
+            const dom = document.createElement("br")
+            return { dom, contentDOM: null, update: () => true }
+          },
+        },
+      },
+
+      // Add a plugin view to handle toggle state changes
+      view: (view) => {
+        return {
+          update: () => {
+            // Get the current toggle state from editor storage
+            const currentState = extension.editor?.storage.typographic.active
+
+            // Get the last known state from our plugin state
+            const lastState = hardBreakPluginKey.getState(
+              view.state,
+            )?.lastKnownState
+
+            // Only update if there was a change
+            if (
+              currentState !== undefined &&
+              lastState !== undefined &&
+              currentState !== lastState
+            ) {
+              // Update hard breaks when toggle state changes
+              updateHardBreaks(view, currentState)
+
+              // Store the new state in a transaction
+              view.dispatch(
+                view.state.tr.setMeta(hardBreakPluginKey, {
+                  lastKnownState: currentState,
+                }),
+              )
+            }
+          },
+          destroy: () => {},
+        }
+      },
+    })
+
+    // Always return both plugins
+    return [typographicPluginWithToggle, hardBreakPluginWithToggle]
   },
 })
 
@@ -35,6 +181,9 @@ const classes = {
   "\u180E": "prose-editor-mvs", // Mongolian vowel separator
   "\uFEFF": "prose-editor-bom", // Byte order mark
 }
+
+// Create a plugin key for hard breaks
+const hardBreakPluginKey = new PluginKey("hardBreak")
 
 // Custom NodeView for hard breaks
 class HardBreakView {
@@ -70,8 +219,25 @@ class HardBreakView {
   }
 }
 
+// Function to update the hard break representation
+function updateHardBreaks(view, _active) {
+  // Force a rebuild of all hard break nodes
+  const tr = view.state.tr
+
+  view.state.doc.descendants((node, pos) => {
+    if (node.type.name === "hardBreak") {
+      // Replace the node with itself to force the nodeView to update
+      tr.replaceWith(pos, pos + node.nodeSize, node.type.create(node.attrs))
+    }
+  })
+
+  if (tr.steps.length > 0) {
+    view.dispatch(tr)
+  }
+}
+
 // Separate plugin for handling hard breaks with NodeViews
-const hardBreakPlugin = new Plugin({
+const _hardBreakPlugin = new Plugin({
   props: {
     nodeViews: {
       hardBreak: (node, _view, _getPos) => new HardBreakView(node),

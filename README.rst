@@ -242,6 +242,19 @@ django-prose-editor outside the admin in your site.
 In addition, you may optionally set a ``--prose-editor-typographic`` property
 to control the color of typographic characters when shown.
 
+Toggling Typographic Characters
+------------------------------------
+
+The Typographic extension now includes a toggle button in the editor menu to show or hide special character visualizations.
+
+Users can click the visibility/visibility_off icon in the editor toolbar to toggle the display of:
+
+- Special whitespace characters (non-breaking spaces, thin spaces, etc.)
+- Line break markers
+- Other special unicode characters
+
+This feature helps users understand the structure of their content while editing, without requiring any configuration.
+
 
 Development
 ===========
