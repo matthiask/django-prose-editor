@@ -9,33 +9,9 @@ export const Typographic = Extension.create({
   name: "typographic",
 
   addProseMirrorPlugins() {
-    return [typographicPlugin]
+    return [typographicPlugin, hardBreakPlugin]
   },
 })
-
-// https://discuss.prosemirror.net/t/efficiently-finding-changed-nodes/4280/5
-// Helper for iterating through the nodes in a document that changed
-// compared to the given previous document. Useful for avoiding
-// duplicate work on each transaction.
-function changedDescendants(old, cur, offset, f) {
-  const oldSize = old.childCount
-  const curSize = cur.childCount
-  outer: for (let i = 0, j = 0; i < curSize; i++) {
-    const child = cur.child(i)
-    for (let scan = j, e = Math.min(oldSize, i + 3); scan < e; scan++) {
-      if (old.child(scan) === child) {
-        j = scan + 1
-        offset += child.nodeSize
-        continue outer
-      }
-    }
-    f(child, offset)
-    if (j < oldSize && old.child(j).sameMarkup(child))
-      changedDescendants(old.child(j), child, offset + 1, f)
-    else child.nodesBetween(0, child.content.size, f, offset + 1)
-    offset += child.nodeSize
-  }
-}
 
 const classes = {
   "\u00A0": "prose-editor-nbsp", // Non-breaking space
@@ -60,6 +36,49 @@ const classes = {
   "\uFEFF": "prose-editor-bom", // Byte order mark
 }
 
+// Custom NodeView for hard breaks
+class HardBreakView {
+  constructor(_node) {
+    // Create a container for both the BR and our custom marker
+    this.dom = document.createElement("span")
+    this.dom.className = "prose-editor-br-container"
+
+    // Add the marker span
+    const marker = document.createElement("span")
+    marker.className = "prose-editor-br-marker"
+    marker.textContent = "↵"
+    this.dom.appendChild(marker)
+
+    // Add the actual BR element
+    const br = document.createElement("br")
+    this.dom.appendChild(br)
+
+    // No content DOM since this is a leaf node
+    this.contentDOM = null
+  }
+
+  update(node) {
+    return node.type.name === "hardBreak"
+  }
+
+  stopEvent() {
+    return false
+  }
+
+  ignoreMutation() {
+    return true
+  }
+}
+
+// Separate plugin for handling hard breaks with NodeViews
+const hardBreakPlugin = new Plugin({
+  props: {
+    nodeViews: {
+      hardBreak: (node, _view, _getPos) => new HardBreakView(node),
+    },
+  },
+})
+
 const typographicDecorationsForNode = (node, position) => {
   const decorations = []
 
@@ -75,15 +94,6 @@ const typographicDecorationsForNode = (node, position) => {
         }),
       )
     }
-  }
-
-  // For hard break nodes (i.e., <br>), add a decoration to make them visible
-  if (node.type.name === "hardBreak") {
-    decorations.push(
-      Decoration.node(position, position + node.nodeSize, {
-        class: "prose-editor-br",
-      }),
-    )
   }
 
   return decorations
@@ -102,19 +112,15 @@ const typographicPlugin = new Plugin({
     init(_, { doc }) {
       return typographicDecorations(doc)
     },
-    apply(tr, set, oldState) {
-      // I fear that's not very performant. Maybe improve this "later".
-      // return tr.docChanged ? typographicDecorations(tr.doc) : set
+    apply(tr, set, _oldState) {
+      // Simplest solution: Rebuild all decorations on doc changes
+      // This ensures we catch all special characters, even those in adjacent nodes
+      if (tr.docChanged) {
+        return typographicDecorations(tr.doc)
+      }
 
-      let newSet = set.map(tr.mapping, tr.doc)
-      changedDescendants(oldState.doc, tr.doc, 0, (node, offset) => {
-        // First, remove our inline decorations for the current node
-        newSet = newSet.remove(newSet.find(offset, offset + node.content.size))
-        // Then, add decorations (including the new content)
-        newSet = newSet.add(tr.doc, typographicDecorationsForNode(node, offset))
-      })
-
-      return newSet
+      // If the document hasn't changed, just map the existing decorations
+      return set.map(tr.mapping, tr.doc)
     },
   },
   props: {
