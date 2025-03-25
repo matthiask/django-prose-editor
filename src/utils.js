@@ -1,3 +1,6 @@
+// Global counter to support unique IDs for dialog form elements
+let dialogId = 0
+
 export const crel = (tagName, attributes = null, children = []) => {
   const dom = document.createElement(tagName)
   dom.append(...children)
@@ -12,28 +15,32 @@ export const crel = (tagName, attributes = null, children = []) => {
 
 export const gettext = window.gettext || ((s) => s)
 
-const formFieldForProperty = (name, config, attrValue) => {
-  const label = crel("label", { textContent: config.title || name })
+const formFieldForProperty = (name, config, attrValue, id) => {
+  const label = crel("label", {
+    htmlFor: id,
+    textContent: config.title || name,
+  })
   const value = attrValue || config.default || ""
   let widget
 
   if (config.type === "boolean") {
-    return crel("label", {}, [
-      crel("input", { name, type: "checkbox", checked: !!value }),
-      config.title || name,
+    return crel("p", {}, [
+      crel("input", { id, name, type: "checkbox", checked: !!value }),
+      label,
     ])
   }
   if (config.format === "textarea") {
-    widget = crel("textarea", { name, value, cols: 80, rows: 30 })
+    widget = crel("textarea", { id, name, value, cols: 80, rows: 30 })
   } else if (config.enum) {
     widget = crel(
       "select",
-      { name, value },
+      { id, name, value },
       config.enum.map((option) => crel("option", { textContent: option })),
     )
   } else {
     // Create input with appropriate attributes
     const attrs = {
+      id,
       name,
       value,
       type: config.format || "text",
@@ -85,10 +92,12 @@ export const updateAttrsDialog =
         )
       }
 
+      const prefix = `prose-editor-${++dialogId}-`
+
       // Add form fields with dynamic enum support
       formElements.push(
-        ...Object.entries(properties).map(([name, config]) =>
-          formFieldForProperty(name, config, attrs[name]),
+        ...Object.entries(properties).map(([name, config], idx) =>
+          formFieldForProperty(name, config, attrs[name], `${prefix}${idx}`),
         ),
       )
 
