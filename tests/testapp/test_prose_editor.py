@@ -1,7 +1,9 @@
 from django import test
 from django.contrib.auth.models import User
-from django.test import Client
+from django.core.exceptions import ImproperlyConfigured
+from django.test import Client, override_settings
 
+from django_prose_editor.widgets import ProseEditorWidget
 from testapp.models import ProseEditorModel, SanitizedProseEditorModel
 
 
@@ -48,4 +50,14 @@ class Test(test.TestCase):
         # print(response, response.content.decode("utf-8"))
         self.assertContains(
             response, 'href="/static/django_prose_editor/overrides.css"'
+        )
+
+    @override_settings(DJANGO_PROSE_EDITOR_PRESETS={"default": []})
+    def test_override_default_preset(self):
+        with self.assertRaises(ImproperlyConfigured) as cm:
+            widget = ProseEditorWidget()
+            widget.get_presets()
+        self.assertEqual(
+            str(cm.exception),
+            'Overriding the "default" preset in DJANGO_PROSE_EDITOR_PRESETS is not allowed.',
         )
