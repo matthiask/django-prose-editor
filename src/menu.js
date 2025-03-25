@@ -343,7 +343,7 @@ function markMenuItems(editor) {
           },
           dom,
           active: (editor) => editor.isActive(markType),
-          hidden: (editor) => editor.can().toggleMark(markType),
+          hidden: (editor) => !editor.can().toggleMark(markType),
         }
       : null
 
