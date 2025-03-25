@@ -8,6 +8,7 @@ def _nh3_sanitizer():
 
     attributes = deepcopy(nh3.ALLOWED_ATTRIBUTES)
     attributes["a"].add("target")
+    attributes["ol"] |= {"start", "type"}
 
     return lambda x: _actually_empty(nh3.clean(x, attributes=attributes))
 
