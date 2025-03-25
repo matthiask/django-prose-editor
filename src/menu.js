@@ -256,16 +256,19 @@ function blockTypeMenuItems(editor) {
       },
     })
 
-    // Add list settings button right after the ordered list button
-    items.push({
-      command(editor) {
-        editor.chain().focus().updateListAttributes().run()
-      },
-      dom: materialButton("tune", gettext("List properties")),
-      hidden(editor) {
-        return !editor.isActive("orderedList")
-      },
-    })
+    // Add list properties button only if list attributes are enabled
+    const orderedListExt = findExtension(editor, "orderedList")
+    if (orderedListExt?.options.enableListAttributes) {
+      items.push({
+        command(editor) {
+          editor.chain().focus().updateListAttributes().run()
+        },
+        dom: materialButton("tune", gettext("List properties")),
+        hidden(editor) {
+          return !editor.isActive("orderedList")
+        },
+      })
+    }
   }
 
   if (!items.length) return null

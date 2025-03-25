@@ -80,12 +80,25 @@ export const OrderedList = TiptapOrderedList.configure({
     return []
   },
 
+  addOptions() {
+    return {
+      ...this.parent?.(),
+      // Option to enable/disable list attributes dialog and menu
+      enableListAttributes: true,
+    }
+  },
+
   addCommands() {
     return {
       ...this.parent?.(),
       updateListAttributes:
         () =>
         ({ editor }) => {
+          // Check if list attributes dialog is enabled
+          if (!this.options.enableListAttributes) {
+            return false
+          }
+
           // Get the ordered list node
           const { state } = editor
           const { selection } = state
