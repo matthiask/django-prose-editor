@@ -96,7 +96,9 @@ lint.extend-select = [
   # flake8-pie
   "PIE",
   # pylint
-  "PL",
+  "PLC",
+  "PLE",
+  "PLW",
   # unused noqa
   "RUF100",
   # flake8-simplify

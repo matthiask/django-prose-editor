@@ -2,7 +2,7 @@ import { Table as TiptapTable } from "@tiptap/extension-table"
 
 import { gettext, updateAttrsDialog } from "./utils.js"
 
-export const tableDialog = updateAttrsDialog(
+const tableDialog = updateAttrsDialog(
   {
     rows: {
       type: "number",

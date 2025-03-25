@@ -101,3 +101,85 @@ def test_prose_editor_formatting(page, live_server):
     model = ProseEditorModel.objects.first()
     assert model is not None
     assert "<strong>Format this text</strong>" in model.description
+
+
+@pytest.mark.django_db
+@pytest.mark.e2e
+def test_prose_editor_table_creation(page, live_server):
+    """Test table insertion in a TableProseEditorModel."""
+    # Login first
+    from django.contrib.auth.models import User
+
+    from testapp.models import TableProseEditorModel
+
+    User.objects.create_superuser("admin", "admin@example.com", "password")
+
+    # Visit the login page
+    page.goto(f"{live_server.url}/admin/login/")
+    page.fill("#id_username", "admin")
+    page.fill("#id_password", "password")
+    page.click("input[type=submit]")
+
+    # Go to the add page for the TableProseEditorModel
+    page.goto(f"{live_server.url}/admin/testapp/tableproseeditormodel/add/")
+
+    # Click in the editor to focus it
+    editor = page.locator(".ProseMirror")
+    editor.click()
+    editor.type("Test content before table")
+    editor.press("Enter")
+    editor.press("Enter")
+
+    # Verify that the table button is present (this verifies the Table extension is loaded)
+    table_button = page.locator(".prose-menubar__button[title='Insert table']")
+    expect(table_button).to_be_visible()
+
+    # Click the table button to open the dialog
+    table_button.click()
+
+    # Check that the dialog appears
+    dialog = page.locator(".prose-editor-dialog")
+    expect(dialog).to_be_visible()
+
+    # Fill in the dialog form with specific values
+    page.fill("input[name='rows']", "4")
+    page.fill("input[name='cols']", "5")
+    page.locator("select[name='withHeaderRow']").select_option("Yes")
+
+    # Submit the dialog
+    dialog.locator("button[type='submit']").click()
+
+    # Wait for the table to be visible
+    table = editor.locator("table")
+    table.wait_for(state="visible", timeout=5000)
+
+    # Verify table structure
+    expect(editor.locator("tr")).to_have_count(4)  # 1 header + 3 data rows
+    expect(editor.locator("th")).to_have_count(5)  # 5 header cells
+
+    # Verify that table manipulation buttons exist (they may be hidden until table is activated)
+    # This confirms that table extensions are properly loaded
+    add_column_button = page.locator(".prose-menubar__button[title='Add column']")
+    expect(add_column_button).to_have_count(1)
+
+    delete_column_button = page.locator(".prose-menubar__button[title='Delete column']")
+    expect(delete_column_button).to_have_count(1)
+
+    # Save the form
+    page.click("input[name='_save']")
+
+    # Check the model content contains a table structure
+    model = TableProseEditorModel.objects.first()
+    assert model is not None
+    html_content = model.description.lower()
+
+    # Verify saved content has table components with the structure we defined
+    assert "table" in html_content
+    assert "tbody" in html_content  # Table uses tbody
+    assert "tr" in html_content  # Has rows
+    assert "th" in html_content  # Has header cells (th) in the first row
+    assert "td" in html_content  # Has data cells (td) in subsequent rows
+
+    # Also verify the correct number of rows and header cells
+    assert html_content.count("<tr>") == 4  # 4 rows total
+    assert html_content.count("<th") == 5  # 5 header cells

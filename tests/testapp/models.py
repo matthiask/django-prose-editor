@@ -16,3 +16,10 @@ class SanitizedProseEditorModel(models.Model):
 
     def __str__(self):
         return self.description
+
+
+class TableProseEditorModel(models.Model):
+    description = ProseEditorField(preset="table")
+
+    def __str__(self):
+        return self.description

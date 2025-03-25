@@ -24,7 +24,7 @@ def pytest_runtest_makereport(item, call):
         try:
             page = item.funcargs["page"]
             # Take screenshot and save it with test name
-            screenshot_dir = os.path.join(os.getcwd(), "screenshots")
+            screenshot_dir = os.path.join(os.getcwd(), "test-results/screenshots/")
             os.makedirs(screenshot_dir, exist_ok=True)
             screenshot_path = os.path.join(screenshot_dir, f"{item.name}_failed.png")
             page.screenshot(path=screenshot_path)

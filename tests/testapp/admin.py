@@ -27,3 +27,8 @@ class SanitizedProseEditorModelForm(forms.ModelForm):
 @admin.register(models.SanitizedProseEditorModel)
 class SanitizedProseEditorModelAdmin(admin.ModelAdmin):
     form = SanitizedProseEditorModelForm
+
+
+@admin.register(models.TableProseEditorModel)
+class TableProseEditorModelAdmin(admin.ModelAdmin):
+    pass
