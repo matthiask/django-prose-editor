@@ -2,7 +2,6 @@ import json
 
 from django import forms
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
 from js_asset import JS, importmap, static_lazy
 
 
@@ -50,10 +49,7 @@ class ProseEditorWidget(forms.Textarea):
 
     def get_presets(self):
         settings_presets = getattr(settings, "DJANGO_PROSE_EDITOR_PRESETS", {})
-        if "default" in settings_presets:
-            raise ImproperlyConfigured(
-                'Overriding the "default" preset in DJANGO_PROSE_EDITOR_PRESETS is not allowed.'
-            )
+        # The system check in checks.py will catch this error during startup
         return settings_presets | {
             "default": [
                 JS("django_prose_editor/editor.js", {"type": "module"}),
