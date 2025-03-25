@@ -217,6 +217,9 @@ const headingButton = (level) => {
     active(editor) {
       return editor.isActive("heading", { level })
     },
+    hidden(editor) {
+      return !editor.can().toggleHeading({ level })
+    },
   }
 }
 
@@ -236,6 +239,9 @@ function blockTypeMenuItems(editor) {
       dom: materialButton("format_list_bulleted", "unordered list"),
       active(_editor) {
         return false
+      },
+      hidden(editor) {
+        return !editor.can().toggleBulletList()
       },
     })
   }
@@ -274,6 +280,9 @@ function blockTypeMenuItems(editor) {
       active(_editor) {
         return false
       },
+      hidden(editor) {
+        return !editor.can().setParagraph()
+      },
     },
   ]
 }
@@ -291,6 +300,9 @@ function nodesMenuItems(editor) {
       active(editor) {
         return editor.isActive("blockquote")
       },
+      hidden(editor) {
+        return !editor.can().toggleBlockquote()
+      },
     })
   }
   if ((type = schema.nodes.horizontalRule)) {
@@ -301,6 +313,9 @@ function nodesMenuItems(editor) {
       dom: materialButton("horizontal_rule", "horizontal rule"),
       active(_editor) {
         return false
+      },
+      hidden(editor) {
+        return !editor.can().setHorizontalRule()
       },
     })
   }
@@ -313,6 +328,7 @@ function nodesMenuItems(editor) {
       active(editor) {
         return editor.isActive("figure")
       },
+      // TODO implement hidden(editor)
     })
   }
   return items
@@ -327,6 +343,7 @@ function markMenuItems(editor) {
           },
           dom,
           active: (editor) => editor.isActive(markType),
+          hidden: (editor) => editor.can().toggleMark(markType),
         }
       : null
 
