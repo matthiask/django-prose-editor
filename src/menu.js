@@ -217,8 +217,8 @@ const headingButton = (level) => {
     active(editor) {
       return editor.isActive("heading", { level })
     },
-    hidden(editor) {
-      return !editor.can().toggleHeading({ level })
+    enabled(editor) {
+      return editor.can().toggleHeading({ level })
     },
   }
 }
@@ -240,8 +240,8 @@ function blockTypeMenuItems(editor) {
       active(_editor) {
         return false
       },
-      hidden(editor) {
-        return !editor.can().toggleBulletList()
+      enabled(editor) {
+        return editor.can().toggleBulletList()
       },
     })
   }
@@ -280,8 +280,8 @@ function blockTypeMenuItems(editor) {
       active(_editor) {
         return false
       },
-      hidden(editor) {
-        return !editor.can().setParagraph()
+      enabled(editor) {
+        return editor.can().setParagraph()
       },
     },
   ]
@@ -300,8 +300,8 @@ function nodesMenuItems(editor) {
       active(editor) {
         return editor.isActive("blockquote")
       },
-      hidden(editor) {
-        return !editor.can().toggleBlockquote()
+      enabled(editor) {
+        return editor.can().toggleBlockquote()
       },
     })
   }
@@ -314,8 +314,8 @@ function nodesMenuItems(editor) {
       active(_editor) {
         return false
       },
-      hidden(editor) {
-        return !editor.can().setHorizontalRule()
+      enabled(editor) {
+        return editor.can().setHorizontalRule()
       },
     })
   }
@@ -328,7 +328,7 @@ function nodesMenuItems(editor) {
       active(editor) {
         return editor.isActive("figure")
       },
-      // TODO implement hidden(editor)
+      // TODO implement hidden(editor) and/or enabled(editor)
     })
   }
   return items
@@ -343,7 +343,7 @@ function markMenuItems(editor) {
           },
           dom,
           active: (editor) => editor.isActive(markType),
-          hidden: (editor) => !editor.can().toggleMark(markType),
+          enabled: (editor) => editor.can().toggleMark(markType),
         }
       : null
 
