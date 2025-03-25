@@ -1,9 +1,13 @@
 import os
 
 import pytest
+from django.contrib.auth.models import User
 from playwright.sync_api import expect
 
-from testapp.models import ProseEditorModel
+from testapp.models import (
+    ProseEditorModel,
+    TableProseEditorModel,
+)
 
 
 # Set Django async unsafe to allow database operations in tests
@@ -183,3 +187,91 @@ def test_prose_editor_table_creation(page, live_server):
     # Also verify the correct number of rows and header cells
     assert html_content.count("<tr>") == 4  # 4 rows total
     assert html_content.count("<th") == 5  # 5 header cells
+
+
+@pytest.mark.django_db
+@pytest.mark.e2e
+def test_prose_editor_ordered_list_attributes(page, live_server):
+    """Test ordered list creation and attribute modification."""
+    # Login first
+    User.objects.create_superuser("admin", "admin@example.com", "password")
+
+    # Visit the login page and log in
+    page.goto(f"{live_server.url}/admin/login/")
+    page.fill("#id_username", "admin")
+    page.fill("#id_password", "password")
+    page.click("input[type=submit]")
+
+    # Go to the add page for the TableProseEditorModel (which has OrderedList extension)
+    page.goto(f"{live_server.url}/admin/testapp/tableproseeditormodel/add/")
+
+    # Click in the editor to focus it
+    editor = page.locator(".ProseMirror")
+    editor.click()
+    editor.type("Test content before list")
+    editor.press("Enter")
+    editor.press("Enter")
+
+    # Verify that the ordered list button is present
+    ordered_list_button = page.locator(".prose-menubar__button[title='ordered list']")
+    expect(ordered_list_button).to_be_visible()
+
+    # Click the ordered list button to create a list
+    ordered_list_button.click()
+
+    # Type list items
+    editor.type("First item")
+    editor.press("Enter")
+    editor.type("Second item")
+    editor.press("Enter")
+    editor.type("Third item")
+
+    # Verify the list was created
+    ol_element = editor.locator("ol")
+    expect(ol_element).to_be_visible()
+
+    # Look for the List properties button in the toolbar
+    list_properties_button = page.locator(
+        ".prose-menubar__button[title='List properties']"
+    )
+
+    # It should be visible now that we have an active ordered list
+    expect(list_properties_button).to_be_visible()
+
+    # Click the list properties button
+    list_properties_button.click()
+
+    # Check that the list properties dialog appears
+    dialog = page.locator(".prose-editor-dialog")
+    expect(dialog).to_be_visible()
+
+    # Change list type to uppercase letters
+    page.locator("select[name='listType']").select_option("A, B, C, ...")
+
+    # Change start value to 5
+    page.fill("input[name='start']", "5")
+
+    # Submit the dialog
+    dialog.locator("button[type='submit']").click()
+
+    # Verify the list has been updated with the new attributes
+    updated_ol = editor.locator("ol")
+    expect(updated_ol).to_have_attribute("type", "A")
+    expect(updated_ol).to_have_attribute("start", "5")
+
+    # Save the form
+    page.click("input[name='_save']")
+
+    # Check the model content contains the ordered list with correct attributes
+    model = TableProseEditorModel.objects.first()
+    assert model is not None
+    html_content = model.description
+
+    # Verify the saved content has the ordered list with the attributes we set
+    assert "<ol" in html_content
+    assert 'type="A"' in html_content
+    assert 'start="5"' in html_content
+    assert "<li>" in html_content
+    assert "First item" in html_content
+    assert "Second item" in html_content
+    assert "Third item" in html_content
