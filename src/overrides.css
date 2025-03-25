@@ -137,6 +137,7 @@
   line-height: 1.1;
   text-transform: none;
   padding: 0;
+  color: var(--body-fg);
   background: none !important;
   border: none !important;
 }
