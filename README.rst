@@ -274,7 +274,7 @@ with source map references, ensuring that development artifacts don't make it
 into the repository.
 
 Browser Testing with Playwright
-------------------------------
+-------------------------------
 
 This project uses Playwright for browser-based testing of the prose editor.
 
@@ -300,7 +300,7 @@ To run the browser tests:
        pytest tests/testapp/test_prose_editor_e2e.py -v --browser chromium
 
 Code Style and Linting
----------------------
+----------------------
 
 This project uses pre-commit hooks to enforce coding style guidelines. We use
 Ruff for Python linting and formatting, Biome for JavaScript/TypeScript linting
