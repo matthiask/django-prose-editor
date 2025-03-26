@@ -1,7 +1,5 @@
 import os
 
-from js_asset import JS
-
 
 DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"}}
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -29,13 +27,8 @@ ALLOWED_HOSTS = ["*"]
 ROOT_URLCONF = "testapp.urls"
 LANGUAGES = (("en", "English"), ("de", "German"))
 
-# Define presets for prose editor
-DJANGO_PROSE_EDITOR_PRESETS = {
-    "table": [
-        JS("django_prose_editor/editor.js", {"type": "module"}),
-        JS("table.js", {"type": "module"}),
-    ],
-}
+# No custom presets needed anymore
+DJANGO_PROSE_EDITOR_PRESETS = {}
 
 TEMPLATES = [
     {

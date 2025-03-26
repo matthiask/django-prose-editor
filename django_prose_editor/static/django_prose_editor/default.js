@@ -23,6 +23,10 @@ import {
   HTML,
   NoSpellCheck,
   Typographic,
+  Table,
+  TableRow,
+  TableHeader,
+  TableCell,
   createTextareaEditor,
   initializeEditors,
 } from "django-prose-editor/editor"
@@ -72,8 +76,18 @@ function createEditor(textarea, config = null) {
     }
   }
 
-  const createIsTypeEnabled = (enabledTypes) => (...types) =>
-    enabledTypes?.length ? !!types.find((t) => enabledTypes.includes(t)) : true
+  // Default extension types (table explicitly excluded)
+  const DEFAULT_TYPES = [
+    "blockquote", "bold", "bulletList", "heading", "horizontalRule",
+    "italic", "link", "orderedList", "strike", "subscript",
+    "superscript", "underline"
+  ]
+
+  const createIsTypeEnabled = (enabledTypes) => (...types) => {
+    // If no types defined, use the defaults
+    const typesToCheck = enabledTypes?.length ? enabledTypes : DEFAULT_TYPES
+    return !!types.find((t) => typesToCheck.includes(t))
+  }
   const isTypeEnabled = createIsTypeEnabled(config.types)
 
   const extensions = [
@@ -103,6 +117,11 @@ function createEditor(textarea, config = null) {
     isTypeEnabled("subscript", "sub") && Subscript,
     isTypeEnabled("superscript", "sup") && Superscript,
     isTypeEnabled("underline") && Underline,
+    // Table support
+    isTypeEnabled("table") && Table,
+    isTypeEnabled("table") && TableRow,
+    isTypeEnabled("table") && TableHeader,
+    isTypeEnabled("table") && TableCell,
   ].filter(Boolean)
 
   return createTextareaEditor(textarea, extensions)

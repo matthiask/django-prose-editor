@@ -19,7 +19,28 @@ class SanitizedProseEditorModel(models.Model):
 
 
 class TableProseEditorModel(models.Model):
-    description = ProseEditorField(preset="table")
+    description = ProseEditorField(
+        config={
+            "types": [
+                "blockquote",
+                "bold",
+                "bulletList",
+                "heading",
+                "horizontalRule",
+                "italic",
+                "link",
+                "orderedList",
+                "strike",
+                "subscript",
+                "superscript",
+                "underline",
+                "table",
+            ],
+            "history": True,
+            "html": True,
+            "typographic": True,
+        }
+    )
 
     def __str__(self):
         return self.description

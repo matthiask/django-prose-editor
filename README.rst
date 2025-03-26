@@ -114,10 +114,12 @@ extensions should be enabled:
                 "types": [
                     "bold",
                     "italic",
+                    "strike",
                     "bulletList",
                     "orderedList",
                     "horizontalRule",
                     "link",
+                    "table",  # Enables full table support
                 ],
                 "history": True,
                 "html": True,
@@ -134,6 +136,14 @@ compatibility, but are deprecated:
   ``orderedList``, ``horizontal_rule`` → ``horizontalRule``
 * ProseMirror mark names: ``strong`` → ``bold``, ``em`` → ``italic``,
   ``strikethrough`` → ``strike``
+
+Available extension types include:
+
+* Text formatting: ``bold``, ``italic``, ``strike``, ``subscript``, ``superscript``, ``underline`` (all enabled by default)
+* Lists: ``bulletList``, ``orderedList`` (enabled by default)
+* Structure: ``blockquote``, ``heading``, ``horizontalRule`` (enabled by default)
+* Links: ``link`` (enabled by default)
+* Tables: ``table`` (opt-in only, not enabled by default)
 
 Advanced Customization with Presets
 -----------------------------------
