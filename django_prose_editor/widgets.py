@@ -1,4 +1,5 @@
 import json
+import warnings
 
 from django import forms
 from django.conf import settings
@@ -57,13 +58,56 @@ class ProseEditorWidget(forms.Textarea):
             ],
         }
 
+    def _convert_extension_names(self, config):
+        """
+        Convert underscore_case extension names to camelCase.
+        This maintains backward compatibility while encouraging the new style.
+        """
+        if not config or "types" not in config or not config["types"]:
+            return config
+
+        pm_to_tiptap = {
+            # Node names
+            "bullet_list": "bulletList",
+            "horizontal_rule": "horizontalRule",
+            "list_item": "listItem",
+            "ordered_list": "orderedList",
+            "hard_break": "hardBreak",
+            # Mark names
+            "strong": "bold",
+            "em": "italic",
+            "strikethrough": "strike",
+        }
+
+        types = []
+        old_types = {}
+
+        for ext_type in config["types"]:
+            if type := pm_to_tiptap.get(ext_type):
+                types.append(type)
+                old_types[ext_type] = type
+            else:
+                types.append(ext_type)
+
+        if old_types:
+            warnings.warn(
+                f"Deprecated extension names were found in the configuration of {self.__class__}: {list(old_types.keys())}. Convert them to their new names: {list(old_types.values())}.",
+                DeprecationWarning,
+                stacklevel=1,
+            )
+
+        config["types"] = types
+        return config
+
     def get_config(self):
-        return self.config or {
+        config = self.config or {
             "types": None,
             "history": True,
             "html": True,
             "typographic": True,
         }
+
+        return self._convert_extension_names(config)
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)

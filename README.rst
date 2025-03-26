@@ -95,10 +95,50 @@ above.
 Customization
 =============
 
-**NOTE!** The previous way of customizing the editor is still supported, but
-it's not recommended (and documented) anymore.
+The editor can be customized in two ways: by using the config parameter to
+include/exclude specific extensions, or by creating custom presets.
 
-The editor can be customized using presets; the way to do this is by adding
+Simple Customization with Config
+--------------------------------
+
+For basic customization, you can use the ``config`` parameter to specify which
+extensions should be enabled:
+
+.. code-block:: python
+
+    from django_prose_editor.fields import ProseEditorField
+
+    class Article(models.Model):
+        content = ProseEditorField(
+            config={
+                "types": [
+                    "bold",
+                    "italic",
+                    "bulletList",
+                    "orderedList",
+                    "horizontalRule",
+                    "link",
+                ],
+                "history": True,
+                "html": True,
+                "typographic": True,
+            }
+        )
+
+Extension names use camelCase format (e.g., ``bold``, ``italic``,
+``bulletList``, ``horizontalRule``), following the naming convention used by
+Tiptap. The following legacy names are still supported for backward
+compatibility, but are deprecated:
+
+* ProseMirror node names: ``bullet_list`` → ``bulletList``, ``ordered_list`` →
+  ``orderedList``, ``horizontal_rule`` → ``horizontalRule``
+* ProseMirror mark names: ``strong`` → ``bold``, ``em`` → ``italic``,
+  ``strikethrough`` → ``strike``
+
+Advanced Customization with Presets
+-----------------------------------
+
+For more advanced customization, you can create custom presets by adding
 additional assets to load:
 
 .. code-block:: python
