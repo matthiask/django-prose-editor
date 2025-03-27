@@ -32,7 +32,7 @@
   display: none !important;
 }
 
-.prose-menubar {
+.prose-menubar:not(:empty) {
   font-size: 14px;
   display: inline-flex;
   align-items: center;
