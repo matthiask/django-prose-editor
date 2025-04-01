@@ -66,6 +66,7 @@ export function createTextareaEditor(textarea, extensions) {
     className: `prose-editor ${disabled ? "disabled" : ""}`,
   })
   textarea.before(element)
+  element.append(textarea)
 
   const editor = new Editor({
     element,
@@ -77,6 +78,7 @@ export function createTextareaEditor(textarea, extensions) {
       textarea.dispatchEvent(new Event("input", { bubbles: true }))
     },
     onDestroy() {
+      element.before(textarea)
       element.remove()
     },
   })

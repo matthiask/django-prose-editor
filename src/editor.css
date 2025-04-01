@@ -28,7 +28,7 @@
   opacity: 0;
 }
 
-.prose-editor + textarea {
+.prose-editor > textarea {
   display: none !important;
 }
 

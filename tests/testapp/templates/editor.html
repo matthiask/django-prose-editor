@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Editor Destroy Test</title>
+  <link rel="stylesheet" href="/static/django_prose_editor/editor.css">
+</head>
+<body>
+  <div id="test-container">
+    <textarea id="test-textarea">Initial <strong>content</strong></textarea>
+  </div>
+
+  <script type="module">
+    // Import the actual editor code including all necessary extensions
+    import {
+      Document,
+      Text,
+      Paragraph,
+      Dropcursor,
+      Gapcursor,
+      HardBreak,
+      createTextareaEditor
+    } from '/static/django_prose_editor/editor.js';
+
+    // Make functions available globally
+    window.setupEditor = () => {
+      const textarea = document.getElementById('test-textarea');
+      // Store the editor instance globally so we can destroy it later
+      // Include all required extensions for a valid schema
+      window.editorInstance = createTextareaEditor(textarea, [
+        Document,
+        Text,
+        Paragraph,
+        Dropcursor,
+        Gapcursor,
+        HardBreak
+      ]);
+      return true;
+    };
+
+    window.destroyEditor = () => {
+      if (window.editorInstance) {
+        window.editorInstance.destroy();
+        return true;
+      }
+      return false;
+    };
+  </script>
+</body>
+</html>
