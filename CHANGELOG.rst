@@ -30,6 +30,7 @@ Next version
 - Added list style overrides to hopefully make lists usable with the Grappelli
   admin skin.
 - Disallowed overriding the default editor preset.
+- Hide the menubar when the editor is disabled.
 
 
 0.10 (2024-12-17)
