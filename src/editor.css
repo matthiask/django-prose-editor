@@ -68,6 +68,11 @@
   height: var(--menubar-height, 45px);
 }
 
+.prose-editor.disabled .prose-menubar,
+.prose-editor.disabled .prose-menubar-placeholder {
+  display: none;
+}
+
 .prose-menubar__group {
   display: flex;
 }
