@@ -138,6 +138,3 @@ export const updateAttrsDialog =
       dialog.showModal()
     })
   }
-
-export const findExtension = (editor, extension) =>
-  editor.extensionManager.extensions.find((e) => e.name === extension)
