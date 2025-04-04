@@ -1,9 +1,6 @@
 import { Extension } from "@tiptap/core"
 import { Plugin } from "@tiptap/pm/state"
-import { crel, gettext } from "./utils.js"
-
-const findExtension = (editor, extension) =>
-  editor.extensionManager.extensions.find((e) => e.name === extension)
+import { crel, gettext, findExtension } from "./utils.js"
 
 export const menuItemsFromEditor = (editor) => {
   // Basic menu items
