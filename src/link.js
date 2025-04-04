@@ -31,7 +31,7 @@ const linkDialog = async (editor, attrs, options) => {
   if (attrs) {
     if (attrs.openInNewWindow) {
       attrs.target = "_blank"
-      attrs.rel = "noopener noreferrer nofollow"
+      attrs.rel = "noopener"
     }
     return attrs
   }
