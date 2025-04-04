@@ -110,7 +110,7 @@ function createEditor(textarea, config = null) {
       Heading.configure({ levels: config.headingLevels || [1, 2, 3, 4, 5] }),
     isTypeEnabled("horizontalRule", "horizontal_rule") && HorizontalRule,
     isTypeEnabled("italic", "em") && Italic,
-    isTypeEnabled("link") && Link,
+    isTypeEnabled("link") && Link.configure({ hideOpenInNewWindow: config.hideOpenInNewWindow || false }),
     isTypeEnabled("bulletList", "bullet_list", "orderedList", "ordered_list") && ListItem,
     isTypeEnabled("orderedList", "ordered_list") && OrderedList,
     isTypeEnabled("strike", "strikethrough") && Strike,

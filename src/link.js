@@ -1,9 +1,9 @@
 import { Link as BaseLink } from "@tiptap/extension-link"
 
-import { gettext, updateAttrsDialog } from "./utils.js"
+import { gettext, updateAttrsDialog, findExtension } from "./utils.js"
 
-const linkDialogImpl = updateAttrsDialog(
-  {
+const linkDialogImpl = (editor, attrs, options) => {
+  const properties = {
     href: {
       type: "string",
       title: gettext("URL"),
@@ -12,19 +12,22 @@ const linkDialogImpl = updateAttrsDialog(
       type: "string",
       title: gettext("Title"),
     },
-    openInNewWindow: {
+  }
+
+  if (!options.hideOpenInNewWindow)
+    properties.openInNewWindow = {
       type: "boolean",
       title: gettext("Open in new window"),
-    },
-  },
-  {
+    }
+
+  return updateAttrsDialog(properties, {
     title: gettext("Edit Link"),
-  },
-)
-const linkDialog = async (editor, attrs) => {
+  })(editor, attrs)
+}
+const linkDialog = async (editor, attrs, options) => {
   attrs = attrs || {}
   attrs.openInNewWindow = attrs.target === "_blank"
-  attrs = await linkDialogImpl(editor, attrs)
+  attrs = await linkDialogImpl(editor, attrs, options)
   if (attrs) {
     if (attrs.openInNewWindow) {
       attrs.target = "_blank"
@@ -54,8 +57,9 @@ export const Link = BaseLink.extend({
         () =>
         ({ editor }) => {
           const attrs = editor.getAttributes(this.name)
+          const options = findExtension(editor, "link")?.options
 
-          linkDialog(editor, attrs).then((attrs) => {
+          linkDialog(editor, attrs, options).then((attrs) => {
             if (attrs) {
               const cmd = editor
                 .chain()
