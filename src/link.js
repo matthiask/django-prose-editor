@@ -28,6 +28,7 @@ const linkDialog = async (editor, attrs) => {
   if (attrs) {
     if (attrs.openInNewWindow) {
       attrs.target = "_blank"
+      attrs.rel = "noopener noreferrer nofollow"
     }
     return attrs
   }
@@ -40,7 +41,7 @@ export const Link = BaseLink.extend({
       openOnClick: false,
       HTMLAttributes: {
         target: null,
-        rel: "noopener noreferrer nofollow",
+        rel: null,
         class: null,
       },
     }
