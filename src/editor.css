@@ -7,9 +7,6 @@
 .prose-editor {
   box-sizing: border-box;
   position: relative;
-  max-width: 120ch;
-  min-width: 40ch;
-
   flex-grow: 1;
 }
 

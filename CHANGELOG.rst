@@ -35,6 +35,7 @@ Next version
   admin skin.
 - Disallowed overriding the default editor preset.
 - Hide the menubar when the editor is disabled.
+- Removed min and max width from the ``.prose-editor`` DIV.
 
 
 0.10 (2024-12-17)
