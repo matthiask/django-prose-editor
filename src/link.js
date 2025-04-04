@@ -1,6 +1,6 @@
 import { Link as BaseLink } from "@tiptap/extension-link"
 
-import { gettext, updateAttrsDialog, findExtension } from "./utils.js"
+import { gettext, updateAttrsDialog } from "./utils.js"
 
 const linkDialogImpl = (editor, attrs, options) => {
   const properties = {
@@ -14,7 +14,7 @@ const linkDialogImpl = (editor, attrs, options) => {
     },
   }
 
-  if (!options.hideOpenInNewWindow)
+  if (options.enableTarget)
     properties.openInNewWindow = {
       type: "boolean",
       title: gettext("Open in new window"),
@@ -32,6 +32,9 @@ const linkDialog = async (editor, attrs, options) => {
     if (attrs.openInNewWindow) {
       attrs.target = "_blank"
       attrs.rel = "noopener"
+    } else {
+      attrs.target = null
+      attrs.rel = null
     }
     return attrs
   }
@@ -42,6 +45,7 @@ export const Link = BaseLink.extend({
     return {
       ...this.parent?.(),
       openOnClick: false,
+      enableTarget: true,
       HTMLAttributes: {
         target: null,
         rel: null,
@@ -57,9 +61,8 @@ export const Link = BaseLink.extend({
         () =>
         ({ editor }) => {
           const attrs = editor.getAttributes(this.name)
-          const options = findExtension(editor, "link")?.options
 
-          linkDialog(editor, attrs, options).then((attrs) => {
+          linkDialog(editor, attrs, this.options).then((attrs) => {
             if (attrs) {
               const cmd = editor
                 .chain()
