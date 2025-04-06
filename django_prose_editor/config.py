@@ -290,7 +290,11 @@ def expand_extensions(extensions: dict[str, Any]) -> dict[str, Any]:
                 if dep not in expanded:
                     expanded[dep] = True
 
-    return expanded
+    return {
+        extension: config
+        for extension, config in expanded.items()
+        if config is not False
+    }
 
 
 def extensions_to_allowlist(
@@ -317,13 +321,6 @@ def extensions_to_allowlist(
     """
     expanded = expand_extensions(extensions)
 
-    # Filter out extensions explicitly set to False (disabled extensions)
-    filtered_extensions = {
-        extension: config
-        for extension, config in expanded.items()
-        if config is not False
-    }
-
     # Initialize the combined configuration with empty sets
     combined_config = {
         "tags": set(),
@@ -336,7 +333,7 @@ def extensions_to_allowlist(
     custom_extensions, js_assets_map = get_custom_extensions()
 
     # Process each enabled extension
-    for extension, config in filtered_extensions.items():
+    for extension, config in expanded.items():
         # Get the processor function
         processor = None
 
