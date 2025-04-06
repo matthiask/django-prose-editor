@@ -18,11 +18,7 @@ importmap.update(
 class ProseEditorWidget(forms.Textarea):
     def __init__(self, *args, **kwargs):
         self.config = kwargs.pop("config", {})
-
         self.preset = kwargs.pop("preset", "default")
-
-        # All configuration is handled through config and preset
-
         super().__init__(*args, **kwargs)
 
     @property
@@ -119,16 +115,9 @@ class ProseEditorWidget(forms.Textarea):
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
-
-        config = self.get_config()
-
-        # Add the preset-specific configuration
         context["widget"]["attrs"][f"data-django-prose-editor-{self.preset}"] = (
-            json.dumps(config, separators=(",", ":"))
+            json.dumps(self.get_config(), separators=(",", ":"))
         )
-
-        # No custom widget attributes needed - all configuration is in config
-
         return context
 
 
