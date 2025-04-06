@@ -87,14 +87,20 @@ The `features` parameter allows you to specify exactly which features you want t
 Server-side Sanitization
 .~~~~~~~~~~~~~~~~~~~~~~~
 
-The configuration automatically generates appropriate sanitization rules for nh3:
+The configuration automatically generates appropriate sanitization rules for nh3.
+Sanitization is enabled by default for the ConfigurableProseEditorField:
 
 .. code-block:: python
 
-    # Automatically sanitizes based on feature configuration
+    # Automatically sanitizes based on feature configuration (sanitize=True is the default)
+    content = ConfigurableProseEditorField(
+        features={"bold": True, "link": True}
+    )
+
+    # You can explicitly disable sanitization if needed
     content = ConfigurableProseEditorField(
         features={"bold": True, "link": True},
-        sanitize=True  # Uses the generated allowlist
+        sanitize=False
     )
 
     # You can also access the generated rules directly

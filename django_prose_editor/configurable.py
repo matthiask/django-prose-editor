@@ -20,10 +20,13 @@ class ConfigurableProseEditorField(ProseEditorField):
     sanitization rules, ensuring that what users can create in the editor matches
     what is allowed after sanitization.
 
+    Sanitization is enabled by default and automatically configured based on the
+    features you enable, so you don't need to specify HTML allowlists separately.
+
     Args:
         features: Dictionary mapping feature names to their configuration
         preset: Optional JavaScript preset name to override the default
-        sanitize: Whether to enable sanitization (True/False) or a custom sanitizer function
+        sanitize: Whether to enable sanitization (defaults to True) or a custom sanitizer function
     """
 
     def __init__(self, *args, **kwargs):
@@ -38,11 +41,14 @@ class ConfigurableProseEditorField(ProseEditorField):
         # Get the full allowlist including JavaScript modules
         feature_allowlist = features_to_allowlist(self.features)
 
-        # Handle sanitization
-        sanitize = kwargs.get("sanitize")
+        # Handle sanitization - default to True for this field
+        sanitize = kwargs.pop("sanitize", True)
         if sanitize is True:
             # If sanitize=True, use our automatic sanitizer based on features
             kwargs["sanitize"] = self._create_sanitizer(feature_allowlist)
+        else:
+            # Pass through the sanitize value (False or custom function)
+            kwargs["sanitize"] = sanitize
 
         # Add JavaScript modules to the expanded features
         if feature_allowlist.get("js_modules"):
