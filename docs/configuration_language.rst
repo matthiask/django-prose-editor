@@ -55,7 +55,7 @@ Example Configuration
         )
 
 Configuring Features
-------------------
+--------------------
 
 The `features` parameter allows you to specify exactly which features you want to enable in your editor:
 
@@ -85,7 +85,7 @@ The `features` parameter allows you to specify exactly which features you want t
     )
 
 Server-side Sanitization
-~~~~~~~~~~~~~~~~~~~~~~~~
+.~~~~~~~~~~~~~~~~~~~~~~~
 
 The configuration automatically generates appropriate sanitization rules for nh3:
 
@@ -138,7 +138,7 @@ the editor with your own functionality while still maintaining the synchronized
 sanitization between frontend and backend.
 
 Step 1: Define Your Extension
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.............................
 
 First, create a JavaScript file with your custom Tiptap extension:
 
@@ -161,7 +161,7 @@ First, create a JavaScript file with your custom Tiptap extension:
     })
 
 Step 2: Register Your Extension
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+...............................
 
 Create a preset that includes your extension:
 
@@ -200,7 +200,7 @@ Create a preset that includes your extension:
     initializeEditors(createEditor, `[${marker}]`)
 
 Step 3: Register Your Extension and Preset in Django Settings
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.....................................................................
 
 Configure your extension and JavaScript preset in Django settings:
 
@@ -233,7 +233,7 @@ Configure your extension and JavaScript preset in Django settings:
     # in your ConfigurableProseEditorField (see example below)
 
 Step 4: Use Your Custom Extension in Models
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+...........................................
 
 Now you can use your custom extension in your models:
 
@@ -266,7 +266,7 @@ The configuration system will:
 4. Use your specified JavaScript preset to initialize the extension
 
 Technical Details
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 Custom Processor Functions
 --------------------------
