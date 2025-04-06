@@ -270,8 +270,12 @@ def expand_extensions(extensions: dict[str, Any]) -> dict[str, Any]:
     expanded = {
         # Core extensions
         "Document": True,
+        "Dropcursor": True,
+        "Gapcursor": True,
         "Paragraph": True,
         "Text": True,
+        "Menu": True,
+        "NoSpellCheck": True,
         # Enable history by default unless explicitly disabled
         "History": True,
     }

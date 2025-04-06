@@ -61,12 +61,6 @@ import {
 
 const marker = "data-django-prose-editor-configurable"
 
-// Core extensions that are always included
-const CORE_EXTENSIONS = [
-  Dropcursor,
-  Gapcursor,
-]
-
 // Extension instances indexed by their names
 const EXTENSIONS = {
   // Extension classes are available directly by their class name
@@ -75,6 +69,8 @@ const EXTENSIONS = {
   Text,
   HardBreak,
   History,
+  Dropcursor,
+  Gapcursor,
 
   // Block nodes
   Blockquote,
@@ -167,8 +163,7 @@ async function createEditorAsync(textarea) {
   // Get the extension configuration
   const extensionsConfig = JSON.parse(textarea.getAttribute(marker) || "{}")
 
-  // Start with core extensions
-  const extensionInstances = [...CORE_EXTENSIONS]
+  const extensionInstances = []
 
   // Check for custom JS modules
   const customModules = extensionsConfig._js_modules || []
