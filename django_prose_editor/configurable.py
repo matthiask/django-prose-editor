@@ -62,7 +62,7 @@ class ConfigurableProseEditorField(ProseEditorField):
 
         super().__init__(*args, **kwargs)
 
-    def _create_sanitizer(self, feature_allowlist=None):
+    def _create_sanitizer(self, sanitize_config=None):
         """Create a sanitizer function based on feature configuration."""
         try:
             import nh3  # noqa: F401
@@ -72,36 +72,17 @@ class ConfigurableProseEditorField(ProseEditorField):
                 "Install django-prose-editor[sanitize] or pip install nh3"
             )
 
-        # Get the full allowlist with tags and attributes if not provided
-        if feature_allowlist is None:
-            feature_allowlist = features_to_allowlist(self.features)
+        # Get the full sanitization config if not provided
+        if sanitize_config is None:
+            sanitize_config = features_to_allowlist(self.features)
 
-        # Check for protocol restrictions on links
-        protocols = None
-        if "link" in self.features and isinstance(self.features["link"], dict):
-            if "protocols" in self.features["link"]:
-                protocols = self.features["link"]["protocols"]
+        # Create a copy of the config excluding js_modules which isn't for nh3
+        nh3_kwargs = {k: v for k, v in sanitize_config.items() if k != "js_modules"}
 
         # Create and return the sanitizer function
         def sanitize_html(html):
             import nh3
 
-            # Prepare arguments for nh3.clean
-            kwargs = {
-                "tags": set(feature_allowlist["tags"]),
-                "attributes": {
-                    tag: set(attrs)
-                    for tag, attrs in feature_allowlist["attributes"].items()
-                },
-            }
-
-            # If we have protocols specified
-            if protocols is not None:
-                # Use url_schemes for validating URLs
-                kwargs["url_schemes"] = set(protocols)
-                # When using url_schemes, link_rel must be set to None if we want to preserve rel
-                kwargs["link_rel"] = None
-
-            return _actually_empty(nh3.clean(html, **kwargs))
+            return _actually_empty(nh3.clean(html, **nh3_kwargs))
 
         return sanitize_html

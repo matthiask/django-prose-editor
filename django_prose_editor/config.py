@@ -25,10 +25,10 @@ def get_custom_extensions():
 
 
 # Feature processors
-# These functions return allowlist information based on feature configuration
+# These functions update a shared sanitization config
 def create_simple_processor(tags, attributes=None, *, js_module=None):
     """
-    Create a simple processor function that returns a fixed set of tags and attributes.
+    Create a simple processor function that adds tags and attributes to the sanitization config.
 
     Args:
         tags: List of HTML tags
@@ -36,25 +36,28 @@ def create_simple_processor(tags, attributes=None, *, js_module=None):
         js_module: Optional URL to JavaScript module implementing this extension
 
     Returns:
-        A processor function
+        A processor function that updates the shared config
     """
 
-    def processor(config):
-        result = {
-            "tags": tags,
-            "attributes": attributes or {},
-        }
+    def processor(feature_config, shared_config):
+        # Add tags to the config
+        shared_config["tags"].update(tags)
 
-        # Include JavaScript module if provided
+        # Add attributes to the config
+        attrs = attributes or {}
+        for tag, allowed_attrs in attrs.items():
+            if tag not in shared_config["attributes"]:
+                shared_config["attributes"][tag] = set()
+            shared_config["attributes"][tag].update(allowed_attrs)
+
+        # Add JavaScript module if provided
         if js_module:
-            result["js_module"] = js_module
-
-        return result
+            shared_config["js_modules"].add(js_module)
 
     return processor
 
 
-def process_heading(config):
+def process_heading(config, shared_config):
     """Process heading feature configuration."""
     tags = ["h1", "h2", "h3", "h4", "h5", "h6"]
 
@@ -63,92 +66,105 @@ def process_heading(config):
         levels = config["levels"]
         tags = [f"h{level}" for level in levels if 1 <= level <= 6]
 
-    return {
-        "tags": tags,
-        "attributes": {},
-    }
+    # Add tags to the shared config
+    shared_config["tags"].update(tags)
 
 
-def process_link(config):
+def process_link(config, shared_config):
     """Process link feature configuration."""
-    attributes = {"a": ["href", "rel"]}
+    # Add the a tag to allowed tags
+    shared_config["tags"].update(["a"])
+
+    # Initialize attributes for the a tag if not present
+    if "a" not in shared_config["attributes"]:
+        shared_config["attributes"]["a"] = set()
+
+    # Add standard attributes
+    shared_config["attributes"]["a"].update(["href", "rel", "title"])
 
     # Include target attribute unless explicitly disabled
     target_allowed = True
-    if isinstance(config, dict) and "allowTargetBlank" in config:
-        target_allowed = bool(config["allowTargetBlank"])
+    if isinstance(config, dict):
+        if "allowTargetBlank" in config:
+            target_allowed = bool(config["allowTargetBlank"])
+
+        # Include URL schemes if specified (for nh3 sanitization)
+        if "protocols" in config:
+            if "url_schemes" not in shared_config:
+                shared_config["url_schemes"] = set()
+            shared_config["url_schemes"].update(config["protocols"])
+            # When restricting URL schemes, we need to set link_rel to None
+            # to preserve the rel attribute
+            shared_config["link_rel"] = None
 
     if target_allowed:
-        attributes["a"].append("target")
-
-    return {
-        "tags": ["a"],
-        "attributes": attributes,
-    }
+        shared_config["attributes"]["a"].add("target")
 
 
 # Additional processors for other extensions
-def process_code_block(config):
+def process_code_block(config, shared_config):
     """Process code block feature configuration."""
-    attributes = {}
+    # Add tags
+    shared_config["tags"].update(["pre", "code"])
 
     # Include language attribute if supported
     if isinstance(config, dict) and config.get("languageClassPrefix"):
-        attributes["pre"] = ["class"]
-        attributes["code"] = ["class"]
+        # Add pre attributes
+        if "pre" not in shared_config["attributes"]:
+            shared_config["attributes"]["pre"] = set()
+        shared_config["attributes"]["pre"].add("class")
 
-    return {
-        "tags": ["pre", "code"],
-        "attributes": attributes,
-    }
+        # Add code attributes
+        if "code" not in shared_config["attributes"]:
+            shared_config["attributes"]["code"] = set()
+        shared_config["attributes"]["code"].add("class")
 
 
-def process_figure(config):
+def process_figure(config, shared_config):
     """Process figure feature configuration."""
-    return {
-        "tags": ["figure", "figcaption", "img"],
-        "attributes": {
-            "img": ["src", "alt", "width", "height"],
-            "figure": ["class"],
-        },
-    }
+    # Add tags
+    shared_config["tags"].update(["figure", "figcaption", "img"])
+
+    # Add attributes for img
+    if "img" not in shared_config["attributes"]:
+        shared_config["attributes"]["img"] = set()
+    shared_config["attributes"]["img"].update(["src", "alt", "width", "height"])
+
+    # Add attributes for figure
+    if "figure" not in shared_config["attributes"]:
+        shared_config["attributes"]["figure"] = set()
+    shared_config["attributes"]["figure"].add("class")
 
 
-def process_image(config):
+def process_image(config, shared_config):
     """Process image feature configuration."""
-    return {
-        "tags": ["img"],
-        "attributes": {
-            "img": ["src", "alt", "width", "height"],
-        },
-    }
+    # Add img tag
+    shared_config["tags"].add("img")
+
+    # Add attributes for img
+    if "img" not in shared_config["attributes"]:
+        shared_config["attributes"]["img"] = set()
+    shared_config["attributes"]["img"].update(["src", "alt", "width", "height"])
 
 
-def process_text_align(config):
+def process_text_align(config, shared_config):
     """Process text alignment feature configuration."""
-    return {
-        "tags": [],  # Text align typically uses classes, not new tags
-        "attributes": {
-            "p": ["style", "class"],
-            "h1": ["style", "class"],
-            "h2": ["style", "class"],
-            "h3": ["style", "class"],
-            "h4": ["style", "class"],
-            "h5": ["style", "class"],
-            "h6": ["style", "class"],
-            "blockquote": ["style", "class"],
-        },
-    }
+    # Text align adds style and class attributes to various elements
+    for tag in ["p", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote"]:
+        if tag not in shared_config["attributes"]:
+            shared_config["attributes"][tag] = set()
+        shared_config["attributes"][tag].update(["style", "class"])
 
 
-def process_color_highlight(config):
+def process_color_highlight(config, shared_config):
     """Process color and highlighting feature configuration."""
-    return {
-        "tags": ["span"],
-        "attributes": {
-            "span": ["style", "class"],
-        },
-    }
+    # Add span tag
+    shared_config["tags"].add("span")
+
+    # Add style and class attributes for span
+    if "span" not in shared_config["attributes"]:
+        shared_config["attributes"]["span"] = set()
+    shared_config["attributes"]["span"].update(["style", "class"])
 
 
 # Default feature-to-HTML mapping with processors as the single source of truth
@@ -246,15 +262,25 @@ def expand_features(features: dict[str, Any]) -> dict[str, Any]:
 
 def features_to_allowlist(
     features: dict[str, Any],
-) -> dict[str, list[str] | dict[str, list[str]] | list[str]]:
+) -> dict[str, Any]:
     """
-    Generate HTML sanitization allowlist from feature configuration.
+    Generate HTML sanitization config from feature configuration.
+
+    This function collects configuration from all feature processors into a unified
+    configuration dictionary suitable for nh3 HTML sanitization.
+
+    Each processor function should accept two arguments:
+    1. feature_config: The feature-specific configuration
+    2. shared_config: The shared configuration dictionary to update
+
+    Processors should directly modify the shared_config dictionary with their
+    required HTML elements, attributes, and other nh3 parameters.
 
     Args:
         features: Dictionary of feature configurations
 
     Returns:
-        Dictionary with 'tags', 'attributes', and 'js_modules' keys
+        Dictionary with sanitization config and 'js_modules' key
     """
     expanded = expand_features(features)
 
@@ -263,9 +289,13 @@ def features_to_allowlist(
         feature: config for feature, config in expanded.items() if config is not False
     }
 
-    allowed_tags: set[str] = set()
-    allowed_attributes: dict[str, set[str]] = {}
-    js_modules: set[str] = set()
+    # Initialize the combined configuration with empty sets
+    combined_config = {
+        "tags": set(),
+        "attributes": {},
+        # Track JavaScript modules separately as it's not for nh3
+        "js_modules": set(),
+    }
 
     # Get custom extensions
     custom_extensions = get_custom_extensions()
@@ -301,29 +331,9 @@ def features_to_allowlist(
         if not processor:
             continue
 
-        # Call the processor to get allowlist information
+        # Call the processor and let it modify the config directly
         try:
-            result = processor(config)
-            if not isinstance(result, dict) or "tags" not in result:
-                warnings.warn(
-                    f"Processor for {feature} returned invalid result: {result}",
-                    UserWarning,
-                    stacklevel=2,
-                )
-                continue
-
-            # Add tags
-            allowed_tags.update(result.get("tags", []))
-
-            # Add attributes
-            for tag, attrs in result.get("attributes", {}).items():
-                if tag not in allowed_attributes:
-                    allowed_attributes[tag] = set()
-                allowed_attributes[tag].update(attrs)
-
-            # Add JavaScript modules if present
-            if "js_module" in result:
-                js_modules.add(result["js_module"])
+            processor(config, combined_config)
         except Exception as e:
             warnings.warn(
                 f"Error processing {feature}: {e}",
@@ -331,9 +341,6 @@ def features_to_allowlist(
                 stacklevel=2,
             )
 
-    # Convert sets to lists for the final output
-    return {
-        "tags": sorted(allowed_tags),
-        "attributes": {tag: sorted(attrs) for tag, attrs in allowed_attributes.items()},
-        "js_modules": sorted(js_modules),
-    }
+    # Return the combined configuration directly with sets
+    # nh3 accepts sets for tags, attributes, and url_schemes
+    return combined_config

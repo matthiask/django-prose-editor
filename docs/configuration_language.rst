@@ -427,7 +427,7 @@ The processor function is the core of custom extensions. It determines what HTML
     }
 
 Working Principles
------------------
+------------------
 
 This configuration system bridges the gap between front-end capabilities and server-side sanitization by:
 
