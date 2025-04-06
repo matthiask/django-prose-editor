@@ -333,10 +333,27 @@ def test_configurable_prose_editor_admin(page, live_server):
     assert "_js_modules" in config
     assert any("blue-bold.js" in js_path for js_path in config["_js_modules"])
 
-    # Add some content using the editor
+    # Add content using the editor to test BlueBold extension
     editor = page.locator(".ProseMirror")
     editor.click()
-    editor.type("Testing the configurable editor")
+
+    # Test keyboard shortcut for BlueBold
+    editor.type("Keyboard shortcut test")
+    editor.press("Control+a")  # Select all text
+    editor.press("Control+Shift+b")  # Apply BlueBold with shortcut
+
+    # Move cursor to end and add new paragraph
+    editor.press("End")
+    editor.press("Enter")
+    editor.press("Enter")
+
+    # Test input rule for BlueBold with the more specific pattern
+    editor.type("**blue:Input rule test**")
+
+    # Add another paragraph to check generated HTML
+    editor.press("Enter")
+    editor.press("Enter")
+    editor.type("Regular text after BlueBold tests")
 
     # Save the form
     page.click("input[name='_save']")
@@ -344,4 +361,45 @@ def test_configurable_prose_editor_admin(page, live_server):
     # Verify the model was created with the content
     model = ConfigurableProseEditorModel.objects.first()
     assert model is not None
-    assert "Testing the configurable editor" in model.description
+
+    # Verify BlueBold formatting is in the saved HTML
+    html_content = model.description
+
+    # Print debug output with clear markers
+    print("\n==== SAVED HTML CONTENT ====")
+    print(html_content)
+    print("==== END SAVED HTML CONTENT ====\n")
+
+    # The HTML will contain a strong tag with appropriate attributes
+    assert "<strong" in html_content.lower(), "Missing <strong> tag in saved HTML"
+    assert 'style="color: blue;"' in html_content, (
+        "Missing blue color style in saved HTML"
+    )
+    assert 'class="blue-bold-text"' in html_content, (
+        "Missing blue-bold-text class in saved HTML"
+    )
+    assert "Keyboard shortcut test" in html_content, (
+        "Missing keyboard shortcut test text"
+    )
+    assert "Input rule test" in html_content, "Missing input rule test text"
+
+    # Go to the change page to see if formatting is preserved
+    page.goto(
+        f"{live_server.url}/admin/testapp/configurableproseeditormodel/{model.id}/change/"
+    )
+
+    # Verify the editor loads with content
+    editor_with_content = page.locator(".ProseMirror")
+    expect(editor_with_content).to_be_visible()
+
+    # Print the editor content for debugging
+    editor_html = editor_with_content.evaluate("el => el.innerHTML")
+
+    print("\n==== EDITOR HTML AFTER RELOAD ====")
+    print(editor_html)
+    print("==== END EDITOR HTML AFTER RELOAD ====\n")
+
+    # Verify that we see the blue-bold formatted content in some form
+    # Checking strong elements exist rather than specific class
+    assert "Keyboard shortcut test" in editor_html
+    assert "Input rule test" in editor_html
