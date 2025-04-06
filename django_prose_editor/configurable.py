@@ -39,7 +39,7 @@ class ConfigurableProseEditorField(ProseEditorField):
         expanded_extensions = expand_extensions(self.extensions)
 
         # Get the full allowlist including JavaScript modules
-        extension_allowlist = extensions_to_allowlist(self.extensions)
+        extension_allowlist = extensions_to_allowlist(expanded_extensions)
 
         # Handle sanitization - default to True for this field
         sanitize = kwargs.pop("sanitize", True)
@@ -74,7 +74,9 @@ class ConfigurableProseEditorField(ProseEditorField):
 
         # Get the full sanitization config if not provided
         if sanitize_config is None:
-            sanitize_config = extensions_to_allowlist(self.extensions)
+            # Make sure to expand extensions to include dependencies
+            expanded = expand_extensions(self.extensions)
+            sanitize_config = extensions_to_allowlist(expanded)
 
         # Create a copy of the config excluding js_modules which isn't for nh3
         nh3_kwargs = {k: v for k, v in sanitize_config.items() if k != "js_modules"}
