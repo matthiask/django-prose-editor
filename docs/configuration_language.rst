@@ -55,7 +55,7 @@ Example Configuration
         )
 
 Configuring Extensions
---------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 The `extensions` parameter allows you to specify exactly which extensions you want to enable in your editor:
 
@@ -85,7 +85,7 @@ The `extensions` parameter allows you to specify exactly which extensions you wa
     )
 
 Server-side Sanitization
-.~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 The configuration automatically generates appropriate sanitization rules for nh3.
 Sanitization is enabled by default for the ConfigurableProseEditorField:
@@ -110,7 +110,7 @@ Sanitization is enabled by default for the ConfigurableProseEditorField:
     # Returns {"tags": ["strong", "a"], "attributes": {"a": ["href"]}}
 
 Extension-to-HTML Mapping
-~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This table shows how editor extensions map to HTML elements and attributes:
 
@@ -134,7 +134,7 @@ Table          <table>, <tr>,          rowspan, colspan
 ============== ======================= ============================
 
 Custom Extensions
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 The configurable preset allows you to add custom Tiptap extensions without having to create a custom preset.
 You can define extension groups in your Django settings, with each group containing related extensions that share the same JavaScript assets:
@@ -168,7 +168,7 @@ You can define extension groups in your Django settings, with each group contain
                 static_lazy("myapp/extensions/blue-bold.js")
             ],
             "extensions": {
-                "BlueBold": create_simple_processor(
+                "BlueBold": html_tags(
                     tags=["strong"],
                     attributes={"strong": ["style", "class"]}
                 )
@@ -203,7 +203,7 @@ The JavaScript module should export the extension as a named export:
     })
 
 Simple Example: Blue Bold Text
------------------------------
+------------------------------
 
 Here's a minimal example of a custom extension that adds a blue color to bold text:
 
@@ -259,139 +259,6 @@ Then you can use your extension in your models:
             }
         )
 
-Advanced Configuration
-=====================
-
-Step 1: Define Your Extension
-.............................
-
-First, create a JavaScript file with your custom Tiptap extension:
-
-.. code-block:: javascript
-
-    // myapp/static/myapp/extensions/custom-extension.js
-    import { Extension } from "django-prose-editor/editor"
-
-    export const MyCustomExtension = Extension.create({
-      name: 'MyCustomExtension',
-
-      addOptions() {
-        return {
-          option1: 'default',
-          option2: true,
-        }
-      },
-
-      // Extension code...
-    })
-
-Step 2: Register Your Extension
-...............................
-
-Create a preset that includes your extension:
-
-.. code-block:: javascript
-
-    // myapp/static/myapp/extensions/custom-preset.js
-    import {
-      Document, Paragraph, Text, Bold, Italic, // etc...
-      createTextareaEditor, initializeEditors,
-    } from "django-prose-editor/editor"
-
-    import { MyCustomExtension } from './custom-extension'
-
-    const marker = "data-django-prose-editor-custom"
-
-    function createEditor(textarea) {
-      if (textarea.closest(".prose-editor")) return
-      const config = JSON.parse(textarea.getAttribute(marker))
-
-      const extensions = [
-        Document, Paragraph, Text,
-        Bold, Italic,
-        // Other standard extensions...
-
-        // Add your custom extension
-        MyCustomExtension.configure({
-          // Get options from the config
-          option1: config["MyCustomExtension.option1"],
-          option2: config["MyCustomExtension.option2"],
-        }),
-      ]
-
-      return createTextareaEditor(textarea, extensions)
-    }
-
-    initializeEditors(createEditor, `[${marker}]`)
-
-Step 3: Register Your Extension in Django Settings
-..................................................
-
-Register your extension group in Django settings:
-
-.. code-block:: python
-
-    # In settings.py
-    from js_asset import JS, static_lazy
-
-    # Register your extension group
-    DJANGO_PROSE_EDITOR_EXTENSIONS = [
-        {
-            # JavaScript assets for this extension group
-            "js": [
-                static_lazy("myapp/extensions/custom-extension.js")
-            ],
-            # Extensions provided by this extension group
-            "extensions": {
-                # Reference the processor function by its dotted path
-                "MyCustomExtension": "myapp.extensions.process_custom_extension",
-                # You can add multiple related extensions that share the same JS
-                "MyCustomExtensionDetails": "myapp.extensions.process_custom_extension_details"
-            }
-        }
-    ]
-
-    # For custom presets (optional - you can use the configurable preset)
-    DJANGO_PROSE_EDITOR_PRESETS = {
-        "custom": [
-            JS("myapp/extensions/custom-preset.js", {"type": "module"}),
-        ],
-    }
-
-    # Then use your extensions with the ConfigurableProseEditorField
-
-Step 4: Use Your Custom Extension in Models
-...........................................
-
-Now you can use your custom extension in your models:
-
-.. code-block:: python
-
-    from django_prose_editor.fields import ConfigurableProseEditorField
-
-    class Article(models.Model):
-        content = ConfigurableProseEditorField(
-            extensions={
-                # Standard extensions
-                "Bold": True,
-                "Italic": True,
-
-                # Your custom extension with configuration
-                "MyCustomExtension": {
-                    "option1": "custom value",
-                    "option2": False,
-                }
-            },
-            # Specify which JS preset to use for custom extensions
-            preset="custom"
-        )
-
-The configuration system will:
-
-1. Enable your custom extension in the editor
-2. Pass your configuration options to the extension
-3. Allow the HTML elements and attributes in the sanitization process
-4. Use your specified JavaScript preset to initialize the extension
 
 Technical Details
 ~~~~~~~~~~~~~~~~~
