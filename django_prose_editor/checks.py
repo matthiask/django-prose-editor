@@ -3,19 +3,33 @@ from django.core.checks import Error, Warning, register
 
 
 @register()
-def check_presets_configuration(app_configs, **kwargs):
+def check_js_implementation_configuration(app_configs, **kwargs):
     """
-    Check that the 'default' preset is not being overridden in settings.
+    Check that the 'default' JavaScript implementation is not being overridden in settings.
     """
     errors = []
 
+    # Check new setting
+    if hasattr(settings, "DJANGO_PROSE_EDITOR_IMPLEMENTATIONS"):
+        implementations = settings.DJANGO_PROSE_EDITOR_IMPLEMENTATIONS
+        if "default" in implementations:
+            errors.append(
+                Error(
+                    'Overriding the "default" implementation in DJANGO_PROSE_EDITOR_IMPLEMENTATIONS is not allowed.',
+                    hint="Remove the 'default' key from your DJANGO_PROSE_EDITOR_IMPLEMENTATIONS setting.",
+                    obj=settings,
+                    id="django_prose_editor.E001",
+                )
+            )
+
+    # For backward compatibility, also check old setting
     if hasattr(settings, "DJANGO_PROSE_EDITOR_PRESETS"):
         presets = settings.DJANGO_PROSE_EDITOR_PRESETS
         if "default" in presets:
             errors.append(
                 Error(
                     'Overriding the "default" preset in DJANGO_PROSE_EDITOR_PRESETS is not allowed.',
-                    hint="Remove the 'default' key from your DJANGO_PROSE_EDITOR_PRESETS setting.",
+                    hint="Use DJANGO_PROSE_EDITOR_IMPLEMENTATIONS instead and remove the 'default' key.",
                     obj=settings,
                     id="django_prose_editor.E001",
                 )
@@ -34,34 +48,6 @@ def check_custom_extensions_configuration(app_configs, **kwargs):
     # Check if custom extensions are defined
     if hasattr(settings, "DJANGO_PROSE_EDITOR_EXTENSIONS"):
         extensions = settings.DJANGO_PROSE_EDITOR_EXTENSIONS
-
-        # If we have extensions, we should also have DJANGO_PROSE_EDITOR_CUSTOM_PRESET
-        if extensions and not hasattr(settings, "DJANGO_PROSE_EDITOR_CUSTOM_PRESET"):
-            errors.append(
-                Warning(
-                    "Custom extensions are defined but DJANGO_PROSE_EDITOR_CUSTOM_PRESET is not set.",
-                    hint="Set DJANGO_PROSE_EDITOR_CUSTOM_PRESET to the name of a preset that includes your custom extensions.",
-                    obj=settings,
-                    id="django_prose_editor.W001",
-                )
-            )
-
-        # If we have a custom preset setting, check that it exists in DJANGO_PROSE_EDITOR_PRESETS
-        if hasattr(settings, "DJANGO_PROSE_EDITOR_CUSTOM_PRESET") and hasattr(
-            settings, "DJANGO_PROSE_EDITOR_PRESETS"
-        ):
-            preset_name = settings.DJANGO_PROSE_EDITOR_CUSTOM_PRESET
-            presets = settings.DJANGO_PROSE_EDITOR_PRESETS
-
-            if preset_name not in presets:
-                errors.append(
-                    Error(
-                        f'DJANGO_PROSE_EDITOR_CUSTOM_PRESET is set to "{preset_name}" but this preset is not defined.',
-                        hint=f"Add '{preset_name}' to your DJANGO_PROSE_EDITOR_PRESETS setting.",
-                        obj=settings,
-                        id="django_prose_editor.E002",
-                    )
-                )
 
         # Check that each extension has required configuration
         for ext_name, ext_config in extensions.items():

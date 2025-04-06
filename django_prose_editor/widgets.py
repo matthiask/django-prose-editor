@@ -18,7 +18,9 @@ importmap.update(
 class ProseEditorWidget(forms.Textarea):
     def __init__(self, *args, **kwargs):
         self.config = kwargs.pop("config", {})
-        self.preset = kwargs.pop("preset", "default")
+        self.js_implementation = kwargs.pop("js_implementation", None) or kwargs.pop(
+            "preset", "default"
+        )
         super().__init__(*args, **kwargs)
 
     @property
@@ -32,7 +34,7 @@ class ProseEditorWidget(forms.Textarea):
             },
             js=[
                 # We don't really need this since editor.js will be loaded
-                # in default.js (or other preset's modules) anyway, but keeping
+                # in default.js (or other implementations' modules) anyway, but keeping
                 # the tag around helps the browser discover and load this
                 # module a little bit earlier.
                 JS("django_prose_editor/editor.js", {"type": "module"}),
@@ -44,17 +46,23 @@ class ProseEditorWidget(forms.Textarea):
         return self.base_media + forms.Media(
             js=[
                 JS("django_prose_editor/editor.js", {"type": "module"}),
-                *self.get_presets()[self.preset],
+                *self.get_implementations()[self.js_implementation],
             ]
         )
 
-    def get_presets(self):
-        settings_presets = getattr(settings, "DJANGO_PROSE_EDITOR_PRESETS", {})
+    def get_implementations(self):
+        implementations = getattr(
+            settings, "DJANGO_PROSE_EDITOR_IMPLEMENTATIONS", {}
+        ) or getattr(settings, "DJANGO_PROSE_EDITOR_PRESETS", {})
         # The system check in checks.py will catch this error during startup
-        return settings_presets | {
+        return implementations | {
             "default": [
                 JS("django_prose_editor/editor.js", {"type": "module"}),
                 JS("django_prose_editor/default.js", {"type": "module"}),
+            ],
+            "configurable": [
+                JS("django_prose_editor/editor.js", {"type": "module"}),
+                JS("django_prose_editor/configurable.js", {"type": "module"}),
             ],
         }
 
@@ -111,11 +119,11 @@ class ProseEditorWidget(forms.Textarea):
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
-        context["widget"]["attrs"][f"data-django-prose-editor-{self.preset}"] = (
-            json.dumps(
-                self.get_config(),
-                separators=(",", ":"),
-            )
+        context["widget"]["attrs"][
+            f"data-django-prose-editor-{self.js_implementation}"
+        ] = json.dumps(
+            self.get_config(),
+            separators=(",", ":"),
         )
         return context
 

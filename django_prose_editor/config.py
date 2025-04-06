@@ -108,7 +108,7 @@ FEATURE_DEPENDENCIES = {
     "table": ["tableRow", "tableHeader", "tableCell"],
 }
 
-# Predefined feature sets
+# Predefined feature sets (profiles)
 FEATURE_PRESETS = {
     "minimal": {
         "bold": True,
@@ -200,6 +200,10 @@ def expand_features(features: dict[str, Any]) -> dict[str, Any]:
     for feature in CORE_FEATURES:
         if feature not in expanded:
             expanded[feature] = True
+
+    # Enable history by default unless explicitly disabled
+    if "history" not in expanded:
+        expanded["history"] = True
 
     # Resolve dependencies
     for feature, deps in FEATURE_DEPENDENCIES.items():

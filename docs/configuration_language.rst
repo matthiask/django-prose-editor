@@ -202,10 +202,10 @@ Create a preset that includes your extension:
 
     initializeEditors(createEditor, `[${marker}]`)
 
-Step 3: Register Your Extension and Preset in Django Settings
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Step 3: Register Your Extension and Implementation in Django Settings
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Configure your extension and preset in your Django settings:
+Configure your extension and JavaScript implementation in Django settings:
 
 .. code-block:: python
 
@@ -222,15 +222,15 @@ Configure your extension and preset in your Django settings:
         }
     }
 
-    # Register your custom preset
-    DJANGO_PROSE_EDITOR_PRESETS = {
+    # Register your custom JavaScript implementation
+    DJANGO_PROSE_EDITOR_IMPLEMENTATIONS = {
         "custom": [
             JS("myapp/extensions/custom-preset.js", {"type": "module"}),
         ],
     }
 
-    # Set this as the preset to use when custom extensions are enabled
-    DJANGO_PROSE_EDITOR_CUSTOM_PRESET = "custom"
+    # Then specify this implementation when using custom extensions
+    # in your ConfigurableProseEditorField (see example below)
 
 Step 4: Use Your Custom Extension in Models
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -253,7 +253,9 @@ Now you can use your custom extension in your models:
                     "option1": "custom value",
                     "option2": False,
                 }
-            }
+            },
+            # Specify which JS implementation to use for custom extensions
+            js_implementation="custom"
         )
 
 The configuration system will:
@@ -261,7 +263,7 @@ The configuration system will:
 1. Enable your custom extension in the editor
 2. Pass your configuration options to the extension
 3. Allow the HTML elements and attributes in the sanitization process
-4. Use your custom preset that knows how to initialize the extension
+4. Use your specified JavaScript implementation to initialize the extension
 
 Implementation Details
 =====================
