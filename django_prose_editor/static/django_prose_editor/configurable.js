@@ -132,30 +132,43 @@ const EXTENSIONS = {
   Menu,
 }
 
+// Cache for module loading promises to avoid duplicate loading
+const moduleCache = new Map()
+
 // Async function to dynamically import external modules in parallel
 async function loadExtensionModules(moduleUrls) {
   if (!moduleUrls || !moduleUrls.length) return
 
-  // Create an array of import promises for all modules
-  const importPromises = moduleUrls.map(url =>
-    import(url)
+  // Create a batch of promises for all requested modules
+  const loadPromises = moduleUrls.map(url => {
+    // If we already have this module or its loading promise in cache, return it
+    if (moduleCache.has(url)) {
+      return moduleCache.get(url)
+    }
+
+    // Create a new loading promise for this module
+    const loadPromise = import(url)
       .then(module => {
-        // Return the module with its named exports
+        // Register the loaded module
+        Object.assign(EXTENSIONS, module)
+        // Replace the promise in the cache with the resolved module
+        moduleCache.set(url, module)
         return module
       })
       .catch(error => {
         console.error(`Error loading extension module from ${url}:`, error)
-        return {} // Return empty object on error
+        // Remove failed modules from cache
+        moduleCache.delete(url)
+        return {}
       })
-  )
 
-  // Wait for all imports to complete in parallel
-  const modules = await Promise.all(importPromises)
+    // Store the promise in the cache
+    moduleCache.set(url, loadPromise)
+    return loadPromise
+  })
 
-  // Merge all extension exports into the EXTENSIONS object
-  for (const module of modules) {
-    Object.assign(EXTENSIONS, module)
-  }
+  // Wait for all modules to load
+  await Promise.all(loadPromises)
 }
 
 async function createEditorAsync(textarea) {
@@ -193,25 +206,60 @@ async function createEditorAsync(textarea) {
   return createTextareaEditor(textarea, extensionInstances)
 }
 
+// Track pending editor initializations
+const pendingEditors = new WeakMap()
+
 // Function for the initializeEditors callback
 function createEditor(textarea) {
-  // Start the async creation but don't await it here
-  // The editor will be initialized asynchronously
-  createEditorAsync(textarea).then(editor => {
-    // The editor is initialized and ready to use
-    if (editor) {
-      // You could optionally emit an event or call a callback here
-      // to notify other components that the editor is ready
-      console.debug('Prose editor initialized with custom extensions')
-    }
-  }).catch(error => {
-    console.error('Error initializing prose editor:', error)
-  })
+  // Check if we already have a pending initialization for this textarea
+  if (pendingEditors.has(textarea)) {
+    return null
+  }
+
+  // Create a promise for the editor initialization
+  const editorPromise = createEditorAsync(textarea)
+    .then(editor => {
+      // The editor is initialized and ready to use
+      if (editor) {
+        console.debug('Prose editor initialized with custom extensions')
+
+        // Dispatch an event for other components to know when the editor is ready
+        const event = new CustomEvent('prose-editor:ready', {
+          detail: { editor, textarea },
+          bubbles: true
+        })
+        textarea.dispatchEvent(event)
+      }
+      // Remove from pending tracking once complete
+      pendingEditors.delete(textarea)
+      return editor
+    })
+    .catch(error => {
+      console.error('Error initializing prose editor:', error)
+      // Remove from pending tracking on error
+      pendingEditors.delete(textarea)
+      return null
+    })
+
+  // Track this pending initialization
+  pendingEditors.set(textarea, editorPromise)
 
   // Return null since we're handling initialization asynchronously
   return null
 }
 
+// Allow other components to get the editor promise
+function getEditorPromise(textarea) {
+  return pendingEditors.get(textarea) || null
+}
+
+// Initialize all editors with the configurable marker
 initializeEditors((textarea) => {
   return createEditor(textarea)
 }, `[${marker}]`)
+
+// Export utility functions for external use
+export {
+  createEditor,
+  getEditorPromise
+}
