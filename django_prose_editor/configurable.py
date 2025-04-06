@@ -40,6 +40,7 @@ class ConfigurableProseEditorField(ProseEditorField):
 
         # Get the full allowlist including JavaScript modules
         extension_allowlist = extensions_to_allowlist(expanded_extensions)
+        js_modules = extension_allowlist.pop("js_modules", set())
 
         # Handle sanitization - default to True for this field
         sanitize = kwargs.pop("sanitize", True)
@@ -51,8 +52,8 @@ class ConfigurableProseEditorField(ProseEditorField):
             kwargs["sanitize"] = sanitize
 
         # Add JavaScript modules to the expanded extensions
-        if extension_allowlist.get("js_modules"):
-            expanded_extensions["_js_modules"] = extension_allowlist["js_modules"]
+        if js_modules:
+            expanded_extensions["_js_modules"] = js_modules
 
         # Use config parameter for the expanded extensions
         kwargs["config"] = expanded_extensions
@@ -62,7 +63,7 @@ class ConfigurableProseEditorField(ProseEditorField):
 
         super().__init__(*args, **kwargs)
 
-    def _create_sanitizer(self, sanitize_config=None):
+    def _create_sanitizer(self, nh3_kwargs):
         """Create a sanitizer function based on extension configuration."""
         try:
             import nh3  # noqa: F401
@@ -71,15 +72,6 @@ class ConfigurableProseEditorField(ProseEditorField):
                 "You need to install nh3 to use automatic sanitization. "
                 "Install django-prose-editor[sanitize] or pip install nh3"
             )
-
-        # Get the full sanitization config if not provided
-        if sanitize_config is None:
-            # Make sure to expand extensions to include dependencies
-            expanded = expand_extensions(self.extensions)
-            sanitize_config = extensions_to_allowlist(expanded)
-
-        # Create a copy of the config excluding js_modules which isn't for nh3
-        nh3_kwargs = {k: v for k, v in sanitize_config.items() if k != "js_modules"}
 
         # Create and return the sanitizer function
         def sanitize_html(html):
