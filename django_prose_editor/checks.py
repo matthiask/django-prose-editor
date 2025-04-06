@@ -52,7 +52,7 @@ def check_custom_extensions_configuration(app_configs, **kwargs):
             errors.append(
                 Error(
                     "DJANGO_PROSE_EDITOR_EXTENSIONS must be a list of dictionaries.",
-                    hint="Configure DJANGO_PROSE_EDITOR_EXTENSIONS as a list of dictionaries, each with 'js' and 'features' keys.",
+                    hint="Configure DJANGO_PROSE_EDITOR_EXTENSIONS as a list of dictionaries, each with 'js' and 'extensions' keys.",
                     obj=settings,
                     id="django_prose_editor.E003",
                 )
@@ -65,7 +65,7 @@ def check_custom_extensions_configuration(app_configs, **kwargs):
                 errors.append(
                     Error(
                         f"Extension group at index {i} must be a dictionary.",
-                        hint="Each extension group must be a dictionary with 'js' and 'features' keys.",
+                        hint="Each extension group must be a dictionary with 'js' and 'extensions' keys.",
                         obj=settings,
                         id="django_prose_editor.E004",
                     )
@@ -73,11 +73,11 @@ def check_custom_extensions_configuration(app_configs, **kwargs):
                 continue
 
             # Check that required keys are present
-            if "features" not in extension_group:
+            if "extensions" not in extension_group:
                 errors.append(
                     Error(
-                        f"Extension group at index {i} is missing the required 'features' key.",
-                        hint="Each extension group must have a 'features' key mapping feature names to processors.",
+                        f"Extension group at index {i} is missing the required 'extensions' key.",
+                        hint="Each extension group must have an 'extensions' key mapping extension names to processors.",
                         obj=settings,
                         id="django_prose_editor.E005",
                     )
@@ -88,19 +88,19 @@ def check_custom_extensions_configuration(app_configs, **kwargs):
                 errors.append(
                     Warning(
                         f"Extension group at index {i} is missing the 'js' key.",
-                        hint="Each extension group should have a 'js' key listing JavaScript assets for the features.",
+                        hint="Each extension group should have a 'js' key listing JavaScript assets for the extensions.",
                         obj=settings,
                         id="django_prose_editor.W002",
                     )
                 )
 
-            # Check the features dictionary
-            features = extension_group["features"]
-            if not isinstance(features, dict):
+            # Check the extensions dictionary
+            extensions_dict = extension_group["extensions"]
+            if not isinstance(extensions_dict, dict):
                 errors.append(
                     Error(
-                        f"The 'features' key in extension group at index {i} must be a dictionary.",
-                        hint="The 'features' key should map feature names to processor callables or dotted paths.",
+                        f"The 'extensions' key in extension group at index {i} must be a dictionary.",
+                        hint="The 'extensions' key should map extension names to processor callables or dotted paths.",
                         obj=settings,
                         id="django_prose_editor.E006",
                     )
@@ -108,12 +108,12 @@ def check_custom_extensions_configuration(app_configs, **kwargs):
                 continue
 
             # Check each processor
-            for feature_name, processor in features.items():
+            for extension_name, processor in extensions_dict.items():
                 # Check if the processor is a string (dotted path) or callable
                 if not (callable(processor) or isinstance(processor, str)):
                     errors.append(
                         Error(
-                            f'Processor for feature "{feature_name}" in group {i} must be a callable or a dotted path string.',
+                            f'Processor for extension "{extension_name}" in group {i} must be a callable or a dotted path string.',
                             hint="Each processor must be either a callable or a dotted import path.",
                             obj=settings,
                             id="django_prose_editor.E007",
@@ -124,7 +124,7 @@ def check_custom_extensions_configuration(app_configs, **kwargs):
                 if isinstance(processor, str) and "." not in processor:
                     errors.append(
                         Warning(
-                            f'Processor path "{processor}" for feature "{feature_name}" in group {i} may not be a valid dotted import path.',
+                            f'Processor path "{processor}" for extension "{extension_name}" in group {i} may not be a valid dotted import path.',
                             hint="The processor should be a dotted import path like 'myapp.processors.my_processor'.",
                             obj=settings,
                             id="django_prose_editor.W003",
@@ -173,7 +173,7 @@ def check_for_sanitized_prose_editor_field(app_configs, **kwargs):
                 messages.append(
                     Info(
                         f"SanitizedProseEditorField is used in {model.__name__}.{field.name}. Consider using ConfigurableProseEditorField instead.",
-                        hint="ConfigurableProseEditorField provides better flexibility and control over features and sanitization.",
+                        hint="ConfigurableProseEditorField provides better flexibility and control over extensions and sanitization.",
                         obj=model,
                         id="django_prose_editor.I001",
                     )

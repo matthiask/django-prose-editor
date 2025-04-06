@@ -11,8 +11,8 @@ Basic Configuration
 
 The configuration system uses a declarative format that defines:
 
-1. Editor features (Tiptap extensions)
-2. HTML elements and attributes allowed by these features
+1. Editor extensions (Tiptap extensions)
+2. HTML elements and attributes allowed by these extensions
 3. Server-side sanitization rules derived from the configuration
 
 Example Configuration
@@ -24,63 +24,63 @@ Example Configuration
 
     class Article(models.Model):
         content = ConfigurableProseEditorField(
-            features={
+            extensions={
                 # Core text formatting
-                "bold": True,
-                "italic": True,
-                "strike": True,
-                "underline": True,
-                "hardBreak": True,
+                "Bold": True,
+                "Italic": True,
+                "Strike": True,
+                "Underline": True,
+                "HardBreak": True,
 
                 # Structure
-                "heading": {
+                "Heading": {
                     "levels": [1, 2, 3]  # Only allow h1, h2, h3
                 },
-                "bulletList": True,
-                "orderedList": True,
-                "blockquote": True,
+                "BulletList": True,
+                "OrderedList": True,
+                "Blockquote": True,
 
-                # Advanced features
-                "link": {
+                # Advanced extensions
+                "Link": {
                     "enableTarget": True,  # Enable "open in new window"
                     "protocols": ["http", "https", "mailto"],  # Limit protocols
                 },
-                "table": True,
+                "Table": True,
 
                 # Editor capabilities
-                "history": True,       # Enables undo/redo
-                "html": True,          # Allows HTML view
-                "typographic": True,   # Enables typographic chars
+                "History": True,       # Enables undo/redo
+                "HTML": True,          # Allows HTML view
+                "Typographic": True,   # Enables typographic chars
             }
         )
 
-Configuring Features
+Configuring Extensions
 --------------------
 
-The `features` parameter allows you to specify exactly which features you want to enable in your editor:
+The `extensions` parameter allows you to specify exactly which extensions you want to enable in your editor:
 
 .. code-block:: python
 
     # Simple configuration with basic text formatting and links
     content = ConfigurableProseEditorField(
-        features={
-            "bold": True,
-            "italic": True,
-            "strike": True,
-            "link": True,
-            "bulletList": True,
-            "orderedList": True,
+        extensions={
+            "Bold": True,
+            "Italic": True,
+            "Strike": True,
+            "Link": True,
+            "BulletList": True,
+            "OrderedList": True,
         }
     )
 
-    # More advanced configuration with specific settings for features
+    # More advanced configuration with specific settings for extensions
     content = ConfigurableProseEditorField(
-        features={
-            "bold": True,
-            "italic": True,
-            "heading": {"levels": [1, 2, 3]},  # Only allow H1-H3
-            "link": {"enableTarget": True},  # Enable "open in new tab"
-            "table": True,
+        extensions={
+            "Bold": True,
+            "Italic": True,
+            "Heading": {"levels": [1, 2, 3]},  # Only allow H1-H3
+            "Link": {"enableTarget": True},  # Enable "open in new tab"
+            "Table": True,
         }
     )
 
@@ -92,44 +92,44 @@ Sanitization is enabled by default for the ConfigurableProseEditorField:
 
 .. code-block:: python
 
-    # Automatically sanitizes based on feature configuration (sanitize=True is the default)
+    # Automatically sanitizes based on extension configuration (sanitize=True is the default)
     content = ConfigurableProseEditorField(
-        features={"bold": True, "link": True}
+        extensions={"Bold": True, "Link": True}
     )
 
     # You can explicitly disable sanitization if needed
     content = ConfigurableProseEditorField(
-        features={"bold": True, "link": True},
+        extensions={"Bold": True, "Link": True},
         sanitize=False
     )
 
     # You can also access the generated rules directly
-    from django_prose_editor.config import features_to_allowlist
+    from django_prose_editor.config import extensions_to_allowlist
 
-    allowlist = features_to_allowlist(features={"bold": True, "link": True})
+    allowlist = extensions_to_allowlist(extensions={"Bold": True, "Link": True})
     # Returns {"tags": ["strong", "a"], "attributes": {"a": ["href"]}}
 
-Feature-to-HTML Mapping
+Extension-to-HTML Mapping
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-This table shows how editor features map to HTML elements and attributes:
+This table shows how editor extensions map to HTML elements and attributes:
 
 ============== ======================= ============================
-Feature        HTML Elements           HTML Attributes
+Extension      HTML Elements           HTML Attributes
 ============== ======================= ============================
-bold           <strong>                -
-italic         <em>                    -
-strike         <s>                     -
-underline      <u>                     -
-subscript      <sub>                   -
-superscript    <sup>                   -
-heading        <h1> to <h6>            -
-bulletList     <ul>, <li>              -
-orderedList    <ol>, <li>              start, type
-blockquote     <blockquote>            -
-horizontalRule <hr>                    -
-link           <a>                     href, target, rel
-table          <table>, <tr>,          rowspan, colspan
+Bold           <strong>                -
+Italic         <em>                    -
+Strike         <s>                     -
+Underline      <u>                     -
+Subscript      <sub>                   -
+Superscript    <sup>                   -
+Heading        <h1> to <h6>            -
+BulletList     <ul>, <li>              -
+OrderedList    <ol>, <li>              start, type
+Blockquote     <blockquote>            -
+HorizontalRule <hr>                    -
+Link           <a>                     href, target, rel
+Table          <table>, <tr>,          rowspan, colspan
                <th>, <td>
 ============== ======================= ============================
 
@@ -137,7 +137,7 @@ Custom Extensions
 ~~~~~~~~~~~~~~~~
 
 The configurable preset allows you to add custom Tiptap extensions without having to create a custom preset.
-You can define extension groups in your Django settings, with each group containing related features that share the same JavaScript assets:
+You can define extension groups in your Django settings, with each group containing related extensions that share the same JavaScript assets:
 
 .. code-block:: python
 
@@ -149,13 +149,13 @@ You can define extension groups in your Django settings, with each group contain
     DJANGO_PROSE_EDITOR_EXTENSIONS = [
         # Simple extension group
         {
-            # JavaScript assets shared by all features in this group
+            # JavaScript assets shared by all extensions in this group
             "js": [
                 static_lazy("myapp/extensions/custom-extension.js")
             ],
-            # Feature processors for this group
-            "features": {
-                "myCustomExtension": create_simple_processor(
+            # Extension processors for this group
+            "extensions": {
+                "MyCustomExtension": create_simple_processor(
                     tags=["div"],
                     attributes={"div": ["data-custom"]}
                 )
@@ -167,29 +167,29 @@ You can define extension groups in your Django settings, with each group contain
             "js": [
                 static_lazy("myapp/extensions/blue-bold.js")
             ],
-            "features": {
-                "blueBold": create_simple_processor(
+            "extensions": {
+                "BlueBold": create_simple_processor(
                     tags=["strong"],
                     attributes={"strong": ["style", "class"]}
                 )
             }
         },
 
-        # Complex extension group with multiple related features
+        # Complex extension group with multiple related extensions
         {
             "js": [
                 static_lazy("myapp/extensions/table/table.js")
             ],
-            "features": {
-                "table": "myapp.extensions.process_table",
-                "tableRow": "myapp.extensions.process_table_row",
-                "tableCell": "myapp.extensions.process_table_cell",
-                "tableHeader": "myapp.extensions.process_table_header"
+            "extensions": {
+                "Table": "myapp.extensions.process_table",
+                "TableRow": "myapp.extensions.process_table_row",
+                "TableCell": "myapp.extensions.process_table_cell",
+                "TableHeader": "myapp.extensions.process_table_header"
             }
         }
     ]
 
-The JavaScript module should export the extension as its default export:
+The JavaScript module should export the extension as a named export:
 
 .. code-block:: javascript
 
@@ -197,13 +197,10 @@ The JavaScript module should export the extension as its default export:
     import { Extension } from "django-prose-editor/editor"
 
     // Create the extension
-    const MyCustomExtension = Extension.create({
-      name: 'myCustomExtension',
+    export const MyCustomExtension = Extension.create({
+      name: 'MyCustomExtension',
       // Extension implementation...
     })
-
-    // Export it as the default export
-    export default MyCustomExtension
 
 Simple Example: Blue Bold Text
 -----------------------------
@@ -216,8 +213,8 @@ Here's a minimal example of a custom extension that adds a blue color to bold te
     import { Mark } from "django-prose-editor/editor"
 
     // Extend the bold mark to make it blue
-    const BlueBold = Mark.create({
-      name: 'blueBold',
+    export const BlueBold = Mark.create({
+      name: 'BlueBold',
 
       // Extend the default bold mark
       priority: 101, // Higher than the default bold priority
@@ -240,8 +237,6 @@ Here's a minimal example of a custom extension that adds a blue color to bold te
       }
     })
 
-    export default BlueBold
-
 Then you can use your extension in your models:
 
 .. code-block:: python
@@ -250,17 +245,17 @@ Then you can use your extension in your models:
 
     class Article(models.Model):
         content = ConfigurableProseEditorField(
-            features={
-                "bold": True,
-                "italic": True,
+            extensions={
+                "Bold": True,
+                "Italic": True,
 
                 # Enable your custom extension
-                "myCustomExtension": {
+                "MyCustomExtension": {
                     "option1": "value",  # Configuration options
                 },
 
                 # Enable the blue bold extension
-                "blueBold": True
+                "BlueBold": True
             }
         )
 
@@ -277,8 +272,8 @@ First, create a JavaScript file with your custom Tiptap extension:
     // myapp/static/myapp/extensions/custom-extension.js
     import { Extension } from "django-prose-editor/editor"
 
-    export default Extension.create({
-      name: 'myCustomExtension',
+    export const MyCustomExtension = Extension.create({
+      name: 'MyCustomExtension',
 
       addOptions() {
         return {
@@ -303,7 +298,7 @@ Create a preset that includes your extension:
       createTextareaEditor, initializeEditors,
     } from "django-prose-editor/editor"
 
-    import MyCustomExtension from './custom-extension'
+    import { MyCustomExtension } from './custom-extension'
 
     const marker = "data-django-prose-editor-custom"
 
@@ -319,8 +314,8 @@ Create a preset that includes your extension:
         // Add your custom extension
         MyCustomExtension.configure({
           // Get options from the config
-          option1: config["myCustomExtension.option1"],
-          option2: config["myCustomExtension.option2"],
+          option1: config["MyCustomExtension.option1"],
+          option2: config["MyCustomExtension.option2"],
         }),
       ]
 
@@ -346,12 +341,12 @@ Register your extension group in Django settings:
             "js": [
                 static_lazy("myapp/extensions/custom-extension.js")
             ],
-            # Features provided by this extension group
-            "features": {
+            # Extensions provided by this extension group
+            "extensions": {
                 # Reference the processor function by its dotted path
-                "myCustomExtension": "myapp.extensions.process_custom_extension",
-                # You can add multiple related features that share the same JS
-                "myCustomExtensionDetails": "myapp.extensions.process_custom_extension_details"
+                "MyCustomExtension": "myapp.extensions.process_custom_extension",
+                # You can add multiple related extensions that share the same JS
+                "MyCustomExtensionDetails": "myapp.extensions.process_custom_extension_details"
             }
         }
     ]
@@ -376,13 +371,13 @@ Now you can use your custom extension in your models:
 
     class Article(models.Model):
         content = ConfigurableProseEditorField(
-            features={
-                # Standard features
-                "bold": True,
-                "italic": True,
+            extensions={
+                # Standard extensions
+                "Bold": True,
+                "Italic": True,
 
                 # Your custom extension with configuration
-                "myCustomExtension": {
+                "MyCustomExtension": {
                     "option1": "custom value",
                     "option2": False,
                 }
@@ -414,7 +409,7 @@ The processor function is the core of custom extensions. It determines what HTML
         Process custom extension configuration for sanitization.
 
         Args:
-            config: The feature configuration (e.g., {"option1": "value"})
+            config: The extension configuration (e.g., {"option1": "value"})
             shared_config: The shared configuration dictionary to update
         """
         # Prepare tags and attributes
@@ -449,8 +444,8 @@ The processor function is the core of custom extensions. It determines what HTML
             "js": [
                 static_lazy("myapp/extensions/complex-extension.js")
             ],
-            "features": {
-                "complexExtension": "myapp.extensions.process_complex_extension"
+            "extensions": {
+                "ComplexExtension": "myapp.extensions.process_complex_extension"
             }
         },
 
@@ -459,8 +454,8 @@ The processor function is the core of custom extensions. It determines what HTML
             "js": [
                 static_lazy("myapp/extensions/simple-extension.js")
             ],
-            "features": {
-                "simpleExtension": create_simple_processor(
+            "extensions": {
+                "SimpleExtension": create_simple_processor(
                     tags=["div", "span"],
                     attributes={"div": ["class"], "span": ["class"]}
                 )
@@ -473,8 +468,8 @@ Working Principles
 
 This configuration system bridges the gap between front-end capabilities and server-side sanitization by:
 
-1. Defining a clear mapping between editor features and HTML elements/attributes
-2. Automatically generating sanitization rules from the feature configuration
+1. Defining a clear mapping between editor extensions and HTML elements/attributes
+2. Automatically generating sanitization rules from the extension configuration
 3. Supporting extension with custom components
 4. Providing processor functions for complex configurations
 
@@ -483,13 +478,13 @@ Special Features
 
 **Link Protocol Sanitization**
 
-When configuring the `link` feature, you can restrict URLs to specific protocols:
+When configuring the `Link` extension, you can restrict URLs to specific protocols:
 
 .. code-block:: python
 
     content = ConfigurableProseEditorField(
-        features={
-            "link": {
+        extensions={
+            "Link": {
                 "protocols": ["http", "https", "mailto"],  # Only allow these protocols
             }
         },
@@ -506,8 +501,8 @@ You can restrict heading levels to a subset of H1-H6:
 .. code-block:: python
 
     content = ConfigurableProseEditorField(
-        features={
-            "heading": {
+        extensions={
+            "Heading": {
                 "levels": [1, 2, 3],  # Only allow H1, H2, H3
             }
         }

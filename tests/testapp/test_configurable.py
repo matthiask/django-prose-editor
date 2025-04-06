@@ -12,7 +12,7 @@ class ConfigurableFormTestCase(TestCase):
     """Tests for the configurable field form rendering."""
 
     def test_dependencies_expanded(self):
-        """Test that all dependencies are properly expanded in raw_features."""
+        """Test that all dependencies are properly expanded in raw_extensions."""
 
         class TestForm(ModelForm):
             class Meta:
@@ -22,28 +22,28 @@ class ConfigurableFormTestCase(TestCase):
         form = TestForm()
         widget = form.fields["description"].widget
 
-        # Get the expanded features from the widget attributes
+        # Get the expanded extensions from the widget attributes
 
         context = widget.get_context("description", "", {})
-        expanded_features = json.loads(
+        expanded_extensions = json.loads(
             context["widget"]["attrs"]["data-django-prose-editor-configurable"]
         )
 
-        # Make sure the expanded_features include all dependencies
-        # The original features only had bold, italic, and table
-        self.assertIn("bold", expanded_features)
-        self.assertIn("italic", expanded_features)
-        self.assertIn("table", expanded_features)
+        # Make sure the expanded_extensions include all dependencies
+        # The original extensions only had Bold, Italic, and Table
+        self.assertIn("Bold", expanded_extensions)
+        self.assertIn("Italic", expanded_extensions)
+        self.assertIn("Table", expanded_extensions)
 
         # The following should be included as dependencies
-        self.assertIn("tableRow", expanded_features)
-        self.assertIn("tableHeader", expanded_features)
-        self.assertIn("tableCell", expanded_features)
+        self.assertIn("TableRow", expanded_extensions)
+        self.assertIn("TableHeader", expanded_extensions)
+        self.assertIn("TableCell", expanded_extensions)
 
-        # Core features should always be included
-        self.assertIn("paragraph", expanded_features)
-        self.assertIn("document", expanded_features)
-        self.assertIn("text", expanded_features)
+        # Core extensions should always be included
+        self.assertIn("Paragraph", expanded_extensions)
+        self.assertIn("Document", expanded_extensions)
+        self.assertIn("Text", expanded_extensions)
 
     def test_heading_levels_config(self):
         """Test that heading levels are properly passed to the widget."""
@@ -56,19 +56,19 @@ class ConfigurableFormTestCase(TestCase):
         form = TestForm()
         widget = form.fields["description"].widget
 
-        # Get the expanded features from the widget attributes
+        # Get the expanded extensions from the widget attributes
 
         context = widget.get_context("description", "", {})
-        expanded_features = json.loads(
+        expanded_extensions = json.loads(
             context["widget"]["attrs"]["data-django-prose-editor-configurable"]
         )
 
-        # Check that heading is in expanded_features with the proper configuration
-        self.assertIn("heading", expanded_features)
-        self.assertEqual(expanded_features["heading"]["levels"], [1, 2, 3])
+        # Check that Heading is in expanded_extensions with the proper configuration
+        self.assertIn("Heading", expanded_extensions)
+        self.assertEqual(expanded_extensions["Heading"]["levels"], [1, 2, 3])
 
-        # Check that we're using the config parameter for the expanded features
-        self.assertEqual(widget.config, expanded_features)
+        # Check that we're using the config parameter for the expanded extensions
+        self.assertEqual(widget.config, expanded_extensions)
 
     def test_sanitization_works(self):
         """Test that basic sanitization works correctly with ConfigurableProseEditorField."""
@@ -145,14 +145,14 @@ class ConfigurableFormTestCase(TestCase):
         self.assertIn("subscript", sanitized, "content from sub should still exist")
         self.assertIn("superscript", sanitized, "content from sup should still exist")
 
-        # Test link sanitization - links are not in the features list,
-        # so they should be removed
+        # Test link sanitization - Link is not in the extensions list,
+        # so it should be removed
         html = '<p>Link with <a href="https://example.com" target="_blank" rel="noopener">attributes</a></p>'
         form = TestForm(data={"description": html})
         self.assertTrue(form.is_valid())
         instance = form.save()
         sanitized = instance.description
-        # Link tag should be removed since it's not in the features
+        # Link tag should be removed since it's not in the extensions
         self.assertNotIn("<a href", sanitized, "link tag should be removed")
         self.assertNotIn(
             'target="_blank"', sanitized, "target attribute should be removed"

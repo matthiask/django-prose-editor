@@ -49,11 +49,11 @@ class TableProseEditorModel(models.Model):
 
 class ConfigurableProseEditorModel(models.Model):
     description = ConfigurableProseEditorField(
-        features={
-            "bold": True,
-            "italic": True,
-            "table": True,  # This should automatically include tableRow, tableHeader, tableCell
-            "heading": {"levels": [1, 2, 3]},  # Limit to h1, h2, h3
+        extensions={
+            "Bold": True,
+            "Italic": True,
+            "Table": True,  # This should automatically include TableRow, TableHeader, TableCell
+            "Heading": {"levels": [1, 2, 3]},  # Limit to h1, h2, h3
         },
         sanitize=True,
     )

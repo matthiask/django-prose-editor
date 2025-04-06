@@ -74,19 +74,19 @@ Using Configurable Sanitization (Recommended)
 ---------------------------------------------
 
 The recommended approach is to use the new ``ConfigurableProseEditorField``
-which automatically synchronizes editor features with sanitization rules:
+which automatically synchronizes editor extensions with sanitization rules:
 
 .. code-block:: python
 
     from django_prose_editor.configurable import ConfigurableProseEditorField
 
     content = ConfigurableProseEditorField(
-        features={
-            "bold": True,
-            "italic": True,
-            "bulletList": True,
-            "link": True,
-        },  # Specify which features to enable
+        extensions={
+            "Bold": True,
+            "Italic": True,
+            "BulletList": True,
+            "Link": True,
+        },  # Specify which extensions to enable
         # sanitize=True is the default, no need to specify it
     )
 
@@ -137,11 +137,11 @@ The editor can be customized in several ways:
 3. Creating custom presets for more advanced customization
 
 
-Simple Customization with Config
---------------------------------
+Simple Customization with Config (Legacy)
+------------------------------------
 
 For basic customization, you can use the ``config`` parameter to specify which
-extensions should be enabled:
+extensions should be enabled (this is the legacy approach):
 
 .. code-block:: python
 
@@ -166,10 +166,11 @@ extensions should be enabled:
             }
         )
 
-Extension names use camelCase format (e.g., ``bold``, ``italic``,
-``bulletList``, ``horizontalRule``), following the naming convention used by
-Tiptap. The following legacy names are still supported for backward
-compatibility, but are deprecated:
+Note: In the legacy approach, extension names use camelCase format (e.g., ``bold``, ``italic``,
+``bulletList``, ``horizontalRule``), whereas the new approach with ConfigurableProseEditorField
+uses PascalCase (e.g., ``Bold``, ``Italic``, ``BulletList``, ``HorizontalRule``).
+
+The following legacy names are still supported for backward compatibility, but are deprecated:
 
 * ProseMirror node names: ``bullet_list`` → ``bulletList``, ``ordered_list`` →
   ``orderedList``, ``horizontal_rule`` → ``horizontalRule``
@@ -178,11 +179,11 @@ compatibility, but are deprecated:
 
 Available extension types include:
 
-* Text formatting: ``bold``, ``italic``, ``strike``, ``subscript``, ``superscript``, ``underline`` (all enabled by default)
-* Lists: ``bulletList``, ``orderedList`` (enabled by default)
-* Structure: ``blockquote``, ``heading``, ``horizontalRule`` (enabled by default)
-* Links: ``link`` (enabled by default)
-* Tables: ``table`` (opt-in only, not enabled by default)
+* Text formatting: ``bold``/``Bold``, ``italic``/``Italic``, ``strike``/``Strike``, etc. (all enabled by default)
+* Lists: ``bulletList``/``BulletList``, ``orderedList``/``OrderedList`` (enabled by default)
+* Structure: ``blockquote``/``Blockquote``, ``heading``/``Heading``, etc. (enabled by default)
+* Links: ``link``/``Link`` (enabled by default)
+* Tables: ``table``/``Table`` (opt-in only, not enabled by default)
 
 Advanced Customization with Presets
 -----------------------------------
