@@ -22,83 +22,165 @@ def get_custom_extensions():
     return getattr(settings, "DJANGO_PROSE_EDITOR_EXTENSIONS", {})
 
 
-# Default feature-to-HTML mapping
-# This defines what HTML elements and attributes each feature allows
+# Feature processors
+# These functions return allowlist information based on feature configuration
+def create_simple_processor(tags, attributes=None):
+    """
+    Create a simple processor function that returns a fixed set of tags and attributes.
+
+    Args:
+        tags: List of HTML tags
+        attributes: Dict mapping tags to allowed attributes
+
+    Returns:
+        A processor function
+    """
+
+    def processor(config):
+        return {
+            "tags": tags,
+            "attributes": attributes or {},
+        }
+
+    return processor
+
+
+def process_heading(config):
+    """Process heading feature configuration."""
+    tags = ["h1", "h2", "h3", "h4", "h5", "h6"]
+
+    # Filter tags based on levels if specified
+    if isinstance(config, dict) and "levels" in config:
+        levels = config["levels"]
+        tags = [f"h{level}" for level in levels if 1 <= level <= 6]
+
+    return {
+        "tags": tags,
+        "attributes": {},
+    }
+
+
+def process_link(config):
+    """Process link feature configuration."""
+    attributes = {"a": ["href", "rel"]}
+
+    # Include target attribute unless explicitly disabled
+    target_allowed = True
+    if isinstance(config, dict) and "allowTargetBlank" in config:
+        target_allowed = bool(config["allowTargetBlank"])
+
+    if target_allowed:
+        attributes["a"].append("target")
+
+    return {
+        "tags": ["a"],
+        "attributes": attributes,
+    }
+
+
+# Additional processors for other extensions
+def process_code_block(config):
+    """Process code block feature configuration."""
+    attributes = {}
+
+    # Include language attribute if supported
+    if isinstance(config, dict) and config.get("languageClassPrefix"):
+        attributes["pre"] = ["class"]
+        attributes["code"] = ["class"]
+
+    return {
+        "tags": ["pre", "code"],
+        "attributes": attributes,
+    }
+
+
+def process_figure(config):
+    """Process figure feature configuration."""
+    return {
+        "tags": ["figure", "figcaption", "img"],
+        "attributes": {
+            "img": ["src", "alt", "width", "height"],
+            "figure": ["class"],
+        },
+    }
+
+
+def process_image(config):
+    """Process image feature configuration."""
+    return {
+        "tags": ["img"],
+        "attributes": {
+            "img": ["src", "alt", "width", "height"],
+        },
+    }
+
+
+def process_text_align(config):
+    """Process text alignment feature configuration."""
+    return {
+        "tags": [],  # Text align typically uses classes, not new tags
+        "attributes": {
+            "p": ["style", "class"],
+            "h1": ["style", "class"],
+            "h2": ["style", "class"],
+            "h3": ["style", "class"],
+            "h4": ["style", "class"],
+            "h5": ["style", "class"],
+            "h6": ["style", "class"],
+            "blockquote": ["style", "class"],
+        },
+    }
+
+
+def process_color_highlight(config):
+    """Process color and highlighting feature configuration."""
+    return {
+        "tags": ["span"],
+        "attributes": {
+            "span": ["style", "class"],
+        },
+    }
+
+
+# Default feature-to-HTML mapping with processors as the single source of truth
 FEATURE_MAPPING = {
     # Core formatting
-    "bold": {
-        "tags": ["strong"],
-        "attributes": {},
-    },
-    "italic": {
-        "tags": ["em"],
-        "attributes": {},
-    },
-    "strike": {
-        "tags": ["s"],
-        "attributes": {},
-    },
-    "underline": {
-        "tags": ["u"],
-        "attributes": {},
-    },
-    "subscript": {
-        "tags": ["sub"],
-        "attributes": {},
-    },
-    "superscript": {
-        "tags": ["sup"],
-        "attributes": {},
-    },
+    "bold": create_simple_processor(["strong"]),
+    "italic": create_simple_processor(["em"]),
+    "strike": create_simple_processor(["s"]),
+    "underline": create_simple_processor(["u"]),
+    "subscript": create_simple_processor(["sub"]),
+    "superscript": create_simple_processor(["sup"]),
+    # Code features
+    "code": create_simple_processor(["code"]),
+    "codeBlock": process_code_block,
+    # Text styling
+    "color": process_color_highlight,
+    "highlight": process_color_highlight,
+    "textAlign": process_text_align,
+    "textStyle": process_color_highlight,
     # Structure
-    "heading": {
-        "tags": ["h1", "h2", "h3", "h4", "h5", "h6"],
-        "attributes": {},
-    },
-    "paragraph": {
-        "tags": ["p"],
-        "attributes": {},
-    },
-    "hardBreak": {
-        "tags": ["br"],
-        "attributes": {},
-    },
-    "bulletList": {
-        "tags": ["ul"],
-        "attributes": {},
-    },
-    "orderedList": {
-        "tags": ["ol"],
-        "attributes": {
-            "ol": ["start", "type"],
-        },
-    },
-    "listItem": {
-        "tags": ["li"],
-        "attributes": {},
-    },
-    "blockquote": {
-        "tags": ["blockquote"],
-        "attributes": {},
-    },
-    "horizontalRule": {
-        "tags": ["hr"],
-        "attributes": {},
-    },
+    "heading": process_heading,
+    "paragraph": create_simple_processor(["p"]),
+    "hardBreak": create_simple_processor(["br"]),
+    "bulletList": create_simple_processor(["ul"]),
+    "orderedList": create_simple_processor(["ol"], {"ol": ["start", "type"]}),
+    "listItem": create_simple_processor(["li"]),
+    "blockquote": create_simple_processor(["blockquote"]),
+    "horizontalRule": create_simple_processor(["hr"]),
+    # Media and figures
+    "image": process_image,
+    "figure": process_figure,
+    "caption": create_simple_processor(["figcaption"]),
     # Advanced features
-    "link": {
-        "tags": ["a"],
-        "attributes": {
-            "a": ["href", "target", "rel"],
-        },
-    },
-    "table": {
-        "tags": ["table", "tbody", "thead", "tr", "th", "td"],
-        "attributes": {
+    "link": process_link,
+    "table": create_simple_processor(
+        ["table", "tbody", "thead", "tr", "th", "td"],
+        {
             "th": ["rowspan", "colspan"],
             "td": ["rowspan", "colspan"],
         },
-    },
+    ),
 }
 
 # Automatic dependencies (features that require other features)
@@ -106,9 +188,13 @@ FEATURE_DEPENDENCIES = {
     "bulletList": ["listItem"],
     "orderedList": ["listItem"],
     "table": ["tableRow", "tableHeader", "tableCell"],
+    "figure": ["caption", "image"],
+    "textAlign": ["textStyle"],
+    "color": ["textStyle"],
+    "highlight": ["textStyle"],
 }
 
-# Predefined feature sets (profiles)
+# Predefined feature sets
 FEATURE_PRESETS = {
     "minimal": {
         "bold": True,
@@ -157,6 +243,8 @@ FEATURE_PRESETS = {
         "underline": True,
         "subscript": True,
         "superscript": True,
+        "code": True,
+        "codeBlock": True,
         "paragraph": True,
         "heading": {"levels": [1, 2, 3, 4, 5, 6]},
         "bulletList": True,
@@ -166,8 +254,36 @@ FEATURE_PRESETS = {
         "hardBreak": True,
         "link": {"allowTargetBlank": True},
         "table": True,
+        "image": True,
+        "figure": True,
+        "color": True,
+        "highlight": True,
+        "textAlign": True,
         "history": True,
         "html": True,
+        "typographic": True,
+    },
+    "content": {
+        # A rich content profile with all features except dangerous ones
+        "bold": True,
+        "italic": True,
+        "strike": True,
+        "underline": True,
+        "subscript": True,
+        "superscript": True,
+        "code": True,
+        "paragraph": True,
+        "heading": {"levels": [1, 2, 3, 4, 5, 6]},
+        "bulletList": True,
+        "orderedList": True,
+        "blockquote": True,
+        "horizontalRule": True,
+        "hardBreak": True,
+        "link": {"allowTargetBlank": True},
+        "image": True,
+        "figure": True,
+        "table": True,
+        "history": True,
         "typographic": True,
     },
 }
@@ -260,6 +376,13 @@ def features_to_allowlist(
     """
     expanded = expand_features(features)
 
+    # Filter out falsy features and special features
+    filtered_features = {
+        feature: config
+        for feature, config in expanded.items()
+        if config and feature not in ("history", "html", "typographic", "preset")
+    }
+
     allowed_tags: set[str] = set()
     allowed_attributes: dict[str, set[str]] = {}
 
@@ -267,56 +390,75 @@ def features_to_allowlist(
     custom_extensions = get_custom_extensions()
 
     # Process each enabled feature
-    for feature, config in expanded.items():
-        if not config:
-            continue
-
-        # Skip non-HTML features
-        if feature in ("history", "html", "typographic"):
-            continue
+    for feature, config in filtered_features.items():
+        # Get the processor function
+        processor = None
 
         # Check if it's a built-in feature
-        mapping = FEATURE_MAPPING.get(feature)
+        if feature in FEATURE_MAPPING:
+            processor = FEATURE_MAPPING[feature]
+        # Or a custom extension
+        elif feature in custom_extensions:
+            ext_config = custom_extensions[feature]
+            processor_path = ext_config.get("processor")
 
-        # If not built-in, check if it's a custom extension
-        if not mapping and feature in custom_extensions:
-            mapping = {
-                "tags": custom_extensions[feature].get("tags", []),
-                "attributes": custom_extensions[feature].get("attributes", {}),
-            }
+            if processor_path:
+                if isinstance(processor_path, str):
+                    # Import the processor function from the specified path
+                    try:
+                        module_path, func_name = processor_path.rsplit(".", 1)
+                        module = __import__(module_path, fromlist=[func_name])
+                        processor = getattr(module, func_name)
+                    except (ImportError, AttributeError, ValueError) as e:
+                        import warnings
 
-        # Skip if we don't have a mapping
-        if not mapping:
+                        warnings.warn(
+                            f"Could not import processor function {processor_path} for {feature}: {e}",
+                            UserWarning,
+                            stacklevel=2,
+                        )
+                else:
+                    # If it's already a callable, use it directly
+                    processor = processor_path
+            else:
+                # Create a simple processor from the tags and attributes
+                tags = ext_config.get("tags", [])
+                attributes = ext_config.get("attributes", {})
+                processor = create_simple_processor(tags, attributes)
+
+        # Skip if we don't have a processor
+        if not processor:
             continue
 
-        # Add tags
-        allowed_tags.update(mapping.get("tags", []))
+        # Call the processor to get allowlist information
+        try:
+            result = processor(config)
+            if not isinstance(result, dict) or "tags" not in result:
+                import warnings
 
-        # Add attributes
-        for tag, attrs in mapping.get("attributes", {}).items():
-            if tag not in allowed_attributes:
-                allowed_attributes[tag] = set()
-            allowed_attributes[tag].update(attrs)
+                warnings.warn(
+                    f"Processor for {feature} returned invalid result: {result}",
+                    UserWarning,
+                    stacklevel=2,
+                )
+                continue
 
-        # Handle feature-specific configurations
-        if feature == "heading" and isinstance(config, dict) and "levels" in config:
-            levels = config["levels"]
-            # Filter heading tags based on allowed levels
-            heading_tags = {f"h{level}" for level in levels if 1 <= level <= 6}
-            # Replace all h1-h6 tags with just the allowed ones
-            allowed_tags = {
-                tag for tag in allowed_tags if not tag.startswith("h")
-            } | heading_tags
+            # Add tags
+            allowed_tags.update(result.get("tags", []))
 
-        if feature == "link" and isinstance(config, dict):
-            if config.get("allowTargetBlank", True) is False:
-                if "a" in allowed_attributes and "target" in allowed_attributes["a"]:
-                    allowed_attributes["a"].remove("target")
+            # Add attributes
+            for tag, attrs in result.get("attributes", {}).items():
+                if tag not in allowed_attributes:
+                    allowed_attributes[tag] = set()
+                allowed_attributes[tag].update(attrs)
+        except Exception as e:
+            import warnings
 
-            # Handle protocol restrictions
-            if "protocols" in config:
-                # Note: This doesn't modify the allowlist, but would be used in sanitization
-                pass
+            warnings.warn(
+                f"Error processing {feature}: {e}",
+                UserWarning,
+                stacklevel=2,
+            )
 
     # Convert sets to lists for the final output
     return {

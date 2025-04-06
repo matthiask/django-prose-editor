@@ -215,10 +215,13 @@ Configure your extension and JavaScript implementation in Django settings:
     # Define the HTML elements and attributes your extension produces
     DJANGO_PROSE_EDITOR_EXTENSIONS = {
         "myCustomExtension": {
-            "tags": ["custom"],  # HTML tags this extension creates
-            "attributes": {
-                "custom": ["attribute1", "attribute2"]  # Allowed attributes for each tag
-            }
+            # Required processor function to generate HTML allowlist for the extension
+            "processor": "myapp.extensions.process_custom_extension"
+
+            # For simple cases, you can still specify tags and attributes directly
+            # and a processor will be automatically created for you:
+            # "tags": ["custom"],
+            # "attributes": {"custom": ["attribute1", "attribute2"]}
         }
     }
 
@@ -268,11 +271,62 @@ The configuration system will:
 Implementation Details
 =====================
 
+Custom Processor Functions
+-------------------------
+
+For advanced cases, you can define processor functions to customize the sanitization rules based on feature configuration:
+
+.. code-block:: python
+
+    # Example processor function
+    def process_custom_extension(config):
+        """
+        Process custom extension configuration for sanitization.
+
+        Args:
+            config: The feature configuration (e.g., {"option1": "value"})
+
+        Returns:
+            Dictionary with "tags" and "attributes" keys
+        """
+        # Default allowlist
+        allowlist = {
+            "tags": ["div", "span"],
+            "attributes": {
+                "div": ["class", "id"],
+                "span": ["class"],
+            }
+        }
+
+        # Example: Modify allowlist based on configuration
+        if config.get("restrictToDiv", False):
+            # Only allow div elements
+            allowlist["tags"] = ["div"]
+            allowlist["attributes"] = {"div": ["class", "id"]}
+
+        # Example: Add data attributes if enabled
+        if config.get("allowDataAttributes", False):
+            allowlist["attributes"]["div"].extend(["data-custom", "data-value"])
+
+        return allowlist
+
+    # You can also use the utility function for simple cases
+    from django_prose_editor.config import create_simple_processor
+
+    simple_processor = create_simple_processor(
+        tags=["div", "span"],
+        attributes={"div": ["class"], "span": ["class"]}
+    )
+
+Working Principles
+-----------------
+
 This configuration system bridges the gap between front-end capabilities and server-side sanitization by:
 
 1. Defining a clear mapping between editor features and HTML elements/attributes
 2. Automatically generating sanitization rules from the feature configuration
 3. Supporting extension with custom components
+4. Providing processor functions for complex configurations
 
 Special Features
 ---------------

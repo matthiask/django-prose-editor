@@ -6,27 +6,55 @@ import {
   HardBreak,
   Text,
   History,
+
+  // Block nodes
   Blockquote,
   Bold,
   BulletList,
   Heading,
   HorizontalRule,
-  Italic,
   ListItem,
   OrderedList,
+
+  // Text formatting
+  Italic,
   Strike,
   Subscript,
   Superscript,
   Underline,
-  Link,
-  Menu,
-  HTML,
-  NoSpellCheck,
-  Typographic,
+
+  // Code features
+  Code,
+  CodeBlock,
+
+  // Text styling
+  Color,
+  Highlight,
+  TextAlign,
+  TextStyle,
+
+  // Media and advanced features
+  Image,
+  Figure,
+  Caption,
+
+  // Tables
   Table,
   TableRow,
   TableHeader,
   TableCell,
+
+  // Special features
+  Link,
+  HTML,
+  NoSpellCheck,
+  Typographic,
+  Fullscreen,
+
+  // UI
+  Menu,
+
+  // Core utilities
   createTextareaEditor,
   initializeEditors,
 } from "django-prose-editor/editor"
@@ -47,13 +75,23 @@ const CORE_EXTENSIONS = [
 
 // Map of feature names to their extensions
 const EXTENSION_MAP = {
-  // Basic formatting
+  // Text formatting
   bold: Bold,
   italic: Italic,
   strike: Strike,
   underline: Underline,
   subscript: Subscript,
   superscript: Superscript,
+
+  // Code features
+  code: Code,
+  codeBlock: CodeBlock,
+
+  // Text styling
+  color: Color,
+  highlight: Highlight,
+  textAlign: TextAlign,
+  textStyle: TextStyle,
 
   // Structure
   blockquote: Blockquote,
@@ -63,17 +101,24 @@ const EXTENSION_MAP = {
   orderedList: OrderedList,
   listItem: ListItem,
 
-  // Other features
-  link: Link,
-  history: History,
-  html: HTML,
-  typographic: Typographic,
+  // Media and figures
+  image: Image,
+  figure: Figure,
+  caption: Caption,
 
   // Tables
   table: Table,
   tableRow: TableRow,
   tableHeader: TableHeader,
   tableCell: TableCell,
+
+  // Special features
+  link: Link,
+  history: History,
+  html: HTML,
+  typographic: Typographic,
+  fullscreen: Fullscreen,
+  nospellcheck: NoSpellCheck,
 }
 
 function createEditor(textarea) {
@@ -85,12 +130,11 @@ function createEditor(textarea) {
   // Start with core extensions
   const extensions = [...CORE_EXTENSIONS]
 
-  // Get all enabled features
+  // All features from Python are already filtered
+  // and only enabled features are passed
   const enabledFeatures = Object.entries(features)
-    // Ignore special keys
-    .filter(([feature]) => !["preset", "profile", "types"].includes(feature))
-    // Filter out disabled features
-    .filter(([_, config]) => config !== false && config !== null && config !== undefined)
+    // Ignore special keys that should be handled separately
+    .filter(([feature]) => !["preset", "types"].includes(feature))
 
   // Process all enabled features
   for (const [feature, config] of enabledFeatures) {
