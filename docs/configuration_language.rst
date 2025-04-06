@@ -143,7 +143,7 @@ You can define extension groups in your Django settings, with each group contain
 
     # In settings.py
     from js_asset import static_lazy
-    from django_prose_editor.config import create_simple_processor
+    from django_prose_editor.config import html_tags
 
     # Define your custom extensions with their processors
     DJANGO_PROSE_EDITOR_EXTENSIONS = [
@@ -155,7 +155,7 @@ You can define extension groups in your Django settings, with each group contain
             ],
             # Extension processors for this group
             "extensions": {
-                "MyCustomExtension": create_simple_processor(
+                "MyCustomExtension": html_tags(
                     tags=["div"],
                     attributes={"div": ["data-custom"]}
                 )
@@ -436,7 +436,7 @@ The processor function is the core of custom extensions. It determines what HTML
 
     # Then in settings.py, register your processor by its dotted path:
     from js_asset import static_lazy
-    from django_prose_editor.config import create_simple_processor
+    from django_prose_editor.config import html_tags
 
     DJANGO_PROSE_EDITOR_EXTENSIONS = [
         # Complex extension group
@@ -455,7 +455,7 @@ The processor function is the core of custom extensions. It determines what HTML
                 static_lazy("myapp/extensions/simple-extension.js")
             ],
             "extensions": {
-                "SimpleExtension": create_simple_processor(
+                "SimpleExtension": html_tags(
                     tags=["div", "span"],
                     attributes={"div": ["class"], "span": ["class"]}
                 )

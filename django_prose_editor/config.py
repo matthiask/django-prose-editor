@@ -68,14 +68,13 @@ def add_tags_and_attributes(shared_config, tags, attributes):
             shared_config["attributes"][tag].update(allowed_attrs)
 
 
-def create_simple_processor(tags, attributes=None, *, js_module=None):
+def html_tags(tags, attributes=None):
     """
     Create a simple processor function that adds tags and attributes to the sanitization config.
 
     Args:
         tags: List of HTML tags
         attributes: Dict mapping tags to allowed attributes
-        js_module: Optional URL to JavaScript module implementing this extension
 
     Returns:
         A processor function that updates the shared config
@@ -83,10 +82,6 @@ def create_simple_processor(tags, attributes=None, *, js_module=None):
 
     def processor(extension_config, shared_config):
         add_tags_and_attributes(shared_config, tags, attributes)
-
-        # Add JavaScript module if provided
-        if js_module:
-            shared_config["js_modules"].add(js_module)
 
     return processor
 
@@ -205,14 +200,14 @@ def process_color_highlight(config, shared_config):
 # Default extension mapping with processors as the single source of truth
 EXTENSION_MAPPING = {
     # Core formatting
-    "Bold": create_simple_processor(["strong"]),
-    "Italic": create_simple_processor(["em"]),
-    "Strike": create_simple_processor(["s"]),
-    "Underline": create_simple_processor(["u"]),
-    "Subscript": create_simple_processor(["sub"]),
-    "Superscript": create_simple_processor(["sup"]),
+    "Bold": html_tags(["strong"]),
+    "Italic": html_tags(["em"]),
+    "Strike": html_tags(["s"]),
+    "Underline": html_tags(["u"]),
+    "Subscript": html_tags(["sub"]),
+    "Superscript": html_tags(["sup"]),
     # Code extensions
-    "Code": create_simple_processor(["code"]),
+    "Code": html_tags(["code"]),
     "CodeBlock": process_code_block,
     # Text styling
     "Color": process_color_highlight,
@@ -221,20 +216,20 @@ EXTENSION_MAPPING = {
     "TextStyle": process_color_highlight,
     # Structure
     "Heading": process_heading,
-    "Paragraph": create_simple_processor(["p"]),
-    "HardBreak": create_simple_processor(["br"]),
-    "BulletList": create_simple_processor(["ul"]),
-    "OrderedList": create_simple_processor(["ol"], {"ol": ["start", "type"]}),
-    "ListItem": create_simple_processor(["li"]),
-    "Blockquote": create_simple_processor(["blockquote"]),
-    "HorizontalRule": create_simple_processor(["hr"]),
+    "Paragraph": html_tags(["p"]),
+    "HardBreak": html_tags(["br"]),
+    "BulletList": html_tags(["ul"]),
+    "OrderedList": html_tags(["ol"], {"ol": ["start", "type"]}),
+    "ListItem": html_tags(["li"]),
+    "Blockquote": html_tags(["blockquote"]),
+    "HorizontalRule": html_tags(["hr"]),
     # Media and figures
     "Image": process_image,
     "Figure": process_figure,
-    "Caption": create_simple_processor(["figcaption"]),
+    "Caption": html_tags(["figcaption"]),
     # Advanced extensions
     "Link": process_link,
-    "Table": create_simple_processor(
+    "Table": html_tags(
         ["table", "tbody", "thead", "tr", "th", "td"],
         {
             "th": ["rowspan", "colspan"],
@@ -242,11 +237,11 @@ EXTENSION_MAPPING = {
         },
     ),
     # Special extensions (these don't produce HTML elements)
-    "History": create_simple_processor([]),
-    "HTML": create_simple_processor([]),
-    "Typographic": create_simple_processor([]),
-    "Document": create_simple_processor([]),
-    "Text": create_simple_processor([]),
+    "History": html_tags([]),
+    "HTML": html_tags([]),
+    "Typographic": html_tags([]),
+    "Document": html_tags([]),
+    "Text": html_tags([]),
 }
 
 # Automatic dependencies (extensions that require other extensions)
