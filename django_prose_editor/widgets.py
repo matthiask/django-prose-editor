@@ -64,23 +64,23 @@ class ProseEditorWidget(forms.Textarea):
 
     def _convert_extension_names(self, config):
         """
-        Convert underscore_case extension names to camelCase.
-        This maintains backward compatibility while encouraging the new style.
+        Convert legacy underscore_case extension names to Tiptap extension names.
+        This maintains backward compatibility for older ProseMirror style names.
         """
         if not config or "types" not in config or not config["types"]:
             return config
 
         pm_to_tiptap = {
-            # Node names
-            "bullet_list": "bulletList",
-            "horizontal_rule": "horizontalRule",
-            "list_item": "listItem",
-            "ordered_list": "orderedList",
-            "hard_break": "hardBreak",
-            # Mark names
-            "strong": "bold",
-            "em": "italic",
-            "strikethrough": "strike",
+            "bullet_list": "BulletList",
+            "horizontal_rule": "HorizontalRule",
+            "list_item": "ListItem",
+            "ordered_list": "OrderedList",
+            "hard_break": "HardBreak",
+            "strong": "Bold",
+            "em": "Italic",
+            "strikethrough": "Strike",
+            "sub": "Subscript",
+            "sup": "Superscript",
         }
 
         types = []

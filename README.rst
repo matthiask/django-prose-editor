@@ -151,14 +151,14 @@ extensions should be enabled (this is the legacy approach):
         content = ProseEditorField(
             config={
                 "types": [
-                    "bold",
-                    "italic",
-                    "strike",
-                    "bulletList",
-                    "orderedList",
-                    "horizontalRule",
-                    "link",
-                    "table",  # Enables full table support
+                    "Bold",
+                    "Italic",
+                    "Strike",
+                    "BulletList",
+                    "OrderedList",
+                    "HorizontalRule",
+                    "Link",
+                    "Table",  # Enables full table support
                 ],
                 "history": True,
                 "html": True,
@@ -166,24 +166,22 @@ extensions should be enabled (this is the legacy approach):
             }
         )
 
-Note: In the legacy approach, extension names use camelCase format (e.g., ``bold``, ``italic``,
-``bulletList``, ``horizontalRule``), whereas the new approach with ConfigurableProseEditorField
-uses PascalCase (e.g., ``Bold``, ``Italic``, ``BulletList``, ``HorizontalRule``).
+All extension names now use the Tiptap names (e.g., ``Bold``, ``Italic``,
+``BulletList``, ``HorizontalRule``). For backward compatibility, the following legacy
+ProseMirror-style names are still supported but are deprecated:
 
-The following legacy names are still supported for backward compatibility, but are deprecated:
-
-* ProseMirror node names: ``bullet_list`` → ``bulletList``, ``ordered_list`` →
-  ``orderedList``, ``horizontal_rule`` → ``horizontalRule``
-* ProseMirror mark names: ``strong`` → ``bold``, ``em`` → ``italic``,
-  ``strikethrough`` → ``strike``
+* Legacy node names: ``bullet_list`` → ``BulletList``, ``ordered_list`` →
+  ``OrderedList``, ``horizontal_rule`` → ``HorizontalRule``
+* Legacy mark names: ``strong`` → ``Bold``, ``em`` → ``Italic``,
+  ``strikethrough`` → ``Strike``, ``sub`` → ``Subscript``, ``sup`` → ``Superscript``
 
 Available extension types include:
 
-* Text formatting: ``bold``/``Bold``, ``italic``/``Italic``, ``strike``/``Strike``, etc. (all enabled by default)
-* Lists: ``bulletList``/``BulletList``, ``orderedList``/``OrderedList`` (enabled by default)
-* Structure: ``blockquote``/``Blockquote``, ``heading``/``Heading``, etc. (enabled by default)
-* Links: ``link``/``Link`` (enabled by default)
-* Tables: ``table``/``Table`` (opt-in only, not enabled by default)
+* Text formatting: ``Bold``, ``Italic``, ``Strike``, ``Subscript``, ``Superscript``, ``Underline`` (all enabled by default)
+* Lists: ``BulletList``, ``OrderedList``, ``ListItem`` (enabled by default)
+* Structure: ``Blockquote``, ``Heading``, ``HorizontalRule`` (enabled by default)
+* Links: ``Link`` (enabled by default)
+* Tables: ``Table``, ``TableRow``, ``TableHeader``, ``TableCell`` (opt-in only, not enabled by default)
 
 Advanced Customization with Presets
 -----------------------------------
