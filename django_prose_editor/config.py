@@ -94,9 +94,7 @@ def create_simple_processor(tags, attributes=None, *, js_module=None):
 def process_heading(config, shared_config):
     """Process heading feature configuration."""
     levels = (
-        c["levels"]
-        if isinstance(config, dict) and (c := config.get("levels"))
-        else range(1, 7)
+        c if isinstance(config, dict) and (c := config.get("levels")) else range(1, 7)
     )
     tags = [f"h{level}" for level in levels]
     add_tags_and_attributes(shared_config, tags, None)
