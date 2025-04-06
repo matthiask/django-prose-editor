@@ -9,13 +9,6 @@ from django.utils.text import Truncator
 from django_prose_editor.widgets import AdminProseEditorWidget, ProseEditorWidget
 
 
-# This needs to be at the top level for backwards compatibility
-__all__ = [
-    "ProseEditorField",
-    "ProseEditorFormField",
-]
-
-
 def _actually_empty(x):
     """
     ProseMirror's schema always adds at least one empty paragraph
@@ -33,20 +26,10 @@ class ProseEditorField(models.TextField):
         self.sanitize = kwargs.pop("sanitize", _actually_empty)
         self.config = kwargs.pop("config", {})
         self.preset = kwargs.pop("preset", "default")
-        # All configuration is handled through config and preset
         super().__init__(*args, **kwargs)
 
     def clean(self, value, instance):
         return self.sanitize(super().clean(value, instance))
-
-    def formfield(self, **kwargs):
-        defaults = {
-            "form_class": ProseEditorFormField,
-            "config": self.config,
-            "preset": self.preset,
-        }
-        defaults.update(kwargs)
-        return super().formfield(**defaults)
 
     def contribute_to_class(self, cls, name, **kwargs):
         """Add a ``get_*_excerpt`` method to models which returns a
@@ -64,6 +47,14 @@ class ProseEditorField(models.TextField):
         name, _path, args, kwargs = super().deconstruct()
         return (name, "django.db.models.TextField", args, kwargs)
 
+    def formfield(self, **kwargs):
+        defaults = {
+            "config": self.config,
+            "form_class": ProseEditorFormField,
+            "preset": self.preset,
+        } | kwargs
+        return super().formfield(**defaults)
+
 
 def _is(widget, widget_class):
     return (
@@ -79,20 +70,16 @@ class ProseEditorFormField(forms.CharField):
     def __init__(self, *args, **kwargs):
         config = kwargs.pop("config", {})
         preset = kwargs.pop("preset", "default")
-        # All configuration is handled through config and preset
         widget = kwargs.get("widget")
 
         # We don't know if widget is set, and if it is, we do not know if it is
         # a class or an instance of the widget. The following if statement
         # should take all possibilities into account.
         if widget and _is(widget, widgets.AdminTextareaWidget):
-            kwargs["widget"] = AdminProseEditorWidget(config=config, preset=preset)
+            kwargs["widget"] = AdminProseEditorWidget
         elif not widget or not _is(widget, ProseEditorWidget):
-            kwargs["widget"] = ProseEditorWidget(config=config, preset=preset)
-        elif isinstance(widget, ProseEditorWidget):
-            # If it's already an instance, update its attributes
-            widget.config = config
-            widget.preset = preset
-            # All attributes updated
+            kwargs["widget"] = ProseEditorWidget
 
         super().__init__(*args, **kwargs)
+        self.widget.config = config
+        self.widget.preset = preset
