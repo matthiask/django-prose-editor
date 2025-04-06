@@ -5,98 +5,11 @@ This module provides a field that uses the configuration system to automatically
 generate front-end editor features and back-end sanitization rules.
 """
 
-import json
-
 from django_prose_editor.config import (
     expand_features,
-    features_to_tiptap_extensions,
     generate_nh3_allowlist,
 )
-from django_prose_editor.fields import ProseEditorField, ProseEditorFormField
-from django_prose_editor.widgets import ProseEditorWidget
-
-
-class ConfigurableProseEditorWidget(ProseEditorWidget):
-    """Widget for the ConfigurableProseEditorField."""
-
-    def __init__(self, *args, **kwargs):
-        self.features = kwargs.pop("features", {})
-        preset = kwargs.pop("preset", None)
-        if preset and not self.features:
-            # If only preset is specified, use it directly
-            self.features = {"preset": preset}
-        elif preset:
-            # If both are specified, add preset to features
-            self.features["preset"] = preset
-
-        # Use the configurable JavaScript implementation by default
-        if "js_implementation" not in kwargs:
-            kwargs["js_implementation"] = "configurable"
-
-        # Calculate the effective types list for Tiptap
-        expanded_features = expand_features(self.features)
-        features_to_tiptap_extensions(expanded_features)
-
-        # We don't need to generate the legacy config format for the configurable field
-        # since it uses configurable.js implementation by default
-
-        # If a config is explicitly provided, use it, otherwise set an empty config
-        # This avoids potential errors in the parent class that might expect config to exist
-        if "config" not in kwargs:
-            kwargs["config"] = {}
-
-        # Store the expanded features (with all dependencies resolved) for the configurable.js implementation
-        self.raw_features = expanded_features
-
-        # Check for custom extensions
-        from django_prose_editor.config import get_custom_extensions
-
-        get_custom_extensions()
-
-        # Check if the field uses custom extensions
-        # Note: We leave it to the user to specify the correct js_implementation
-        # when using custom extensions
-
-        super().__init__(*args, **kwargs)
-
-    def get_context(self, name, value, attrs):
-        """
-        Override to add the raw features for configurable.js implementation.
-        """
-        context = super().get_context(name, value, attrs)
-
-        # If using the configurable implementation, also pass the raw features
-        if self.js_implementation == "configurable":
-            context["widget"]["attrs"]["data-django-prose-editor-configurable"] = (
-                json.dumps(
-                    self.raw_features,
-                    separators=(",", ":"),
-                )
-            )
-
-        return context
-
-
-class ConfigurableProseEditorFormField(ProseEditorFormField):
-    """Form field for ConfigurableProseEditorField."""
-
-    widget = ConfigurableProseEditorWidget
-
-    def __init__(self, *args, **kwargs):
-        self.features = kwargs.pop("features", {})
-        self.preset = kwargs.pop("preset", None)  # Feature preset
-        self.js_implementation = kwargs.pop(
-            "js_implementation", None
-        )  # JS implementation
-
-        # Pass features to the widget
-        kwargs["widget"] = self.widget(
-            features=self.features,
-            preset=self.preset,  # Use "preset" for feature preset
-            js_implementation=self.js_implementation,  # Use "js_implementation" for JS implementation
-        )
-
-        super().__init__(*args, **kwargs)
+from django_prose_editor.fields import ProseEditorField
 
 
 class ConfigurableProseEditorField(ProseEditorField):
@@ -166,6 +79,7 @@ class ConfigurableProseEditorField(ProseEditorField):
 
             # Use url_schemes for protocol validation
             kwargs = {
+                # TODO tags?
                 "attributes": allowlist,
             }
 
@@ -184,10 +98,7 @@ class ConfigurableProseEditorField(ProseEditorField):
     def formfield(self, **kwargs):
         """Return a ConfigurableProseEditorFormField for this field."""
         defaults = {
-            "form_class": ConfigurableProseEditorFormField,
-            "features": self.features,
-            "preset": self.preset,
-            "js_implementation": self.js_implementation,
-        }
-        defaults.update(kwargs)
-        return super(ProseEditorField, self).formfield(**defaults)
+            "config": expand_features(self.features),  # XXX update name?
+            "preset": self.js_implementation,  # XXX update the name later.
+        } | kwargs
+        return super().formfield(**defaults)

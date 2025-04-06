@@ -308,37 +308,6 @@ def expand_features(features: dict[str, Any]) -> dict[str, Any]:
     return expanded
 
 
-def features_to_tiptap_extensions(features: dict[str, Any]) -> list[str]:
-    """
-    Convert feature configuration to list of enabled Tiptap extensions.
-
-    Args:
-        features: Dictionary of feature configurations
-
-    Returns:
-        List of extension names to enable
-    """
-    extensions = []
-
-    # Get custom extensions
-    get_custom_extensions()
-
-    for feature, config in features.items():
-        if not config:  # Skip disabled features
-            continue
-
-        # Skip special config keys
-        if feature == "preset":
-            continue
-
-        # Add the feature to the list of extensions
-        extensions.append(feature)
-
-        # Custom extensions are handled by the JavaScript preset
-
-    return extensions
-
-
 def features_to_allowlist(
     features: dict[str, Any],
 ) -> dict[str, list[str] | dict[str, list[str]]]:
