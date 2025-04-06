@@ -1,14 +1,13 @@
-=============================
 Editor Configuration Language
 =============================
 
 Overview
-========
+~~~~~~~~
 
 Django Prose Editor provides a unified configuration approach that synchronizes front-end editor capabilities with server-side sanitization rules. This ensures consistency between what users can create in the editor and what is allowed after sanitization.
 
 Basic Configuration
-===================
+~~~~~~~~~~~~~~~~~~~
 
 The configuration system uses a declarative format that defines:
 
@@ -92,7 +91,7 @@ For backwards compatibility, you can still use the old parameter name `preset`
 instead of `group` when specifying feature groups:
 
 Server-side Sanitization
-========================
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 The configuration automatically generates appropriate sanitization rules for nh3:
 
@@ -111,7 +110,7 @@ The configuration automatically generates appropriate sanitization rules for nh3
     # Returns {"tags": ["strong", "a"], "attributes": {"a": ["href"]}}
 
 Feature-to-HTML Mapping
-=======================
+~~~~~~~~~~~~~~~~~~~~~~~
 
 This table shows how editor features map to HTML elements and attributes:
 
@@ -135,7 +134,7 @@ table          <table>, <tr>,          rowspan, colspan
 ============== ======================= ============================
 
 Advanced Configuration
-======================
+~~~~~~~~~~~~~~~~~~~~~~
 
 Custom Extensions
 -----------------
@@ -168,7 +167,7 @@ First, create a JavaScript file with your custom Tiptap extension:
     })
 
 Step 2: Register Your Extension
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Create a preset that includes your extension:
 
@@ -240,7 +239,7 @@ Configure your extension and JavaScript preset in Django settings:
     # in your ConfigurableProseEditorField (see example below)
 
 Step 4: Use Your Custom Extension in Models
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Now you can use your custom extension in your models:
 
@@ -273,10 +272,10 @@ The configuration system will:
 4. Use your specified JavaScript preset to initialize the extension
 
 Technical Details
-=====================
+~~~~~~~~~~~~~~~~~~~~~
 
 Custom Processor Functions
--------------------------
+--------------------------
 
 For advanced cases, you can define processor functions to customize the sanitization rules based on feature configuration:
 
@@ -323,7 +322,7 @@ For advanced cases, you can define processor functions to customize the sanitiza
     )
 
 Working Principles
------------------
+-----------------~
 
 This configuration system bridges the gap between front-end capabilities and server-side sanitization by:
 
@@ -333,7 +332,7 @@ This configuration system bridges the gap between front-end capabilities and ser
 4. Providing processor functions for complex configurations
 
 Special Features
----------------
+----------------
 
 **Link Protocol Sanitization**
 
