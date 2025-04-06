@@ -67,7 +67,6 @@ const CORE_EXTENSIONS = [
   Dropcursor,
   Gapcursor,
   Paragraph,
-  HardBreak,
   Text,
   Menu,
   NoSpellCheck,
@@ -76,12 +75,7 @@ const CORE_EXTENSIONS = [
 // Extension instances indexed by their names
 const EXTENSIONS = {
   // Extension classes are available directly by their class name
-  Document,
-  Dropcursor,
-  Gapcursor,
-  Paragraph,
   HardBreak,
-  Text,
   History,
 
   // Block nodes
@@ -124,7 +118,6 @@ const EXTENSIONS = {
   // Special extensions
   Link,
   HTML,
-  NoSpellCheck,
   Typographic,
   Fullscreen,
 
@@ -151,8 +144,6 @@ async function loadExtensionModules(moduleUrls) {
       .then(module => {
         // Register the loaded module
         Object.assign(EXTENSIONS, module)
-        // Replace the promise in the cache with the resolved module
-        moduleCache.set(url, module)
         return module
       })
       .catch(error => {
@@ -175,29 +166,28 @@ async function createEditorAsync(textarea) {
   if (textarea.closest(".prose-editor")) return null
 
   // Get the extension configuration
-  const extensions_config = JSON.parse(textarea.getAttribute(marker) || "{}")
+  const extensionsConfig = JSON.parse(textarea.getAttribute(marker) || "{}")
 
   // Start with core extensions
   const extensionInstances = [...CORE_EXTENSIONS]
 
   // Check for custom JS modules
-  const customModules = extensions_config._js_modules || []
+  const customModules = extensionsConfig._js_modules || []
 
   // Load custom extension modules - this will merge them directly into EXTENSIONS
   await loadExtensionModules(customModules)
 
   // Process all extensions from the config
-  for (const [extensionName, config] of Object.entries(extensions_config)) {
+  for (const [extensionName, config] of Object.entries(extensionsConfig)) {
     // Skip the _js_modules key which isn't an extension
     if (extensionName === '_js_modules') continue
 
     const extension = EXTENSIONS[extensionName]
     if (extension) {
       // If the extension has a configuration object (not empty), pass it to the extension
-      if (typeof config === 'object' && config !== null && Object.keys(config).length > 0) {
+      if (typeof config === 'object') {
         extensionInstances.push(extension.configure(config))
       } else {
-        // Simple boolean flag, null, undefined, or empty object extensions use the default configuration
         extensionInstances.push(extension)
       }
     }
