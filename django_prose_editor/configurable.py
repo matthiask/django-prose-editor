@@ -5,11 +5,92 @@ This module provides a field that uses the configuration system to automatically
 generate front-end editor features and back-end sanitization rules.
 """
 
+import json
+
 from django_prose_editor.config import (
     expand_features,
-    generate_nh3_allowlist,
+    features_to_allowlist,
 )
-from django_prose_editor.fields import ProseEditorField
+from django_prose_editor.fields import ProseEditorField, ProseEditorFormField
+from django_prose_editor.widgets import ProseEditorWidget
+
+
+class ConfigurableProseEditorWidget(ProseEditorWidget):
+    """Widget for the ConfigurableProseEditorField."""
+
+    def __init__(self, *args, **kwargs):
+        self.features = kwargs.pop("features", {})
+        preset = kwargs.pop("preset", None)
+        if preset and not self.features:
+            # If only preset is specified, use it directly
+            self.features = {"preset": preset}
+        elif preset:
+            # If both are specified, add preset to features
+            self.features["preset"] = preset
+
+        # Use the configurable JavaScript implementation by default
+        if "js_implementation" not in kwargs:
+            kwargs["js_implementation"] = "configurable"
+
+        # We don't need to generate the legacy config format for the configurable field
+        # since it uses configurable.js implementation by default
+
+        # If a config is explicitly provided, use it, otherwise set an empty config
+        # This avoids potential errors in the parent class that might expect config to exist
+        if "config" not in kwargs:
+            kwargs["config"] = {}
+
+        # Calculate the expanded features including all dependencies
+        expanded_features = expand_features(self.features)
+
+        # Store the expanded features (with all dependencies resolved) for the configurable.js implementation
+        self.raw_features = expanded_features
+
+        # Check for custom extensions
+        from django_prose_editor.config import get_custom_extensions
+
+        get_custom_extensions()
+
+        super().__init__(*args, **kwargs)
+
+    def get_context(self, name, value, attrs):
+        """
+        Override to add the raw features for configurable.js implementation.
+        """
+        context = super().get_context(name, value, attrs)
+
+        # If using the configurable implementation, also pass the raw features
+        if self.js_implementation == "configurable":
+            context["widget"]["attrs"]["data-django-prose-editor-configurable"] = (
+                json.dumps(
+                    self.raw_features,
+                    separators=(",", ":"),
+                )
+            )
+
+        return context
+
+
+class ConfigurableProseEditorFormField(ProseEditorFormField):
+    """Form field for ConfigurableProseEditorField."""
+
+    widget = ConfigurableProseEditorWidget
+
+    def __init__(self, *args, **kwargs):
+        self.features = kwargs.pop("features", {})
+        self.preset = kwargs.pop("preset", None)  # Feature preset
+        self.js_implementation = kwargs.pop(
+            "js_implementation", None
+        )  # JS implementation
+
+        # Pass features to the widget
+        kwargs["widget"] = self.widget(
+            features=self.features,
+            preset=self.preset,  # Use "preset" for feature preset
+            js_implementation=self.js_implementation,  # Use "js_implementation" for JS implementation
+        )
+
+        super().__init__(*args, **kwargs)
 
 
 class ConfigurableProseEditorField(ProseEditorField):
@@ -53,40 +134,40 @@ class ConfigurableProseEditorField(ProseEditorField):
     def _create_sanitizer(self):
         """Create a sanitizer function based on feature configuration."""
         try:
-            import nh3
+            import nh3  # noqa: F401
         except ImportError:
             raise ImportError(
                 "You need to install nh3 to use automatic sanitization. "
                 "Install django-prose-editor[sanitize] or pip install nh3"
             )
 
-        # Generate allowlist based on features
-        allowlist = generate_nh3_allowlist(self.features)
+        # Get the full allowlist with tags and attributes
+        feature_allowlist = features_to_allowlist(self.features)
 
         # Check for protocol restrictions on links
-        url_filter = None
+        protocols = None
         if "link" in self.features and isinstance(self.features["link"], dict):
             if "protocols" in self.features["link"]:
-                from django_prose_editor.sanitized import _create_protocol_validator
-
-                url_filter = _create_protocol_validator(
-                    self.features["link"]["protocols"]
-                )
+                protocols = self.features["link"]["protocols"]
 
         # Create and return the sanitizer function
         def sanitize_html(html):
+            import nh3
+
             from django_prose_editor.fields import _actually_empty
 
-            # Use url_schemes for protocol validation
+            # Prepare arguments for nh3.clean
             kwargs = {
-                # TODO tags?
-                "attributes": allowlist,
+                "tags": set(feature_allowlist["tags"]),
+                "attributes": {
+                    tag: set(attrs)
+                    for tag, attrs in feature_allowlist["attributes"].items()
+                },
             }
 
             # If we have protocols specified
-            if url_filter is not None:
-                # Use url_schemes for validating URLs (simpler approach)
-                protocols = self.features["link"].get("protocols", [])
+            if protocols is not None:
+                # Use url_schemes for validating URLs
                 kwargs["url_schemes"] = set(protocols)
                 # When using url_schemes, link_rel must be set to None if we want to preserve rel
                 kwargs["link_rel"] = None
@@ -98,7 +179,10 @@ class ConfigurableProseEditorField(ProseEditorField):
     def formfield(self, **kwargs):
         """Return a ConfigurableProseEditorFormField for this field."""
         defaults = {
-            "config": expand_features(self.features),  # XXX update name?
-            "preset": self.js_implementation,  # XXX update the name later.
-        } | kwargs
-        return super().formfield(**defaults)
+            "form_class": ConfigurableProseEditorFormField,
+            "features": self.features,
+            "preset": self.preset,
+            "js_implementation": self.js_implementation,
+        }
+        defaults.update(kwargs)
+        return super(ProseEditorField, self).formfield(**defaults)

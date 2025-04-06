@@ -5,7 +5,6 @@ This module provides a way to define editor features and generate
 corresponding sanitization rules for server-side HTML cleaning.
 """
 
-from copy import deepcopy
 from typing import Any
 
 
@@ -411,30 +410,3 @@ def features_to_allowlist(
         "tags": sorted(allowed_tags),
         "attributes": {tag: sorted(attrs) for tag, attrs in allowed_attributes.items()},
     }
-
-
-def generate_nh3_allowlist(features: dict[str, Any]) -> dict[str, dict[str, set[str]]]:
-    """
-    Generate an nh3-compatible allowlist from feature configuration.
-
-    Args:
-        features: Dictionary of feature configurations
-
-    Returns:
-        Dictionary compatible with nh3.clean's attributes parameter
-    """
-    import nh3
-
-    # Start with nh3's default allowed attributes
-    allowlist = deepcopy(nh3.ALLOWED_ATTRIBUTES)
-
-    # Get our feature-based allowlist
-    feature_allowlist = features_to_allowlist(features)
-
-    # Update the nh3 allowlist with our feature-based attributes
-    for tag, attrs in feature_allowlist["attributes"].items():
-        if tag not in allowlist:
-            allowlist[tag] = set()
-        allowlist[tag].update(attrs)
-
-    return allowlist

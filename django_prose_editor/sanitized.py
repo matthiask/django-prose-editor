@@ -6,50 +6,9 @@ based on editor configurations.
 """
 
 from copy import deepcopy
-from typing import Any
 
-from django_prose_editor.config import generate_nh3_allowlist
 from django_prose_editor.configurable import ConfigurableProseEditorField
 from django_prose_editor.fields import _actually_empty
-
-
-def _create_protocol_validator(protocols):
-    """
-    Create a validator function for link protocols.
-
-    Args:
-        protocols: List of allowed protocols (e.g., ['http', 'https', 'mailto'])
-
-    Returns:
-        A validator function for nh3's attribute_filter parameter
-    """
-    allowed_protocols = set(protocols)
-
-    def validate_attribute(tag, attr, value):
-        """
-        Validate attributes, specifically checking href URLs for protocols.
-
-        This function matches the signature needed for nh3's attribute_filter parameter.
-        """
-        # We only want to validate href attributes
-        if tag != "a" or attr != "href":
-            return value
-
-        if not value:
-            return None
-
-        # Allow relative URLs or in-page links
-        if value.startswith(("/", "#")):
-            return value
-
-        # Check protocol
-        if any(value.startswith(f"{protocol}:") for protocol in allowed_protocols):
-            return value
-
-        # If protocol is not allowed, remove the attribute
-        return None
-
-    return validate_attribute
 
 
 def _nh3_sanitizer():
@@ -67,42 +26,6 @@ def _nh3_sanitizer():
     attributes["ol"] |= {"start", "type"}
 
     return lambda x: _actually_empty(nh3.clean(x, attributes=attributes))
-
-
-def generate_allowlist(
-    features: dict[str, Any] = None,
-) -> dict[str, set[str] | dict[str, set[str]]]:
-    """
-    Generate an nh3-compatible allowlist from feature configuration.
-
-    This function provides a user-facing API for generating allowlists that can
-    be used with nh3.clean() directly.
-
-    Args:
-        features: Dictionary of feature configurations
-
-    Returns:
-        Dictionary with allowed tags and attributes
-    """
-    if features is None:
-        # Default features for backward compatibility
-        features = {
-            "bold": True,
-            "italic": True,
-            "strike": True,
-            "underline": True,
-            "subscript": True,
-            "superscript": True,
-            "heading": True,
-            "paragraph": True,
-            "bulletList": True,
-            "orderedList": True,
-            "blockquote": True,
-            "horizontalRule": True,
-            "link": {"allowTargetBlank": True},
-        }
-
-    return generate_nh3_allowlist(features)
 
 
 class SanitizedProseEditorField(ConfigurableProseEditorField):

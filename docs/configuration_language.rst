@@ -102,9 +102,9 @@ The configuration automatically generates appropriate sanitization rules for nh3
     )
 
     # You can also access the generated rules directly
-    from django_prose_editor.sanitized import generate_allowlist
+    from django_prose_editor.config import features_to_allowlist
 
-    allowlist = generate_allowlist(features={"bold": True, "link": True})
+    allowlist = features_to_allowlist(features={"bold": True, "link": True})
     # Returns {"tags": ["strong", "a"], "attributes": {"a": ["href"]}}
 
 Feature-to-HTML Mapping
