@@ -5,7 +5,11 @@ This module provides a way to define editor features and generate
 corresponding sanitization rules for server-side HTML cleaning.
 """
 
+import warnings
 from typing import Any
+
+from django.conf import settings
+from django.utils.module_loading import import_string
 
 
 # Function to load custom extensions from settings
@@ -16,7 +20,6 @@ def get_custom_extensions():
     Returns:
         Dictionary mapping extension names to their configurations
     """
-    from django.conf import settings
 
     return getattr(settings, "DJANGO_PROSE_EDITOR_EXTENSIONS", {})
 
@@ -187,6 +190,13 @@ FEATURE_MAPPING = {
             "td": ["rowspan", "colspan"],
         },
     ),
+    # Special features (these don't produce HTML elements)
+    "history": create_simple_processor([]),
+    "html": create_simple_processor([]),
+    "typographic": create_simple_processor([]),
+    "preset": create_simple_processor([]),
+    "document": create_simple_processor([]),
+    "text": create_simple_processor([]),
 }
 
 # Automatic dependencies (features that require other features)
@@ -200,11 +210,6 @@ FEATURE_DEPENDENCIES = {
     "highlight": ["textStyle"],
 }
 
-# Feature groups were removed to simplify the API
-
-# Core features that are always enabled
-CORE_FEATURES = ["document", "paragraph", "text"]
-
 
 def expand_features(features: dict[str, Any]) -> dict[str, Any]:
     """
@@ -216,23 +221,22 @@ def expand_features(features: dict[str, Any]) -> dict[str, Any]:
     Returns:
         Expanded feature configuration
     """
-    expanded = {}
+
+    expanded = {
+        # Core features
+        "document": True,
+        "paragraph": True,
+        "text": True,
+        # Enable history by default unless explicitly disabled
+        "history": True,
+    }
 
     # Include user-specified features
     expanded.update(features)
 
-    # Always include core features
-    for feature in CORE_FEATURES:
-        if feature not in expanded:
-            expanded[feature] = True
-
-    # Enable history by default unless explicitly disabled
-    if "history" not in expanded:
-        expanded["history"] = True
-
     # Resolve dependencies
     for feature, deps in FEATURE_DEPENDENCIES.items():
-        if feature in expanded and expanded[feature]:
+        if feature in expanded and (expanded[feature] is not False):
             for dep in deps:
                 if dep not in expanded:
                     expanded[dep] = True
@@ -254,11 +258,9 @@ def features_to_allowlist(
     """
     expanded = expand_features(features)
 
-    # Filter out falsy features and special features
+    # Filter out features explicitly set to False (disabled features)
     filtered_features = {
-        feature: config
-        for feature, config in expanded.items()
-        if config and feature not in ("history", "html", "typographic", "preset")
+        feature: config for feature, config in expanded.items() if config is not False
     }
 
     allowed_tags: set[str] = set()
@@ -285,12 +287,8 @@ def features_to_allowlist(
                 if isinstance(processor_path, str):
                     # Import the processor function from the specified path
                     try:
-                        module_path, func_name = processor_path.rsplit(".", 1)
-                        module = __import__(module_path, fromlist=[func_name])
-                        processor = getattr(module, func_name)
+                        processor = import_string(processor_path)
                     except (ImportError, AttributeError, ValueError) as e:
-                        import warnings
-
                         warnings.warn(
                             f"Could not import processor function {processor_path} for {feature}: {e}",
                             UserWarning,
@@ -313,8 +311,6 @@ def features_to_allowlist(
         try:
             result = processor(config)
             if not isinstance(result, dict) or "tags" not in result:
-                import warnings
-
                 warnings.warn(
                     f"Processor for {feature} returned invalid result: {result}",
                     UserWarning,
@@ -335,8 +331,6 @@ def features_to_allowlist(
             if "js_module" in result:
                 js_modules.add(result["js_module"])
         except Exception as e:
-            import warnings
-
             warnings.warn(
                 f"Error processing {feature}: {e}",
                 UserWarning,

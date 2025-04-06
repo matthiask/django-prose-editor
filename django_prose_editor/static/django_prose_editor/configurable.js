@@ -173,21 +173,15 @@ async function createEditorAsync(textarea) {
   const customExtensions = await loadExtensionModules(customModules)
   extensions.push(...customExtensions)
 
-  // All features from Python are already filtered
-  // and only enabled features are passed
-  const enabledFeatures = Object.entries(features)
-    // Ignore special keys that should be handled separately
-    .filter(([feature]) => !["preset", "types", "_js_modules"].includes(feature))
-
-  // Process all enabled features
-  for (const [feature, config] of enabledFeatures) {
+  // Process all features from the config
+  for (const [feature, config] of Object.entries(features)) {
     const extension = EXTENSION_MAP[feature]
     if (extension) {
-      // If the feature has a configuration object, pass it directly to the extension
-      if (config && typeof config === 'object') {
+      // If the feature has a configuration object (not empty), pass it to the extension
+      if (typeof config === 'object' && config !== null && Object.keys(config).length > 0) {
         extensions.push(extension.configure(config))
       } else {
-        // Simple boolean flag features just use the default configuration
+        // Simple boolean flag, null, undefined, or empty object features use the default configuration
         extensions.push(extension)
       }
     }
