@@ -137,7 +137,7 @@ Custom Extensions
 ~~~~~~~~~~~~~~~~
 
 The configurable preset allows you to add custom Tiptap extensions without having to create a custom preset.
-You can define processor functions in your Django settings, which will determine both the JavaScript modules and HTML elements:
+You can define extension groups in your Django settings, with each group containing related features that share the same JavaScript assets:
 
 .. code-block:: python
 
@@ -146,24 +146,48 @@ You can define processor functions in your Django settings, which will determine
     from django_prose_editor.config import create_simple_processor
 
     # Define your custom extensions with their processors
-    DJANGO_PROSE_EDITOR_EXTENSIONS = {
-        # Simple extension with a direct processor function
-        "myCustomExtension": create_simple_processor(
-            tags=["div"],
-            attributes={"div": ["data-custom"]},
-            js_module=static_lazy("myapp/extensions/custom-extension.js")
-        ),
+    DJANGO_PROSE_EDITOR_EXTENSIONS = [
+        # Simple extension group
+        {
+            # JavaScript assets shared by all features in this group
+            "js": [
+                static_lazy("myapp/extensions/custom-extension.js")
+            ],
+            # Feature processors for this group
+            "features": {
+                "myCustomExtension": create_simple_processor(
+                    tags=["div"],
+                    attributes={"div": ["data-custom"]}
+                )
+            }
+        },
 
-        # Blue bold extension with a direct processor
-        "blueBold": create_simple_processor(
-            tags=["strong"],
-            attributes={"strong": ["style", "class"]},
-            js_module=static_lazy("myapp/extensions/blue-bold.js")
-        ),
+        # Blue bold extension group
+        {
+            "js": [
+                static_lazy("myapp/extensions/blue-bold.js")
+            ],
+            "features": {
+                "blueBold": create_simple_processor(
+                    tags=["strong"],
+                    attributes={"strong": ["style", "class"]}
+                )
+            }
+        },
 
-        # Extension with a processor imported from a Python path
-        "complexExtension": "myapp.extensions.process_complex_extension"
-    }
+        # Complex extension group with multiple related features
+        {
+            "js": [
+                static_lazy("myapp/extensions/table/table.js")
+            ],
+            "features": {
+                "table": "myapp.extensions.process_table",
+                "tableRow": "myapp.extensions.process_table_row",
+                "tableCell": "myapp.extensions.process_table_cell",
+                "tableHeader": "myapp.extensions.process_table_header"
+            }
+        }
+    ]
 
 The JavaScript module should export the extension as its default export:
 
@@ -308,18 +332,29 @@ Create a preset that includes your extension:
 Step 3: Register Your Extension in Django Settings
 ..................................................
 
-Register your processor function for the extension in Django settings:
+Register your extension group in Django settings:
 
 .. code-block:: python
 
     # In settings.py
-    from js_asset import JS
+    from js_asset import JS, static_lazy
 
-    # Register your processor function for the extension
-    DJANGO_PROSE_EDITOR_EXTENSIONS = {
-        # Reference the processor function by its dotted path
-        "myCustomExtension": "myapp.extensions.process_custom_extension"
-    }
+    # Register your extension group
+    DJANGO_PROSE_EDITOR_EXTENSIONS = [
+        {
+            # JavaScript assets for this extension group
+            "js": [
+                static_lazy("myapp/extensions/custom-extension.js")
+            ],
+            # Features provided by this extension group
+            "features": {
+                # Reference the processor function by its dotted path
+                "myCustomExtension": "myapp.extensions.process_custom_extension",
+                # You can add multiple related features that share the same JS
+                "myCustomExtensionDetails": "myapp.extensions.process_custom_extension_details"
+            }
+        }
+    ]
 
     # For custom presets (optional - you can use the configurable preset)
     DJANGO_PROSE_EDITOR_PRESETS = {
@@ -374,57 +409,64 @@ The processor function is the core of custom extensions. It determines what HTML
 .. code-block:: python
 
     # Example processor function in myapp/extensions.py
-    def process_complex_extension(config):
+    def process_complex_extension(config, shared_config):
         """
         Process custom extension configuration for sanitization.
 
         Args:
             config: The feature configuration (e.g., {"option1": "value"})
-
-        Returns:
-            Dictionary with "tags", "attributes", and optionally "js_module" keys
+            shared_config: The shared configuration dictionary to update
         """
-        from js_asset import static_lazy
-
-        # Default allowlist
-        allowlist = {
-            "tags": ["div", "span"],
-            "attributes": {
-                "div": ["class", "id"],
-                "span": ["class"],
-            },
-            # JavaScript module URL
-            "js_module": static_lazy("myapp/extensions/complex-extension.js")
+        # Prepare tags and attributes
+        tags = ["div", "span"]
+        attributes = {
+            "div": ["class", "id"],
+            "span": ["class"],
         }
 
-        # Example: Modify allowlist based on configuration
+        # Example: Modify the configuration based on options
         if config.get("restrictToDiv", False):
             # Only allow div elements
-            allowlist["tags"] = ["div"]
-            allowlist["attributes"] = {"div": ["class", "id"]}
+            tags = ["div"]
+            attributes = {"div": ["class", "id"]}
 
         # Example: Add data attributes if enabled
         if config.get("allowDataAttributes", False):
-            allowlist["attributes"]["div"].extend(["data-custom", "data-value"])
+            if "div" not in attributes:
+                attributes["div"] = []
+            attributes["div"].extend(["data-custom", "data-value"])
 
-        return allowlist
+        # Add tags and attributes to the shared config
+        add_tags_and_attributes(shared_config, tags, attributes)
 
     # Then in settings.py, register your processor by its dotted path:
-    DJANGO_PROSE_EDITOR_EXTENSIONS = {
-        "complexExtension": "myapp.extensions.process_complex_extension"
-    }
-
-    # For simple cases, you can use the built-in create_simple_processor function
     from js_asset import static_lazy
     from django_prose_editor.config import create_simple_processor
 
-    DJANGO_PROSE_EDITOR_EXTENSIONS = {
-        "simpleExtension": create_simple_processor(
-            tags=["div", "span"],
-            attributes={"div": ["class"], "span": ["class"]},
-            js_module=static_lazy("myapp/extensions/simple-extension.js")
-        )
-    }
+    DJANGO_PROSE_EDITOR_EXTENSIONS = [
+        # Complex extension group
+        {
+            "js": [
+                static_lazy("myapp/extensions/complex-extension.js")
+            ],
+            "features": {
+                "complexExtension": "myapp.extensions.process_complex_extension"
+            }
+        },
+
+        # Simple extension group
+        {
+            "js": [
+                static_lazy("myapp/extensions/simple-extension.js")
+            ],
+            "features": {
+                "simpleExtension": create_simple_processor(
+                    tags=["div", "span"],
+                    attributes={"div": ["class"], "span": ["class"]}
+                )
+            }
+        }
+    ]
 
 Working Principles
 ------------------

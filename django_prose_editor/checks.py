@@ -46,27 +46,99 @@ def check_custom_extensions_configuration(app_configs, **kwargs):
     if hasattr(settings, "DJANGO_PROSE_EDITOR_EXTENSIONS"):
         extensions = settings.DJANGO_PROSE_EDITOR_EXTENSIONS
 
-        # Check that each extension has a valid processor
-        for ext_name, ext_processor in extensions.items():
-            # Check if the processor is a string (dotted path) or callable
-            if not (callable(ext_processor) or isinstance(ext_processor, str)):
+        # Check that extensions is a list
+        if not isinstance(extensions, list):
+            errors.append(
+                Error(
+                    "DJANGO_PROSE_EDITOR_EXTENSIONS must be a list of dictionaries.",
+                    hint="Configure DJANGO_PROSE_EDITOR_EXTENSIONS as a list of dictionaries, each with 'js' and 'features' keys.",
+                    obj=settings,
+                    id="django_prose_editor.E003",
+                )
+            )
+            return errors
+
+        # Check each extension group
+        for i, extension_group in enumerate(extensions):
+            if not isinstance(extension_group, dict):
                 errors.append(
                     Error(
-                        f'Custom extension "{ext_name}" processor must be a callable or a dotted path string.',
-                        hint="Each custom extension must have a processor that is either a callable or a dotted import path.",
+                        f"Extension group at index {i} must be a dictionary.",
+                        hint="Each extension group must be a dictionary with 'js' and 'features' keys.",
                         obj=settings,
-                        id="django_prose_editor.E003",
+                        id="django_prose_editor.E004",
+                    )
+                )
+                continue
+
+            # Check that required keys are present
+            if "features" not in extension_group:
+                errors.append(
+                    Error(
+                        f"Extension group at index {i} is missing the required 'features' key.",
+                        hint="Each extension group must have a 'features' key mapping feature names to processors.",
+                        obj=settings,
+                        id="django_prose_editor.E005",
+                    )
+                )
+                continue
+
+            if "js" not in extension_group:
+                errors.append(
+                    Warning(
+                        f"Extension group at index {i} is missing the 'js' key.",
+                        hint="Each extension group should have a 'js' key listing JavaScript assets for the features.",
+                        obj=settings,
+                        id="django_prose_editor.W002",
                     )
                 )
 
-            # If it's a string, verify it looks like a dotted path
-            if isinstance(ext_processor, str) and "." not in ext_processor:
+            # Check the features dictionary
+            features = extension_group["features"]
+            if not isinstance(features, dict):
                 errors.append(
-                    Warning(
-                        f'Custom extension "{ext_name}" processor path "{ext_processor}" may not be a valid dotted import path.',
-                        hint="The processor should be a dotted import path like 'myapp.processors.my_processor'.",
+                    Error(
+                        f"The 'features' key in extension group at index {i} must be a dictionary.",
+                        hint="The 'features' key should map feature names to processor callables or dotted paths.",
                         obj=settings,
-                        id="django_prose_editor.W002",
+                        id="django_prose_editor.E006",
+                    )
+                )
+                continue
+
+            # Check each processor
+            for feature_name, processor in features.items():
+                # Check if the processor is a string (dotted path) or callable
+                if not (callable(processor) or isinstance(processor, str)):
+                    errors.append(
+                        Error(
+                            f'Processor for feature "{feature_name}" in group {i} must be a callable or a dotted path string.',
+                            hint="Each processor must be either a callable or a dotted import path.",
+                            obj=settings,
+                            id="django_prose_editor.E007",
+                        )
+                    )
+
+                # If it's a string, verify it looks like a dotted path
+                if isinstance(processor, str) and "." not in processor:
+                    errors.append(
+                        Warning(
+                            f'Processor path "{processor}" for feature "{feature_name}" in group {i} may not be a valid dotted import path.',
+                            hint="The processor should be a dotted import path like 'myapp.processors.my_processor'.",
+                            obj=settings,
+                            id="django_prose_editor.W003",
+                        )
+                    )
+
+            # Check the js assets list
+            js_assets = extension_group.get("js", [])
+            if not isinstance(js_assets, (list, tuple)):
+                errors.append(
+                    Error(
+                        f"The 'js' key in extension group at index {i} must be a list.",
+                        hint="The 'js' key should be a list of JavaScript asset URLs.",
+                        obj=settings,
+                        id="django_prose_editor.E008",
                     )
                 )
 

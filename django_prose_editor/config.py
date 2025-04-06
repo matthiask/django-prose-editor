@@ -17,11 +17,39 @@ def get_custom_extensions():
     """
     Load custom extensions from Django settings.
 
-    Returns:
-        Dictionary mapping extension names to their processor callables or dotted paths
-    """
+    The DJANGO_PROSE_EDITOR_EXTENSIONS setting should be a list of dictionaries,
+    where each dictionary contains:
+    - 'js': A list of JavaScript assets (required)
+    - 'features': A dictionary mapping feature names to processor callables or dotted paths (required)
 
-    return getattr(settings, "DJANGO_PROSE_EDITOR_EXTENSIONS", {})
+    This structure allows for extensions that provide multiple related features
+    that share the same JavaScript assets. For example, a table extension might
+    provide 'table', 'tableRow', and 'tableCell' features that all use the same JavaScript files.
+
+    Returns:
+        Tuple of (feature_processors, js_assets) where:
+        - feature_processors is a dictionary mapping feature names to processor callables
+        - js_assets is a dictionary mapping feature names to lists of JavaScript assets
+    """
+    feature_processors = {}
+    js_assets = {}
+
+    extensions = getattr(settings, "DJANGO_PROSE_EDITOR_EXTENSIONS", [])
+
+    # Process each extension group
+    for extension_group in extensions:
+        js = extension_group.get("js", [])
+        features = extension_group.get("features", {})
+
+        # Add all feature processors to the global map
+        for feature_name, processor in features.items():
+            feature_processors[feature_name] = processor
+
+            # Associate JavaScript assets with each feature
+            if js:
+                js_assets[feature_name] = list(js)
+
+    return feature_processors, js_assets
 
 
 # Feature processors
@@ -306,8 +334,8 @@ def features_to_allowlist(
         "js_modules": set(),
     }
 
-    # Get custom extensions
-    custom_extensions = get_custom_extensions()
+    # Get custom extensions and their JS assets
+    custom_extensions, js_assets_map = get_custom_extensions()
 
     # Process each enabled feature
     for feature, config in filtered_features.items():
@@ -335,6 +363,12 @@ def features_to_allowlist(
                 else:
                     # If it's already a callable, use it directly
                     processor = ext_processor
+
+            # Add JS assets for this feature if available
+            if feature in js_assets_map:
+                if "js_modules" not in combined_config:
+                    combined_config["js_modules"] = set()
+                combined_config["js_modules"].update(js_assets_map[feature])
 
         # Skip if we don't have a processor
         if not processor:
