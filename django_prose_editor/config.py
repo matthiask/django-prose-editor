@@ -23,23 +23,30 @@ def get_custom_extensions():
 
 # Feature processors
 # These functions return allowlist information based on feature configuration
-def create_simple_processor(tags, attributes=None):
+def create_simple_processor(tags, attributes=None, js_module=None):
     """
     Create a simple processor function that returns a fixed set of tags and attributes.
 
     Args:
         tags: List of HTML tags
         attributes: Dict mapping tags to allowed attributes
+        js_module: Optional URL to JavaScript module implementing this extension
 
     Returns:
         A processor function
     """
 
     def processor(config):
-        return {
+        result = {
             "tags": tags,
             "attributes": attributes or {},
         }
+
+        # Include JavaScript module if provided
+        if js_module:
+            result["js_module"] = js_module
+
+        return result
 
     return processor
 
@@ -235,7 +242,7 @@ def expand_features(features: dict[str, Any]) -> dict[str, Any]:
 
 def features_to_allowlist(
     features: dict[str, Any],
-) -> dict[str, list[str] | dict[str, list[str]]]:
+) -> dict[str, list[str] | dict[str, list[str]] | list[str]]:
     """
     Generate HTML sanitization allowlist from feature configuration.
 
@@ -243,7 +250,7 @@ def features_to_allowlist(
         features: Dictionary of feature configurations
 
     Returns:
-        Dictionary with 'tags' and 'attributes' keys
+        Dictionary with 'tags', 'attributes', and 'js_modules' keys
     """
     expanded = expand_features(features)
 
@@ -256,6 +263,7 @@ def features_to_allowlist(
 
     allowed_tags: set[str] = set()
     allowed_attributes: dict[str, set[str]] = {}
+    js_modules: set[str] = set()
 
     # Get custom extensions
     custom_extensions = get_custom_extensions()
@@ -322,6 +330,10 @@ def features_to_allowlist(
                 if tag not in allowed_attributes:
                     allowed_attributes[tag] = set()
                 allowed_attributes[tag].update(attrs)
+
+            # Add JavaScript modules if present
+            if "js_module" in result:
+                js_modules.add(result["js_module"])
         except Exception as e:
             import warnings
 
@@ -335,4 +347,5 @@ def features_to_allowlist(
     return {
         "tags": sorted(allowed_tags),
         "attributes": {tag: sorted(attrs) for tag, attrs in allowed_attributes.items()},
+        "js_modules": sorted(js_modules),
     }

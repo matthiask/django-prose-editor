@@ -32,14 +32,21 @@ class ConfigurableProseEditorField(ProseEditorField):
         # Get the preset for JavaScript implementation
         self.preset = kwargs.pop("preset", "configurable")
 
+        # Expand features to include all dependencies
+        expanded_features = expand_features(self.features)
+
+        # Get the full allowlist including JavaScript modules
+        feature_allowlist = features_to_allowlist(self.features)
+
         # Handle sanitization
         sanitize = kwargs.get("sanitize")
         if sanitize is True:
             # If sanitize=True, use our automatic sanitizer based on features
-            kwargs["sanitize"] = self._create_sanitizer()
+            kwargs["sanitize"] = self._create_sanitizer(feature_allowlist)
 
-        # Expand features to include all dependencies
-        expanded_features = expand_features(self.features)
+        # Add JavaScript modules to the expanded features
+        if feature_allowlist.get("js_modules"):
+            expanded_features["_js_modules"] = feature_allowlist["js_modules"]
 
         # Use config parameter for the expanded features
         kwargs["config"] = expanded_features
@@ -49,7 +56,7 @@ class ConfigurableProseEditorField(ProseEditorField):
 
         super().__init__(*args, **kwargs)
 
-    def _create_sanitizer(self):
+    def _create_sanitizer(self, feature_allowlist=None):
         """Create a sanitizer function based on feature configuration."""
         try:
             import nh3  # noqa: F401
@@ -59,8 +66,9 @@ class ConfigurableProseEditorField(ProseEditorField):
                 "Install django-prose-editor[sanitize] or pip install nh3"
             )
 
-        # Get the full allowlist with tags and attributes
-        feature_allowlist = features_to_allowlist(self.features)
+        # Get the full allowlist with tags and attributes if not provided
+        if feature_allowlist is None:
+            feature_allowlist = features_to_allowlist(self.features)
 
         # Check for protocol restrictions on links
         protocols = None

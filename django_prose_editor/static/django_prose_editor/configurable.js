@@ -122,8 +122,43 @@ const EXTENSION_MAP = {
   nospellcheck: NoSpellCheck,
 }
 
-function createEditor(textarea) {
-  if (textarea.closest(".prose-editor")) return
+// Async function to dynamically import external modules in parallel
+async function loadExtensionModules(moduleUrls) {
+  if (!moduleUrls || !moduleUrls.length) return []
+
+  // Create an array of import promises for all modules
+  const importPromises = moduleUrls.map(url =>
+    import(url)
+      .then(module => {
+        const extensions = []
+
+        // If the module exports a default extension, add it
+        if (module.default) {
+          extensions.push(module.default)
+        }
+
+        // If the module exports extensions, add them
+        if (module.extensions && Array.isArray(module.extensions)) {
+          extensions.push(...module.extensions)
+        }
+
+        return extensions
+      })
+      .catch(error => {
+        console.error(`Error loading extension module from ${url}:`, error)
+        return [] // Return empty array on error
+      })
+  )
+
+  // Wait for all imports to complete in parallel
+  const modulesArrays = await Promise.all(importPromises)
+
+  // Flatten the array of arrays into a single array
+  return modulesArrays.flat()
+}
+
+async function createEditorAsync(textarea) {
+  if (textarea.closest(".prose-editor")) return null
 
   // Get the feature configuration
   const features = JSON.parse(textarea.getAttribute(marker) || "{}")
@@ -131,11 +166,18 @@ function createEditor(textarea) {
   // Start with core extensions
   const extensions = [...CORE_EXTENSIONS]
 
+  // Check for custom JS modules
+  const customModules = features._js_modules || []
+
+  // Load custom extension modules
+  const customExtensions = await loadExtensionModules(customModules)
+  extensions.push(...customExtensions)
+
   // All features from Python are already filtered
   // and only enabled features are passed
   const enabledFeatures = Object.entries(features)
     // Ignore special keys that should be handled separately
-    .filter(([feature]) => !["preset", "types"].includes(feature))
+    .filter(([feature]) => !["preset", "types", "_js_modules"].includes(feature))
 
   // Process all enabled features
   for (const [feature, config] of enabledFeatures) {
@@ -152,6 +194,25 @@ function createEditor(textarea) {
   }
 
   return createTextareaEditor(textarea, extensions)
+}
+
+// Function for the initializeEditors callback
+function createEditor(textarea) {
+  // Start the async creation but don't await it here
+  // The editor will be initialized asynchronously
+  createEditorAsync(textarea).then(editor => {
+    // The editor is initialized and ready to use
+    if (editor) {
+      // You could optionally emit an event or call a callback here
+      // to notify other components that the editor is ready
+      console.debug('Prose editor initialized with custom extensions')
+    }
+  }).catch(error => {
+    console.error('Error initializing prose editor:', error)
+  })
+
+  // Return null since we're handling initialization asynchronously
+  return null
 }
 
 initializeEditors((textarea) => {

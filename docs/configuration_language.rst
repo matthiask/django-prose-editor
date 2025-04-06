@@ -127,15 +127,66 @@ table          <table>, <tr>,          rowspan, colspan
                <th>, <td>
 ============== ======================= ============================
 
-Advanced Configuration
-~~~~~~~~~~~~~~~~~~~~~~
-
 Custom Extensions
------------------
+~~~~~~~~~~~~~~~~
 
-The configuration system supports custom Tiptap extensions. This allows you to extend
-the editor with your own functionality while still maintaining the synchronized
-sanitization between frontend and backend.
+The configurable preset allows you to add custom Tiptap extensions without having to create a custom preset.
+You can define JavaScript modules in your Django settings, which will be automatically loaded by the editor in parallel:
+
+.. code-block:: python
+
+    # In settings.py
+    from django.templatetags.static import static
+
+    # Define your custom extension with its HTML elements and the JS module URL
+    DJANGO_PROSE_EDITOR_EXTENSIONS = {
+        "myCustomExtension": {
+            # HTML elements and attributes that this extension produces
+            "tags": ["div"],
+            "attributes": {"div": ["data-custom"]},
+
+            # URL to the JavaScript module implementing this extension
+            "js_module": static("myapp/extensions/custom-extension.js")
+        }
+    }
+
+The JavaScript module should export the extension as its default export:
+
+.. code-block:: javascript
+
+    // myapp/static/myapp/extensions/custom-extension.js
+    import { Extension } from "django-prose-editor/editor"
+
+    // Create the extension
+    const MyCustomExtension = Extension.create({
+      name: 'myCustomExtension',
+      // Extension implementation...
+    })
+
+    // Export it as the default export
+    export default MyCustomExtension
+
+Then you can use your extension in your models:
+
+.. code-block:: python
+
+    from django_prose_editor.configurable import ConfigurableProseEditorField
+
+    class Article(models.Model):
+        content = ConfigurableProseEditorField(
+            features={
+                "bold": True,
+                "italic": True,
+
+                # Enable your custom extension
+                "myCustomExtension": {
+                    "option1": "value",  # Configuration options
+                }
+            }
+        )
+
+Advanced Configuration
+=====================
 
 Step 1: Define Your Extension
 .............................
@@ -284,7 +335,7 @@ For advanced cases, you can define processor functions to customize the sanitiza
             config: The feature configuration (e.g., {"option1": "value"})
 
         Returns:
-            Dictionary with "tags" and "attributes" keys
+            Dictionary with "tags", "attributes", and optionally "js_module" keys
         """
         # Default allowlist
         allowlist = {
@@ -292,7 +343,9 @@ For advanced cases, you can define processor functions to customize the sanitiza
             "attributes": {
                 "div": ["class", "id"],
                 "span": ["class"],
-            }
+            },
+            # Optional JavaScript module URL
+            "js_module": "myapp/extensions/custom-extension.js"
         }
 
         # Example: Modify allowlist based on configuration
@@ -312,11 +365,12 @@ For advanced cases, you can define processor functions to customize the sanitiza
 
     simple_processor = create_simple_processor(
         tags=["div", "span"],
-        attributes={"div": ["class"], "span": ["class"]}
+        attributes={"div": ["class"], "span": ["class"]},
+        js_module="myapp/extensions/custom-extension.js"  # Optional JavaScript module
     )
 
 Working Principles
------------------~
+-----------------
 
 This configuration system bridges the gap between front-end capabilities and server-side sanitization by:
 
