@@ -124,7 +124,12 @@ function createEditor(textarea, config = null) {
     isTypeEnabled("Table") && TableCell,
   ].filter(Boolean)
 
-  return createTextareaEditor(textarea, extensions)
+  const editor = createTextareaEditor(textarea, extensions)
+  const event = new CustomEvent("prose-editor:ready", {
+    detail: { editor, textarea },
+    bubbles: true,
+  })
+  return editor
 }
 
 initializeEditors((textarea) => {
