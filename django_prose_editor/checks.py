@@ -22,6 +22,16 @@ def check_js_preset_configuration(app_configs, **kwargs):
                 )
             )
 
+        if "configurable" in presets:
+            errors.append(
+                Error(
+                    'Overriding the "configurable" preset in DJANGO_PROSE_EDITOR_PRESETS is not allowed.',
+                    hint="Remove the 'configurable' key from your DJANGO_PROSE_EDITOR_PRESETS setting.",
+                    obj=settings,
+                    id="django_prose_editor.E002",
+                )
+            )
+
     return errors
 
 
@@ -36,50 +46,27 @@ def check_custom_extensions_configuration(app_configs, **kwargs):
     if hasattr(settings, "DJANGO_PROSE_EDITOR_EXTENSIONS"):
         extensions = settings.DJANGO_PROSE_EDITOR_EXTENSIONS
 
-        # Check that each extension has required configuration
-        for ext_name, ext_config in extensions.items():
-            if not isinstance(ext_config, dict):
+        # Check that each extension has a valid processor
+        for ext_name, ext_processor in extensions.items():
+            # Check if the processor is a string (dotted path) or callable
+            if not (callable(ext_processor) or isinstance(ext_processor, str)):
                 errors.append(
                     Error(
-                        f'Custom extension "{ext_name}" configuration must be a dictionary.',
-                        hint="Each custom extension must have a dictionary configuration.",
+                        f'Custom extension "{ext_name}" processor must be a callable or a dotted path string.',
+                        hint="Each custom extension must have a processor that is either a callable or a dotted import path.",
                         obj=settings,
                         id="django_prose_editor.E003",
                     )
                 )
-                continue
 
-            # Check for required keys
-            if "tags" not in ext_config:
+            # If it's a string, verify it looks like a dotted path
+            if isinstance(ext_processor, str) and "." not in ext_processor:
                 errors.append(
                     Warning(
-                        f'Custom extension "{ext_name}" is missing the "tags" configuration.',
-                        hint="Define which HTML tags this extension can produce in the 'tags' key.",
+                        f'Custom extension "{ext_name}" processor path "{ext_processor}" may not be a valid dotted import path.',
+                        hint="The processor should be a dotted import path like 'myapp.processors.my_processor'.",
                         obj=settings,
                         id="django_prose_editor.W002",
-                    )
-                )
-
-            if "attributes" not in ext_config:
-                errors.append(
-                    Warning(
-                        f'Custom extension "{ext_name}" is missing the "attributes" configuration.',
-                        hint="Define which HTML attributes this extension can produce in the 'attributes' key.",
-                        obj=settings,
-                        id="django_prose_editor.W003",
-                    )
-                )
-
-            # Check that attributes is properly formatted
-            if "attributes" in ext_config and not isinstance(
-                ext_config["attributes"], dict
-            ):
-                errors.append(
-                    Error(
-                        f'Custom extension "{ext_name}" has invalid "attributes" configuration. It must be a dictionary.',
-                        hint="The 'attributes' configuration should be a dictionary mapping tag names to lists of allowed attributes.",
-                        obj=settings,
-                        id="django_prose_editor.E004",
                     )
                 )
 

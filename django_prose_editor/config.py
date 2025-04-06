@@ -18,7 +18,7 @@ def get_custom_extensions():
     Load custom extensions from Django settings.
 
     Returns:
-        Dictionary mapping extension names to their configurations
+        Dictionary mapping extension names to their processor callables or dotted paths
     """
 
     return getattr(settings, "DJANGO_PROSE_EDITOR_EXTENSIONS", {})
@@ -280,28 +280,22 @@ def features_to_allowlist(
             processor = FEATURE_MAPPING[feature]
         # Or a custom extension
         elif feature in custom_extensions:
-            ext_config = custom_extensions[feature]
-            processor_path = ext_config.get("processor")
+            ext_processor = custom_extensions[feature]
 
-            if processor_path:
-                if isinstance(processor_path, str):
+            if ext_processor:
+                if isinstance(ext_processor, str):
                     # Import the processor function from the specified path
                     try:
-                        processor = import_string(processor_path)
+                        processor = import_string(ext_processor)
                     except (ImportError, AttributeError, ValueError) as e:
                         warnings.warn(
-                            f"Could not import processor function {processor_path} for {feature}: {e}",
+                            f"Could not import processor function {ext_processor} for {feature}: {e}",
                             UserWarning,
                             stacklevel=2,
                         )
                 else:
                     # If it's already a callable, use it directly
-                    processor = processor_path
-            else:
-                # Create a simple processor from the tags and attributes
-                tags = ext_config.get("tags", [])
-                attributes = ext_config.get("attributes", {})
-                processor = create_simple_processor(tags, attributes)
+                    processor = ext_processor
 
         # Skip if we don't have a processor
         if not processor:

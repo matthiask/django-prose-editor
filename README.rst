@@ -81,29 +81,35 @@ which automatically synchronizes editor features with sanitization rules:
     from django_prose_editor.configurable import ConfigurableProseEditorField
 
     content = ConfigurableProseEditorField(
-        preset="standard",  # Use a predefined feature set
-        sanitize=True,      # Enable synchronized sanitization
+        features={
+            "bold": True,
+            "italic": True,
+            "bulletList": True,
+            "link": True,
+        },  # Specify which features to enable
+        # sanitize=True is the default, no need to specify it
     )
 
-This ensures that the HTML sanitization rules exactly match what the editor allows,
-preventing inconsistencies between editing capabilities and allowed output.
+This ensures that the HTML sanitization rules exactly match what the editor
+allows, preventing inconsistencies between editing capabilities and allowed
+output. Note that you need the nh3 library for this which is automatically
+installed when you specify the requirement as
+``django-prose-editor[sanitize]``.
 
-Legacy Approach (Deprecated)
-----------------------------
+Old Approach
+------------
 
 For backward compatibility, you can still use the ``sanitize`` argument with
 ``ProseEditorField`` or use the legacy ``SanitizedProseEditorField``, although
-these approaches are now deprecated:
+these approaches are now discouraged:
 
 .. code-block:: python
 
     from django_prose_editor.sanitized import SanitizedProseEditorField
 
-    description = SanitizedProseEditorField()  # Deprecated, will show warning
-
-The legacy ``SanitizedProseEditorField`` has been updated to use the new
-``ConfigurableProseEditorField`` system internally, so you get the benefits of
-synchronized sanitization without changing your code.
+    # Please tell me why you're unable to use the ConfigurableProseEditorField!
+    # I'd be very interested in your use cases.
+    description = SanitizedProseEditorField()
 
 Install django-prose-editor with the extra "sanitize" to use
 sanitization features.
@@ -123,11 +129,13 @@ Customization
 
 The editor can be customized in several ways:
 
-1. Using the ``config`` parameter to include/exclude specific extensions (legacy approach)
-2. Using the new configuration language with ``ConfigurableProseEditorField`` (recommended)
+1. Using the new configuration language with ``ConfigurableProseEditorField``
+   (recommended). For the new configuration language, see the
+   :doc:`configuration_language` documentation.
+2. Using the ``config`` parameter to include/exclude specific extensions
+   (legacy approach)
 3. Creating custom presets for more advanced customization
 
-For the new configuration language, see the :doc:`configuration_language` documentation.
 
 Simple Customization with Config
 --------------------------------
@@ -177,7 +185,7 @@ Available extension types include:
 * Tables: ``table`` (opt-in only, not enabled by default)
 
 Advanced Customization with Presets
---------------------------------
+-----------------------------------
 
 For more advanced customization, you can create custom presets by
 adding additional assets to load:

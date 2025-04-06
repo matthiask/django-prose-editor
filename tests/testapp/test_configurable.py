@@ -1,5 +1,7 @@
 """Tests for the new configurable prose editor field."""
 
+import json
+
 from django.forms.models import ModelForm
 from django.test import TestCase
 
@@ -21,7 +23,6 @@ class ConfigurableFormTestCase(TestCase):
         widget = form.fields["description"].widget
 
         # Get the expanded features from the widget attributes
-        import json
 
         context = widget.get_context("description", "", {})
         expanded_features = json.loads(
@@ -56,7 +57,6 @@ class ConfigurableFormTestCase(TestCase):
         widget = form.fields["description"].widget
 
         # Get the expanded features from the widget attributes
-        import json
 
         context = widget.get_context("description", "", {})
         expanded_features = json.loads(

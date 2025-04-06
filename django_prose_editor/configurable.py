@@ -9,7 +9,7 @@ from django_prose_editor.config import (
     expand_features,
     features_to_allowlist,
 )
-from django_prose_editor.fields import ProseEditorField
+from django_prose_editor.fields import ProseEditorField, _actually_empty
 
 
 class ConfigurableProseEditorField(ProseEditorField):
@@ -85,8 +85,6 @@ class ConfigurableProseEditorField(ProseEditorField):
         # Create and return the sanitizer function
         def sanitize_html(html):
             import nh3
-
-            from django_prose_editor.fields import _actually_empty
 
             # Prepare arguments for nh3.clean
             kwargs = {
