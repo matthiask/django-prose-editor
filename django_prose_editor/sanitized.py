@@ -1,8 +1,52 @@
-from django_prose_editor.fields import ProseEditorField, _actually_empty
+"""
+Sanitized Prose Editor fields with automatic HTML cleanup.
+
+This module provides field classes that automatically sanitize HTML content
+based on editor configurations.
+"""
+
+from copy import deepcopy
+from typing import Any
+
+from django_prose_editor.config import generate_nh3_allowlist
+from django_prose_editor.configurable import ConfigurableProseEditorField
+from django_prose_editor.fields import _actually_empty
+
+
+def _create_protocol_validator(protocols):
+    """
+    Create a validator function for link protocols.
+
+    Args:
+        protocols: List of allowed protocols (e.g., ['http', 'https', 'mailto'])
+
+    Returns:
+        A validator function for nh3's url_filter parameter
+    """
+    allowed_protocols = set(protocols)
+
+    def validate_url(url):
+        """Check if URL starts with an allowed protocol."""
+        if not url:
+            return False
+
+        # Check for relative URLs or in-page links
+        if url.startswith(("/", "#")):
+            return True
+
+        # Check protocol
+        return any(url.startswith(f"{protocol}:") for protocol in allowed_protocols)
+
+    return validate_url
 
 
 def _nh3_sanitizer():
-    from copy import deepcopy
+    """
+    Legacy sanitizer function that adds specific attributes to nh3's allowlist.
+
+    This is kept for backward compatibility with existing SanitizedProseEditorField usage.
+    New code should use ConfigurableSanitizedProseEditorField instead.
+    """
 
     import nh3
 
@@ -13,8 +57,100 @@ def _nh3_sanitizer():
     return lambda x: _actually_empty(nh3.clean(x, attributes=attributes))
 
 
-class SanitizedProseEditorField(ProseEditorField):
+def generate_allowlist(
+    features: dict[str, Any] = None,
+) -> dict[str, set[str] | dict[str, set[str]]]:
+    """
+    Generate an nh3-compatible allowlist from feature configuration.
+
+    This function provides a user-facing API for generating allowlists that can
+    be used with nh3.clean() directly.
+
+    Args:
+        features: Dictionary of feature configurations
+
+    Returns:
+        Dictionary with allowed tags and attributes
+    """
+    if features is None:
+        # Default features for backward compatibility
+        features = {
+            "bold": True,
+            "italic": True,
+            "strike": True,
+            "underline": True,
+            "subscript": True,
+            "superscript": True,
+            "heading": True,
+            "paragraph": True,
+            "bulletList": True,
+            "orderedList": True,
+            "blockquote": True,
+            "horizontalRule": True,
+            "link": {"allowTargetBlank": True},
+        }
+
+    return generate_nh3_allowlist(features)
+
+
+class SanitizedProseEditorField(ConfigurableProseEditorField):
+    """
+    Legacy field that automatically sanitizes HTML using nh3.
+
+    Deprecated: Use ConfigurableProseEditorField with sanitize=True instead.
+
+    Args:
+        config: Legacy configuration dictionary
+        features: Dictionary mapping feature names to their configuration
+        preset: Optional preset name to use as a base configuration
+        sanitize: Whether to enable sanitization (defaults to True)
+    """
+
     def __init__(self, *args, **kwargs):
+        import warnings
+
+        warnings.warn(
+            "SanitizedProseEditorField is deprecated. Use ConfigurableProseEditorField with sanitize=True instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+        # Convert config to features if present
+        config = kwargs.pop("config", {})
+        features = kwargs.pop("features", {})
+
+        if config and "types" in config:
+            for feature_type in config["types"]:
+                features[feature_type] = True
+
+            for key in ["history", "html", "typographic"]:
+                if key in config:
+                    features[key] = config[key]
+
+        # If no explicit features, use the defaults that match legacy behavior
+        if not features:
+            features = {
+                "bold": True,
+                "italic": True,
+                "strike": True,
+                "underline": True,
+                "subscript": True,
+                "superscript": True,
+                "heading": True,
+                "paragraph": True,
+                "bulletList": True,
+                "orderedList": True,
+                "blockquote": True,
+                "horizontalRule": True,
+                "link": {"allowTargetBlank": True},
+                "history": True,
+                "html": True,
+                "typographic": True,
+            }
+
+        # Enable sanitization by default
         if "sanitize" not in kwargs:
-            kwargs["sanitize"] = _nh3_sanitizer()
-        super().__init__(*args, **kwargs)
+            kwargs["sanitize"] = True
+
+        # Call parent with transformed parameters
+        super().__init__(*args, features=features, **kwargs)

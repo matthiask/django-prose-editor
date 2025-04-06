@@ -9,6 +9,13 @@ from django.utils.text import Truncator
 from django_prose_editor.widgets import AdminProseEditorWidget, ProseEditorWidget
 
 
+# This needs to be at the top level for backwards compatibility
+__all__ = [
+    "ProseEditorField",
+    "ProseEditorFormField",
+]
+
+
 def _actually_empty(x):
     """
     ProseMirror's schema always adds at least one empty paragraph

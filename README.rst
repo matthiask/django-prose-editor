@@ -58,6 +58,18 @@ Replace ``models.TextField`` with ``ProseEditorField`` where appropriate:
     class Project(models.Model):
         description = ProseEditorField()
 
+    # Or use the new configurable fields with synchronized sanitization
+    from django_prose_editor.fields import ConfigurableSanitizedProseEditorField
+
+    class Article(models.Model):
+        content = ConfigurableSanitizedProseEditorField(
+            preset="standard",  # Use a predefined feature set
+            features={
+                "table": True,  # Add table support
+                "heading": {"levels": [1, 2, 3]},  # Limit heading levels
+            }
+        )
+
 Note! No migrations will be generated when switching from and to
 ``models.TextField``. That's by design. Those migrations are mostly annoying.
 
@@ -68,19 +80,45 @@ Security
 ProseMirror does a really good job of only allowing content which conforms to a
 particular scheme. Of course users can submit what they want, they are not
 constrainted by the HTML widgets you're using. You should still always sanitize
-the HTML submitted on the server side. A good way to do this is by using the
-``sanitize`` argument to the ``ProseEditorField``. You can use the following
-snippet to always pass HTML through `nh3
-<https://nh3.readthedocs.io/en/latest/>`__:
+the HTML submitted on the server side.
+
+Using Configurable Sanitization (Recommended)
+--------------------------------------------
+
+The recommended approach is to use the new ``ConfigurableProseEditorField``
+which automatically synchronizes editor features with sanitization rules:
+
+.. code-block:: python
+
+    from django_prose_editor.fields import ConfigurableProseEditorField
+
+    content = ConfigurableProseEditorField(
+        preset="standard",  # Use a predefined feature set
+        sanitize=True,      # Enable synchronized sanitization
+    )
+
+This ensures that the HTML sanitization rules exactly match what the editor allows,
+preventing inconsistencies between editing capabilities and allowed output.
+
+Legacy Approach (Deprecated)
+--------------------------
+
+For backward compatibility, you can still use the ``sanitize`` argument with
+``ProseEditorField`` or use the legacy ``SanitizedProseEditorField``, although
+these approaches are now deprecated:
 
 .. code-block:: python
 
     from django_prose_editor.sanitized import SanitizedProseEditorField
 
-    description = SanitizedProseEditorField()
+    description = SanitizedProseEditorField()  # Deprecated, will show warning
+
+The legacy ``SanitizedProseEditorField`` has been updated to use the new
+``ConfigurableProseEditorField`` system internally, so you get the benefits of
+synchronized sanitization without changing your code.
 
 Install django-prose-editor with the extra "sanitize" to use
-``SanitizedProseEditorField``.
+sanitization features.
 
 Convenience
 ===========
@@ -95,8 +133,13 @@ above.
 Customization
 =============
 
-The editor can be customized in two ways: by using the config parameter to
-include/exclude specific extensions, or by creating custom presets.
+The editor can be customized in several ways:
+
+1. Using the ``config`` parameter to include/exclude specific extensions (legacy approach)
+2. Creating custom presets for more advanced customization (legacy approach)
+3. Using the new configuration language with ``ConfigurableProseEditorField`` (recommended)
+
+For the new configuration language, see the :doc:`configuration_language` documentation.
 
 Simple Customization with Config
 --------------------------------

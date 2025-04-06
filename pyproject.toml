@@ -101,8 +101,6 @@ lint.extend-select = [
   "PLW",
   # unused noqa
   "RUF100",
-  # flake8-simplify
-  "SIM",
   # pyupgrade
   "UP",
   "W",
@@ -110,6 +108,8 @@ lint.extend-select = [
   "YTT",
 ]
 lint.extend-ignore = [
+  # Stop pestering me, the default raise behavior is great
+  "B904",
   # Allow zip() without strict=
   "B905",
   # No line length errors
