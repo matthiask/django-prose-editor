@@ -21,23 +21,35 @@ def _create_protocol_validator(protocols):
         protocols: List of allowed protocols (e.g., ['http', 'https', 'mailto'])
 
     Returns:
-        A validator function for nh3's url_filter parameter
+        A validator function for nh3's attribute_filter parameter
     """
     allowed_protocols = set(protocols)
 
-    def validate_url(url):
-        """Check if URL starts with an allowed protocol."""
-        if not url:
-            return False
+    def validate_attribute(tag, attr, value):
+        """
+        Validate attributes, specifically checking href URLs for protocols.
 
-        # Check for relative URLs or in-page links
-        if url.startswith(("/", "#")):
-            return True
+        This function matches the signature needed for nh3's attribute_filter parameter.
+        """
+        # We only want to validate href attributes
+        if tag != "a" or attr != "href":
+            return value
+
+        if not value:
+            return None
+
+        # Allow relative URLs or in-page links
+        if value.startswith(("/", "#")):
+            return value
 
         # Check protocol
-        return any(url.startswith(f"{protocol}:") for protocol in allowed_protocols)
+        if any(value.startswith(f"{protocol}:") for protocol in allowed_protocols):
+            return value
 
-    return validate_url
+        # If protocol is not allowed, remove the attribute
+        return None
+
+    return validate_attribute
 
 
 def _nh3_sanitizer():
@@ -148,9 +160,9 @@ class SanitizedProseEditorField(ConfigurableProseEditorField):
                 "typographic": True,
             }
 
-        # Enable sanitization by default
-        if "sanitize" not in kwargs:
-            kwargs["sanitize"] = True
+        # Use the legacy sanitizer directly for backward compatibility
+        # This bypasses any issues with the configurable field sanitizer
+        kwargs["sanitize"] = _nh3_sanitizer()
 
         # Call parent with transformed parameters
         super().__init__(*args, features=features, **kwargs)

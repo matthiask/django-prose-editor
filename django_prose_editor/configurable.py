@@ -35,38 +35,18 @@ class ConfigurableProseEditorWidget(ProseEditorWidget):
 
         # Calculate the effective types list for Tiptap
         expanded_features = expand_features(self.features)
-        types = features_to_tiptap_extensions(expanded_features)
+        features_to_tiptap_extensions(expanded_features)
 
-        # Convert features to the config format expected by ProseEditorWidget
-        config = {
-            "types": types,
-            "history": expanded_features.get("history", True),
-            "html": expanded_features.get("html", True),
-            "typographic": expanded_features.get("typographic", True),
-        }
+        # We don't need to generate the legacy config format for the configurable field
+        # since it uses configurable.js implementation by default
 
-        # Handle heading levels if specified
-        if "heading" in expanded_features and isinstance(
-            expanded_features["heading"], dict
-        ):
-            config["headingLevels"] = expanded_features["heading"].get(
-                "levels", [1, 2, 3, 4, 5, 6]
-            )
+        # If a config is explicitly provided, use it, otherwise set an empty config
+        # This avoids potential errors in the parent class that might expect config to exist
+        if "config" not in kwargs:
+            kwargs["config"] = {}
 
-        # Add feature-specific configurations to allow the JS side to access them
-        for feature, feature_config in expanded_features.items():
-            if isinstance(feature_config, dict) and feature != "preset":
-                # Add this feature's configuration to the global config
-                # with the feature name as a prefix
-                for key, value in feature_config.items():
-                    config[f"{feature}.{key}"] = value
-
-        # For backward compatibility with the default.js implementation,
-        # we still need to pass the legacy config
-        kwargs["config"] = config
-
-        # Store the raw features for the configurable.js implementation
-        self.raw_features = self.features
+        # Store the expanded features (with all dependencies resolved) for the configurable.js implementation
+        self.raw_features = expanded_features
 
         # Check for custom extensions
         from django_prose_editor.config import get_custom_extensions
@@ -184,9 +164,20 @@ class ConfigurableProseEditorField(ProseEditorField):
         def sanitize_html(html):
             from django_prose_editor.fields import _actually_empty
 
-            return _actually_empty(
-                nh3.clean(html, attributes=allowlist, url_filter=url_filter)
-            )
+            # Use url_schemes for protocol validation
+            kwargs = {
+                "attributes": allowlist,
+            }
+
+            # If we have protocols specified
+            if url_filter is not None:
+                # Use url_schemes for validating URLs (simpler approach)
+                protocols = self.features["link"].get("protocols", [])
+                kwargs["url_schemes"] = set(protocols)
+                # When using url_schemes, link_rel must be set to None if we want to preserve rel
+                kwargs["link_rel"] = None
+
+            return _actually_empty(nh3.clean(html, **kwargs))
 
         return sanitize_html
 
