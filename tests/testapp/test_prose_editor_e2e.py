@@ -1,3 +1,4 @@
+import json
 import os
 
 import pytest
@@ -5,6 +6,7 @@ from django.contrib.auth.models import User
 from playwright.sync_api import expect
 
 from testapp.models import (
+    ConfigurableProseEditorModel,
     ProseEditorModel,
     TableProseEditorModel,
 )
@@ -275,3 +277,71 @@ def test_prose_editor_ordered_list_attributes(page, live_server):
     assert "First item" in html_content
     assert "Second item" in html_content
     assert "Third item" in html_content
+
+
+@pytest.mark.django_db
+@pytest.mark.e2e
+def test_configurable_prose_editor_admin(page, live_server):
+    """Test that the configurable prose editor loads in the admin with the BlueBold extension."""
+    # Create superuser for admin access
+    User.objects.create_superuser("admin", "admin@example.com", "password")
+
+    # Log in to the admin
+    page.goto(f"{live_server.url}/admin/login/")
+    page.fill("#id_username", "admin")
+    page.fill("#id_password", "password")
+    page.click("input[type=submit]")
+
+    # Go to the add page for ConfigurableProseEditorModel
+    page.goto(f"{live_server.url}/admin/testapp/configurableproseeditormodel/add/")
+
+    # Check that the prose editor is loaded
+    editor_container = page.locator(".prose-editor")
+    expect(editor_container).to_be_visible()
+
+    # The data attribute is on the textarea element inside the prose editor, not on the div
+    # The textarea is hidden by the editor UI, so we don't check if it's visible
+    textarea = page.locator(".prose-editor textarea")
+
+    # Get the configurable data attribute from the textarea
+    configurable_attr = textarea.get_attribute("data-django-prose-editor-configurable")
+    assert configurable_attr is not None
+
+    # Parse the configuration JSON
+    config = json.loads(configurable_attr)
+
+    # Verify BlueBold extension is present in the configuration
+    assert "BlueBold" in config
+
+    # Check the <head> for the blue-bold.js script in the import map or as a script tag
+    page_content = page.content()
+    assert "blue-bold.js" in page_content, (
+        "BlueBold JS file reference not found in page content"
+    )
+
+    # Verify other expected extensions are present
+    assert "Bold" in config
+    assert "Italic" in config
+    assert "Table" in config
+    assert "Heading" in config
+
+    # Verify Heading is configured with correct levels
+    assert "levels" in config["Heading"]
+    assert config["Heading"]["levels"] == [1, 2, 3]
+
+    # Verify the BlueBold JS module is included in the configuration
+    assert "_js_modules" in config
+    assert any("blue-bold.js" in js_path for js_path in config["_js_modules"])
+
+    # Add some content using the editor
+    editor = page.locator(".ProseMirror")
+    editor.click()
+    editor.type("Testing the configurable editor")
+
+    # Save the form
+    page.click("input[name='_save']")
+
+    # Verify the model was created with the content
+    model = ConfigurableProseEditorModel.objects.first()
+    assert model is not None
+    assert "Testing the configurable editor" in model.description
