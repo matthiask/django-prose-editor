@@ -20,21 +20,29 @@ class ConfigurableFormTestCase(TestCase):
         form = TestForm()
         widget = form.fields["description"].widget
 
-        # Make sure the raw_features include all dependencies
+        # Get the expanded features from the widget attributes
+        import json
+
+        context = widget.get_context("description", "", {})
+        expanded_features = json.loads(
+            context["widget"]["attrs"]["data-django-prose-editor-configurable"]
+        )
+
+        # Make sure the expanded_features include all dependencies
         # The original features only had bold, italic, and table
-        self.assertIn("bold", widget.raw_features)
-        self.assertIn("italic", widget.raw_features)
-        self.assertIn("table", widget.raw_features)
+        self.assertIn("bold", expanded_features)
+        self.assertIn("italic", expanded_features)
+        self.assertIn("table", expanded_features)
 
         # The following should be included as dependencies
-        self.assertIn("tableRow", widget.raw_features)
-        self.assertIn("tableHeader", widget.raw_features)
-        self.assertIn("tableCell", widget.raw_features)
+        self.assertIn("tableRow", expanded_features)
+        self.assertIn("tableHeader", expanded_features)
+        self.assertIn("tableCell", expanded_features)
 
         # Core features should always be included
-        self.assertIn("paragraph", widget.raw_features)
-        self.assertIn("document", widget.raw_features)
-        self.assertIn("text", widget.raw_features)
+        self.assertIn("paragraph", expanded_features)
+        self.assertIn("document", expanded_features)
+        self.assertIn("text", expanded_features)
 
     def test_heading_levels_config(self):
         """Test that heading levels are properly passed to the widget."""
@@ -47,9 +55,17 @@ class ConfigurableFormTestCase(TestCase):
         form = TestForm()
         widget = form.fields["description"].widget
 
-        # Check that heading is in raw_features with the proper configuration
-        self.assertIn("heading", widget.raw_features)
-        self.assertEqual(widget.raw_features["heading"]["levels"], [1, 2, 3])
+        # Get the expanded features from the widget attributes
+        import json
+
+        context = widget.get_context("description", "", {})
+        expanded_features = json.loads(
+            context["widget"]["attrs"]["data-django-prose-editor-configurable"]
+        )
+
+        # Check that heading is in expanded_features with the proper configuration
+        self.assertIn("heading", expanded_features)
+        self.assertEqual(expanded_features["heading"]["levels"], [1, 2, 3])
 
         # Check that we're using an empty config now
         self.assertEqual(widget.config, {})

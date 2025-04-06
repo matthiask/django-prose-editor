@@ -11,86 +11,7 @@ from django_prose_editor.config import (
     expand_features,
     features_to_allowlist,
 )
-from django_prose_editor.fields import ProseEditorField, ProseEditorFormField
-from django_prose_editor.widgets import ProseEditorWidget
-
-
-class ConfigurableProseEditorWidget(ProseEditorWidget):
-    """Widget for the ConfigurableProseEditorField."""
-
-    def __init__(self, *args, **kwargs):
-        self.features = kwargs.pop("features", {})
-        preset = kwargs.pop("preset", None)
-        if preset and not self.features:
-            # If only preset is specified, use it directly
-            self.features = {"preset": preset}
-        elif preset:
-            # If both are specified, add preset to features
-            self.features["preset"] = preset
-
-        # Use the configurable JavaScript implementation by default
-        if "js_implementation" not in kwargs:
-            kwargs["js_implementation"] = "configurable"
-
-        # We don't need to generate the legacy config format for the configurable field
-        # since it uses configurable.js implementation by default
-
-        # If a config is explicitly provided, use it, otherwise set an empty config
-        # This avoids potential errors in the parent class that might expect config to exist
-        if "config" not in kwargs:
-            kwargs["config"] = {}
-
-        # Calculate the expanded features including all dependencies
-        expanded_features = expand_features(self.features)
-
-        # Store the expanded features (with all dependencies resolved) for the configurable.js implementation
-        self.raw_features = expanded_features
-
-        # Check for custom extensions
-        from django_prose_editor.config import get_custom_extensions
-
-        get_custom_extensions()
-
-        super().__init__(*args, **kwargs)
-
-    def get_context(self, name, value, attrs):
-        """
-        Override to add the raw features for configurable.js implementation.
-        """
-        context = super().get_context(name, value, attrs)
-
-        # If using the configurable implementation, also pass the raw features
-        if self.js_implementation == "configurable":
-            context["widget"]["attrs"]["data-django-prose-editor-configurable"] = (
-                json.dumps(
-                    self.raw_features,
-                    separators=(",", ":"),
-                )
-            )
-
-        return context
-
-
-class ConfigurableProseEditorFormField(ProseEditorFormField):
-    """Form field for ConfigurableProseEditorField."""
-
-    widget = ConfigurableProseEditorWidget
-
-    def __init__(self, *args, **kwargs):
-        self.features = kwargs.pop("features", {})
-        self.preset = kwargs.pop("preset", None)  # Feature preset
-        self.js_implementation = kwargs.pop(
-            "js_implementation", None
-        )  # JS implementation
-
-        # Pass features to the widget
-        kwargs["widget"] = self.widget(
-            features=self.features,
-            preset=self.preset,  # Use "preset" for feature preset
-            js_implementation=self.js_implementation,  # Use "js_implementation" for JS implementation
-        )
-
-        super().__init__(*args, **kwargs)
+from django_prose_editor.fields import ProseEditorField
 
 
 class ConfigurableProseEditorField(ProseEditorField):
@@ -103,22 +24,35 @@ class ConfigurableProseEditorField(ProseEditorField):
 
     Args:
         features: Dictionary mapping feature names to their configuration
-        preset: Optional feature preset name to use as a base configuration
-        js_implementation: Optional JavaScript implementation name to override the default
+        group: Optional feature group name to use as a base configuration
+        preset: Optional JavaScript preset name to override the default
         sanitize: Whether to enable sanitization (True/False) or a custom sanitizer function
     """
 
     def __init__(self, *args, **kwargs):
         self.features = kwargs.pop("features", {})
-        self.preset = kwargs.pop("preset", None)
-        self.js_implementation = kwargs.pop("js_implementation", None)
+        self.group = kwargs.pop("group", None)
 
-        if self.preset and not self.features:
-            # If only preset is specified, use it directly
-            self.features = {"preset": self.preset}
-        elif self.preset:
-            # If both are specified, add preset to features
-            self.features["preset"] = self.preset
+        # Allow backwards compatibility with "preset" for feature groups
+        old_preset = kwargs.pop("preset", None)
+        if old_preset and not self.group:
+            self.group = old_preset
+
+        # Get the preset for JavaScript implementation (renamed from js_implementation)
+        self.preset = kwargs.pop("preset", "configurable")
+
+        # For backwards compatibility with js_implementation
+        js_impl = kwargs.pop("js_implementation", None)
+        if js_impl and not self.preset:
+            self.preset = js_impl
+
+        # Convert group to feature configuration
+        if self.group and not self.features:
+            # If only group is specified, use it directly
+            self.features = {"group": self.group}
+        elif self.group:
+            # If both are specified, add group to features
+            self.features["group"] = self.group
 
         # Handle sanitization
         sanitize = kwargs.get("sanitize")
@@ -126,8 +60,21 @@ class ConfigurableProseEditorField(ProseEditorField):
             # If sanitize=True, use our automatic sanitizer based on features
             kwargs["sanitize"] = self._create_sanitizer()
 
-        # Remove 'config' if it exists to avoid conflicts with our features approach
-        kwargs.pop("config", None)
+        # Expand features to include all dependencies
+        expanded_features = expand_features(self.features)
+
+        # Create a minimal empty config for compatibility with the base field
+        kwargs["config"] = {}
+
+        # Set the preset for the JavaScript implementation
+        kwargs["preset"] = self.preset
+
+        # Add the expanded features as a data attribute for the widget to pick up
+        widget_attrs = kwargs.pop("widget_attrs", {}) or {}
+        widget_attrs["data-django-prose-editor-configurable"] = json.dumps(
+            expanded_features, separators=(",", ":")
+        )
+        kwargs["widget_attrs"] = widget_attrs
 
         super().__init__(*args, **kwargs)
 
@@ -175,14 +122,3 @@ class ConfigurableProseEditorField(ProseEditorField):
             return _actually_empty(nh3.clean(html, **kwargs))
 
         return sanitize_html
-
-    def formfield(self, **kwargs):
-        """Return a ConfigurableProseEditorFormField for this field."""
-        defaults = {
-            "form_class": ConfigurableProseEditorFormField,
-            "features": self.features,
-            "preset": self.preset,
-            "js_implementation": self.js_implementation,
-        }
-        defaults.update(kwargs)
-        return super(ProseEditorField, self).formfield(**defaults)

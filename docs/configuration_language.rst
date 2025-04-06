@@ -55,38 +55,41 @@ Example Configuration
             }
         )
 
-Predefined Feature Sets
------------------------
+Predefined Feature Groups
+-------------------------
 
-For convenience, several predefined feature sets are available:
+For convenience, several predefined feature groups are available:
 
 .. code-block:: python
 
     # Minimal configuration (text formatting only)
-    content = ConfigurableProseEditorField(preset="minimal")
+    content = ConfigurableProseEditorField(group="minimal")
 
     # Basic configuration (text + lists + links)
-    content = ConfigurableProseEditorField(preset="basic")
+    content = ConfigurableProseEditorField(group="basic")
 
     # Standard configuration (most features except tables)
-    content = ConfigurableProseEditorField(preset="standard")
+    content = ConfigurableProseEditorField(group="standard")
 
     # Full configuration (all available features)
-    content = ConfigurableProseEditorField(preset="full")
+    content = ConfigurableProseEditorField(group="full")
 
-You can extend predefined sets:
+You can extend predefined groups:
 
 .. code-block:: python
 
     content = ConfigurableProseEditorField(
-        preset="basic",
+        group="basic",
         features={
-            "table": True,  # Add table support to basic preset
+            "table": True,  # Add table support to basic group
             "link": {
                 "allowTargetBlank": False  # Override link settings
             }
         }
     )
+
+For backwards compatibility, you can still use the old parameter name `preset`
+instead of `group` when specifying feature groups:
 
 Server-side Sanitization
 ========================

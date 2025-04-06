@@ -18,9 +18,16 @@ importmap.update(
 class ProseEditorWidget(forms.Textarea):
     def __init__(self, *args, **kwargs):
         self.config = kwargs.pop("config", {})
-        self.js_implementation = kwargs.pop("js_implementation", None) or kwargs.pop(
-            "preset", "default"
-        )
+
+        # Note: renamed to preset, with js_implementation as fallback for backwards compatibility
+        self.preset = kwargs.pop("preset", "default")
+        old_impl = kwargs.pop("js_implementation", None)
+        if old_impl:
+            self.preset = old_impl
+
+        # Allow passing additional HTML attributes for the widget
+        self.widget_attrs = kwargs.pop("widget_attrs", {})
+
         super().__init__(*args, **kwargs)
 
     @property
@@ -46,7 +53,7 @@ class ProseEditorWidget(forms.Textarea):
         return self.base_media + forms.Media(
             js=[
                 JS("django_prose_editor/editor.js", {"type": "module"}),
-                *self.get_implementations()[self.js_implementation],
+                *self.get_implementations()[self.preset],
             ]
         )
 
@@ -119,12 +126,19 @@ class ProseEditorWidget(forms.Textarea):
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
-        context["widget"]["attrs"][
-            f"data-django-prose-editor-{self.js_implementation}"
-        ] = json.dumps(
-            self.get_config(),
-            separators=(",", ":"),
+
+        # Add the preset-specific configuration
+        context["widget"]["attrs"][f"data-django-prose-editor-{self.preset}"] = (
+            json.dumps(
+                self.get_config(),
+                separators=(",", ":"),
+            )
         )
+
+        # Add any custom widget attributes
+        for key, value in self.widget_attrs.items():
+            context["widget"]["attrs"][key] = value
+
         return context
 
 

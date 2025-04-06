@@ -56,6 +56,7 @@ class ConfigurableProseEditorModel(models.Model):
             "heading": {"levels": [1, 2, 3]},  # Limit to h1, h2, h3
         },
         sanitize=True,
+        preset="configurable",  # Use the configurable preset
     )
 
     def __str__(self):

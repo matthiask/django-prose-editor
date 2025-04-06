@@ -193,8 +193,8 @@ FEATURE_DEPENDENCIES = {
     "highlight": ["textStyle"],
 }
 
-# Predefined feature sets
-FEATURE_PRESETS = {
+# Predefined feature sets (groups)
+FEATURE_GROUPS = {
     "minimal": {
         "bold": True,
         "italic": True,
@@ -280,10 +280,10 @@ def expand_features(features: dict[str, Any]) -> dict[str, Any]:
     """
     expanded = {}
 
-    # Start with a preset if specified
-    preset_name = features.get("preset")
-    if preset_name and preset_name in FEATURE_PRESETS:
-        expanded.update(FEATURE_PRESETS[preset_name])
+    # Start with a feature group if specified
+    group_name = features.get("group")
+    if group_name and group_name in FEATURE_GROUPS:
+        expanded.update(FEATURE_GROUPS[group_name])
 
     # Override with user-specified features
     expanded.update(features)

@@ -16,7 +16,7 @@ def _nh3_sanitizer():
     Legacy sanitizer function that adds specific attributes to nh3's allowlist.
 
     This is kept for backward compatibility with existing SanitizedProseEditorField usage.
-    New code should use ConfigurableSanitizedProseEditorField instead.
+    New code should use ConfigurableProseEditorField with sanitize=True instead.
     """
 
     import nh3
@@ -83,8 +83,15 @@ class SanitizedProseEditorField(ConfigurableProseEditorField):
                 "typographic": True,
             }
 
+        # Set default sanitization
         if "sanitize" not in kwargs:
             kwargs["sanitize"] = _nh3_sanitizer()
+
+        # Preserve backwards compatibility for preset parameter
+        preset = kwargs.pop("preset", None)
+        if preset:
+            # Map legacy preset to the new JS preset parameter
+            kwargs["preset"] = preset
 
         # Call parent with transformed parameters
         super().__init__(*args, features=features, **kwargs)
