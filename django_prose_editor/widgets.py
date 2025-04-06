@@ -3,6 +3,7 @@ import warnings
 
 from django import forms
 from django.conf import settings
+from django.core.serializers.json import DjangoJSONEncoder
 from js_asset import JS, importmap, static_lazy
 
 
@@ -119,7 +120,7 @@ class ProseEditorWidget(forms.Textarea):
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
         context["widget"]["attrs"][f"data-django-prose-editor-{self.preset}"] = (
-            json.dumps(self.get_config(), separators=(",", ":"))
+            json.dumps(self.get_config(), separators=(",", ":"), cls=DjangoJSONEncoder)
         )
         return context
 

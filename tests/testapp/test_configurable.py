@@ -35,6 +35,9 @@ class ConfigurableFormTestCase(TestCase):
         self.assertIn("Italic", expanded_extensions)
         self.assertIn("Table", expanded_extensions)
 
+        # The custom BlueBold extension should also be included
+        self.assertIn("BlueBold", expanded_extensions)
+
         # The following should be included as dependencies
         self.assertIn("TableRow", expanded_extensions)
         self.assertIn("TableHeader", expanded_extensions)

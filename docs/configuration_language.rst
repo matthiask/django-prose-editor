@@ -252,7 +252,6 @@ Here's a minimal example of a custom extension that adds a blue color to bold te
         }, 0]
       },
 
-      // Add a button to the toolbar
       addOptions() {
         return {
           HTMLAttributes: {

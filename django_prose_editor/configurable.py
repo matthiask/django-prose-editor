@@ -53,7 +53,7 @@ class ConfigurableProseEditorField(ProseEditorField):
 
         # Add JavaScript modules to the expanded extensions
         if js_modules:
-            expanded_extensions["_js_modules"] = js_modules
+            expanded_extensions["_js_modules"] = list(js_modules)
 
         # Use config parameter for the expanded extensions
         kwargs["config"] = expanded_extensions

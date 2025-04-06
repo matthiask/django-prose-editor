@@ -1,5 +1,9 @@
 import os
 
+from js_asset import static_lazy
+
+from django_prose_editor.config import html_tags
+
 
 DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"}}
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -29,6 +33,18 @@ LANGUAGES = (("en", "English"), ("de", "German"))
 
 # No custom presets needed anymore
 DJANGO_PROSE_EDITOR_PRESETS = {}
+
+DJANGO_PROSE_EDITOR_EXTENSIONS = [
+    {
+        "js": [static_lazy("testapp/blue-bold.js")],
+        "extensions": {
+            "BlueBold": html_tags(
+                tags=["strong"], attributes={"strong": ["style", "class"]}
+            )
+        },
+    },
+]
+
 
 TEMPLATES = [
     {
