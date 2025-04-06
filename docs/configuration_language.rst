@@ -147,6 +147,14 @@ You can define JavaScript modules in your Django settings, which will be automat
 
             # URL to the JavaScript module implementing this extension
             "js_module": static("myapp/extensions/custom-extension.js")
+        },
+        "blueBold": {
+            # HTML elements that this extension produces
+            "tags": ["strong"],
+            "attributes": {"strong": ["style", "class"]},
+
+            # URL to the JavaScript module implementing this extension
+            "js_module": static("myapp/extensions/blue-bold.js")
         }
     }
 
@@ -166,6 +174,43 @@ The JavaScript module should export the extension as its default export:
     // Export it as the default export
     export default MyCustomExtension
 
+Simple Example: Blue Bold Text
+-----------------------------
+
+Here's a minimal example of a custom extension that adds a blue color to bold text:
+
+.. code-block:: javascript
+
+    // myapp/static/myapp/extensions/blue-bold.js
+    import { Mark } from "django-prose-editor/editor"
+
+    // Extend the bold mark to make it blue
+    const BlueBold = Mark.create({
+      name: 'blueBold',
+
+      // Extend the default bold mark
+      priority: 101, // Higher than the default bold priority
+
+      // Customize how it renders in the DOM
+      renderHTML({ HTMLAttributes }) {
+        return ['strong', {
+          ...HTMLAttributes,
+          style: 'color: blue;'
+        }, 0]
+      },
+
+      // Add a button to the toolbar
+      addOptions() {
+        return {
+          HTMLAttributes: {
+            class: 'blue-bold-text',
+          },
+        }
+      }
+    })
+
+    export default BlueBold
+
 Then you can use your extension in your models:
 
 .. code-block:: python
@@ -181,7 +226,10 @@ Then you can use your extension in your models:
                 # Enable your custom extension
                 "myCustomExtension": {
                     "option1": "value",  # Configuration options
-                }
+                },
+
+                # Enable the blue bold extension
+                "blueBold": True
             }
         )
 
