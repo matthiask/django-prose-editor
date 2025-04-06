@@ -164,17 +164,17 @@ First, create a JavaScript file with your custom Tiptap extension:
         }
       },
 
-      // Extension implementation...
+      // Extension code...
     })
 
 Step 2: Register Your Extension
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Create an implementation that includes your extension:
+Create a preset that includes your extension:
 
 .. code-block:: javascript
 
-    // myapp/static/myapp/extensions/custom-implementation.js
+    // myapp/static/myapp/extensions/custom-preset.js
     import {
       Document, Paragraph, Text, Bold, Italic, // etc...
       createTextareaEditor, initializeEditors,
@@ -206,10 +206,10 @@ Create an implementation that includes your extension:
 
     initializeEditors(createEditor, `[${marker}]`)
 
-Step 3: Register Your Extension and Implementation in Django Settings
+Step 3: Register Your Extension and Preset in Django Settings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Configure your extension and JavaScript implementation in Django settings:
+Configure your extension and JavaScript preset in Django settings:
 
 .. code-block:: python
 
@@ -229,14 +229,14 @@ Configure your extension and JavaScript implementation in Django settings:
         }
     }
 
-    # Register your custom JavaScript implementation
-    DJANGO_PROSE_EDITOR_IMPLEMENTATIONS = {
+    # Register your custom JavaScript preset
+    DJANGO_PROSE_EDITOR_PRESETS = {
         "custom": [
-            JS("myapp/extensions/custom-implementation.js", {"type": "module"}),
+            JS("myapp/extensions/custom-preset.js", {"type": "module"}),
         ],
     }
 
-    # Then specify this implementation when using custom extensions
+    # Then specify this preset when using custom extensions
     # in your ConfigurableProseEditorField (see example below)
 
 Step 4: Use Your Custom Extension in Models
@@ -261,8 +261,8 @@ Now you can use your custom extension in your models:
                     "option2": False,
                 }
             },
-            # Specify which JS implementation to use for custom extensions
-            js_implementation="custom"
+            # Specify which JS preset to use for custom extensions
+            preset="custom"
         )
 
 The configuration system will:
@@ -270,9 +270,9 @@ The configuration system will:
 1. Enable your custom extension in the editor
 2. Pass your configuration options to the extension
 3. Allow the HTML elements and attributes in the sanitization process
-4. Use your specified JavaScript implementation to initialize the extension
+4. Use your specified JavaScript preset to initialize the extension
 
-Implementation Details
+Technical Details
 =====================
 
 Custom Processor Functions

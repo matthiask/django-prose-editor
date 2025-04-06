@@ -5,8 +5,6 @@ This module provides a field that uses the configuration system to automatically
 generate front-end editor features and back-end sanitization rules.
 """
 
-import json
-
 from django_prose_editor.config import (
     expand_features,
     features_to_allowlist,
@@ -38,13 +36,8 @@ class ConfigurableProseEditorField(ProseEditorField):
         if old_preset and not self.group:
             self.group = old_preset
 
-        # Get the preset for JavaScript implementation (renamed from js_implementation)
+        # Get the preset (renamed from js_implementation)
         self.preset = kwargs.pop("preset", "configurable")
-
-        # For backwards compatibility with js_implementation
-        js_impl = kwargs.pop("js_implementation", None)
-        if js_impl and not self.preset:
-            self.preset = js_impl
 
         # Convert group to feature configuration
         if self.group and not self.features:
@@ -63,18 +56,11 @@ class ConfigurableProseEditorField(ProseEditorField):
         # Expand features to include all dependencies
         expanded_features = expand_features(self.features)
 
-        # Create a minimal empty config for compatibility with the base field
-        kwargs["config"] = {}
+        # Use config parameter for the expanded features
+        kwargs["config"] = expanded_features
 
-        # Set the preset for the JavaScript implementation
+        # Set the preset
         kwargs["preset"] = self.preset
-
-        # Add the expanded features as a data attribute for the widget to pick up
-        widget_attrs = kwargs.pop("widget_attrs", {}) or {}
-        widget_attrs["data-django-prose-editor-configurable"] = json.dumps(
-            expanded_features, separators=(",", ":")
-        )
-        kwargs["widget_attrs"] = widget_attrs
 
         super().__init__(*args, **kwargs)
 

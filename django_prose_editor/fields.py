@@ -33,7 +33,7 @@ class ProseEditorField(models.TextField):
         self.sanitize = kwargs.pop("sanitize", _actually_empty)
         self.config = kwargs.pop("config", {})
         self.preset = kwargs.pop("preset", "default")
-        self.widget_attrs = kwargs.pop("widget_attrs", {})
+        # All configuration is handled through config and preset
         super().__init__(*args, **kwargs)
 
     def clean(self, value, instance):
@@ -44,7 +44,6 @@ class ProseEditorField(models.TextField):
             "form_class": ProseEditorFormField,
             "config": self.config,
             "preset": self.preset,
-            "widget_attrs": self.widget_attrs,
         }
         defaults.update(kwargs)
         return super().formfield(**defaults)
@@ -80,24 +79,20 @@ class ProseEditorFormField(forms.CharField):
     def __init__(self, *args, **kwargs):
         config = kwargs.pop("config", {})
         preset = kwargs.pop("preset", "default")
-        widget_attrs = kwargs.pop("widget_attrs", {})
+        # All configuration is handled through config and preset
         widget = kwargs.get("widget")
 
         # We don't know if widget is set, and if it is, we do not know if it is
         # a class or an instance of the widget. The following if statement
         # should take all possibilities into account.
         if widget and _is(widget, widgets.AdminTextareaWidget):
-            kwargs["widget"] = AdminProseEditorWidget(
-                config=config, preset=preset, widget_attrs=widget_attrs
-            )
+            kwargs["widget"] = AdminProseEditorWidget(config=config, preset=preset)
         elif not widget or not _is(widget, ProseEditorWidget):
-            kwargs["widget"] = ProseEditorWidget(
-                config=config, preset=preset, widget_attrs=widget_attrs
-            )
+            kwargs["widget"] = ProseEditorWidget(config=config, preset=preset)
         elif isinstance(widget, ProseEditorWidget):
             # If it's already an instance, update its attributes
             widget.config = config
             widget.preset = preset
-            widget.widget_attrs = widget_attrs
+            # All attributes updated
 
         super().__init__(*args, **kwargs)

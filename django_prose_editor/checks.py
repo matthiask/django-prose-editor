@@ -3,33 +3,20 @@ from django.core.checks import Error, Warning, register
 
 
 @register()
-def check_js_implementation_configuration(app_configs, **kwargs):
+def check_js_preset_configuration(app_configs, **kwargs):
     """
-    Check that the 'default' JavaScript implementation is not being overridden in settings.
+    Check that the 'default' JavaScript preset is not being overridden in settings.
     """
     errors = []
 
-    # Check new setting
-    if hasattr(settings, "DJANGO_PROSE_EDITOR_IMPLEMENTATIONS"):
-        implementations = settings.DJANGO_PROSE_EDITOR_IMPLEMENTATIONS
-        if "default" in implementations:
-            errors.append(
-                Error(
-                    'Overriding the "default" implementation in DJANGO_PROSE_EDITOR_IMPLEMENTATIONS is not allowed.',
-                    hint="Remove the 'default' key from your DJANGO_PROSE_EDITOR_IMPLEMENTATIONS setting.",
-                    obj=settings,
-                    id="django_prose_editor.E001",
-                )
-            )
-
-    # For backward compatibility, also check old setting
+    # Main setting
     if hasattr(settings, "DJANGO_PROSE_EDITOR_PRESETS"):
         presets = settings.DJANGO_PROSE_EDITOR_PRESETS
         if "default" in presets:
             errors.append(
                 Error(
                     'Overriding the "default" preset in DJANGO_PROSE_EDITOR_PRESETS is not allowed.',
-                    hint="Use DJANGO_PROSE_EDITOR_IMPLEMENTATIONS instead and remove the 'default' key.",
+                    hint="Remove the 'default' key from your DJANGO_PROSE_EDITOR_PRESETS setting.",
                     obj=settings,
                     id="django_prose_editor.E001",
                 )

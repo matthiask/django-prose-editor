@@ -125,7 +125,7 @@ The editor can be customized in several ways:
 
 1. Using the ``config`` parameter to include/exclude specific extensions (legacy approach)
 2. Using the new configuration language with ``ConfigurableProseEditorField`` (recommended)
-3. Creating custom implementations for more advanced customization
+3. Creating custom presets for more advanced customization
 
 For the new configuration language, see the :doc:`configuration_language` documentation.
 
@@ -176,27 +176,27 @@ Available extension types include:
 * Links: ``link`` (enabled by default)
 * Tables: ``table`` (opt-in only, not enabled by default)
 
-Advanced Customization with Implementations
--------------------------------------------
+Advanced Customization with Presets
+--------------------------------
 
-For more advanced customization, you can create custom implementations by
+For more advanced customization, you can create custom presets by
 adding additional assets to load:
 
 .. code-block:: python
 
     from js_asset import JS
 
-    DJANGO_PROSE_EDITOR_IMPLEMENTATIONS = {
+    DJANGO_PROSE_EDITOR_PRESETS = {
         "announcements": [
             JS("prose-editors/announcements.js", {"type": "module"}),
         ],
     }
 
-The implementation can be selected when instantiating the field:
+The preset can be selected when instantiating the field:
 
 .. code-block:: python
 
-    text = ProseEditorField(_("text"), implementation="announcements")
+    text = ProseEditorField(_("text"), preset="announcements")
 
 The editor uses ES modules and importmaps; you can import extensions and
 utilities from the `django-prose-editor/editor` module. The importmap support
@@ -227,7 +227,7 @@ Here's the example:
     } from "django-prose-editor/editor"
 
 
-    // "announcements" is the name of the implementation.
+    // "announcements" is the name of the preset.
     const marker = "data-django-prose-editor-announcements"
 
     function createEditor(textarea) {

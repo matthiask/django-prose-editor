@@ -67,5 +67,5 @@ class ConfigurableFormTestCase(TestCase):
         self.assertIn("heading", expanded_features)
         self.assertEqual(expanded_features["heading"]["levels"], [1, 2, 3])
 
-        # Check that we're using an empty config now
-        self.assertEqual(widget.config, {})
+        # Check that we're using the config parameter for the expanded features
+        self.assertEqual(widget.config, expanded_features)
