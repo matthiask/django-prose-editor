@@ -388,3 +388,57 @@ This configuration will only allow the specified heading levels in both the edit
 and the sanitized output.
 
 For those who need more control, you can still use the lower-level configuration options or create custom presets as described in the main documentation.
+
+JavaScript Events
+~~~~~~~~~~~~~~~~
+
+The configurable editor fires custom events that you can listen for in your frontend code:
+
+**prose-editor:ready**
+
+This event is fired when an editor is fully initialized and ready to use. It's dispatched on the textarea element and bubbles up the DOM.
+
+.. code-block:: javascript
+
+    // Listen for editor initialization
+    document.addEventListener('prose-editor:ready', (event) => {
+        // Access the editor instance and the textarea
+        const { editor, textarea } = event.detail;
+
+        // Example: Focus the editor when it's ready
+        editor.commands.focus();
+
+        // Example: Get the textarea's ID for reference
+        console.log(`Editor ready for ${textarea.id}`);
+    });
+
+The event provides an object in the `detail` property with:
+- `editor`: The initialized editor instance with full access to Tiptap commands and API
+- `textarea`: The original textarea element that was enhanced with the editor
+
+This is useful when you need to interact with editors programmatically or initialize other components that depend on the editor being fully loaded.
+
+**Accessing Editor Instances Programmatically**
+
+For more advanced use cases, you can import the `getEditorPromise` function to get a reference to a pending or completed editor initialization:
+
+.. code-block:: javascript
+
+    // In your custom script
+    import { getEditorPromise } from "django-prose-editor/configurable";
+
+    // Get the textarea element
+    const textarea = document.querySelector('#my-editor');
+
+    // Get the promise for this editor's initialization
+    const editorPromise = getEditorPromise(textarea);
+
+    if (editorPromise) {
+        // Wait for the editor to be fully initialized
+        editorPromise.then(editor => {
+            if (editor) {
+                // Do something with the editor instance
+                editor.commands.setContent('<p>New content</p>');
+            }
+        });
+    }

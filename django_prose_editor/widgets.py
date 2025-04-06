@@ -10,6 +10,9 @@ importmap.update(
     {
         "imports": {
             "django-prose-editor/editor": static_lazy("django_prose_editor/editor.js"),
+            "django-prose-editor/configurable": static_lazy(
+                "django_prose_editor/configurable.js"
+            ),
         }
     }
 )
