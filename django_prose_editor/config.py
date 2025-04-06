@@ -107,6 +107,9 @@ def process_link(config, shared_config):
     # Prepare tags and attributes
     tags = ["a"]
     attributes = {"a": ["href", "rel", "title"]}
+    # If rel is in the list of allowed attributes link_rel has to be set to
+    # None.
+    shared_config["link_rel"] = None
 
     # Include target attribute unless explicitly disabled
     target_allowed = True
@@ -119,9 +122,6 @@ def process_link(config, shared_config):
             if "url_schemes" not in shared_config:
                 shared_config["url_schemes"] = set()
             shared_config["url_schemes"].update(config["protocols"])
-            # When restricting URL schemes, we need to set link_rel to None
-            # to preserve the rel attribute
-            shared_config["link_rel"] = None
 
     # Add target attribute if allowed
     if target_allowed:
