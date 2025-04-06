@@ -58,18 +58,6 @@ Replace ``models.TextField`` with ``ProseEditorField`` where appropriate:
     class Project(models.Model):
         description = ProseEditorField()
 
-    # Or use the new configurable fields with synchronized sanitization
-    from django_prose_editor.fields import ConfigurableSanitizedProseEditorField
-
-    class Article(models.Model):
-        content = ConfigurableSanitizedProseEditorField(
-            preset="standard",  # Use a predefined feature set
-            features={
-                "table": True,  # Add table support
-                "heading": {"levels": [1, 2, 3]},  # Limit heading levels
-            }
-        )
-
 Note! No migrations will be generated when switching from and to
 ``models.TextField``. That's by design. Those migrations are mostly annoying.
 
@@ -83,14 +71,14 @@ constrainted by the HTML widgets you're using. You should still always sanitize
 the HTML submitted on the server side.
 
 Using Configurable Sanitization (Recommended)
---------------------------------------------
+---------------------------------------------
 
 The recommended approach is to use the new ``ConfigurableProseEditorField``
 which automatically synchronizes editor features with sanitization rules:
 
 .. code-block:: python
 
-    from django_prose_editor.fields import ConfigurableProseEditorField
+    from django_prose_editor.configurable import ConfigurableProseEditorField
 
     content = ConfigurableProseEditorField(
         preset="standard",  # Use a predefined feature set
@@ -101,7 +89,7 @@ This ensures that the HTML sanitization rules exactly match what the editor allo
 preventing inconsistencies between editing capabilities and allowed output.
 
 Legacy Approach (Deprecated)
---------------------------
+----------------------------
 
 For backward compatibility, you can still use the ``sanitize`` argument with
 ``ProseEditorField`` or use the legacy ``SanitizedProseEditorField``, although
@@ -136,8 +124,8 @@ Customization
 The editor can be customized in several ways:
 
 1. Using the ``config`` parameter to include/exclude specific extensions (legacy approach)
-2. Creating custom presets for more advanced customization (legacy approach)
-3. Using the new configuration language with ``ConfigurableProseEditorField`` (recommended)
+2. Using the new configuration language with ``ConfigurableProseEditorField`` (recommended)
+3. Creating custom implementations for more advanced customization
 
 For the new configuration language, see the :doc:`configuration_language` documentation.
 
@@ -188,27 +176,27 @@ Available extension types include:
 * Links: ``link`` (enabled by default)
 * Tables: ``table`` (opt-in only, not enabled by default)
 
-Advanced Customization with Presets
------------------------------------
+Advanced Customization with Implementations
+-------------------------------------------
 
-For more advanced customization, you can create custom presets by adding
-additional assets to load:
+For more advanced customization, you can create custom implementations by
+adding additional assets to load:
 
 .. code-block:: python
 
     from js_asset import JS
 
-    DJANGO_PROSE_EDITOR_PRESETS = {
+    DJANGO_PROSE_EDITOR_IMPLEMENTATIONS = {
         "announcements": [
             JS("prose-editors/announcements.js", {"type": "module"}),
         ],
     }
 
-The preset can be selected when instantiating the field:
+The implementation can be selected when instantiating the field:
 
 .. code-block:: python
 
-    text = ProseEditorField(_("text"), preset="announcements")
+    text = ProseEditorField(_("text"), implementation="announcements")
 
 The editor uses ES modules and importmaps; you can import extensions and
 utilities from the `django-prose-editor/editor` module. The importmap support
@@ -239,7 +227,7 @@ Here's the example:
     } from "django-prose-editor/editor"
 
 
-    // "announcements" is the name of the preset.
+    // "announcements" is the name of the implementation.
     const marker = "data-django-prose-editor-announcements"
 
     function createEditor(textarea) {

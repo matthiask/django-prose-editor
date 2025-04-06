@@ -263,29 +263,6 @@ FEATURE_PRESETS = {
         "html": True,
         "typographic": True,
     },
-    "content": {
-        # A rich content profile with all features except dangerous ones
-        "bold": True,
-        "italic": True,
-        "strike": True,
-        "underline": True,
-        "subscript": True,
-        "superscript": True,
-        "code": True,
-        "paragraph": True,
-        "heading": {"levels": [1, 2, 3, 4, 5, 6]},
-        "bulletList": True,
-        "orderedList": True,
-        "blockquote": True,
-        "horizontalRule": True,
-        "hardBreak": True,
-        "link": {"allowTargetBlank": True},
-        "image": True,
-        "figure": True,
-        "table": True,
-        "history": True,
-        "typographic": True,
-    },
 }
 
 # Core features that are always enabled

@@ -1,6 +1,6 @@
-===============================
+=============================
 Editor Configuration Language
-===============================
+=============================
 
 Overview
 ========
@@ -8,7 +8,7 @@ Overview
 Django Prose Editor provides a unified configuration approach that synchronizes front-end editor capabilities with server-side sanitization rules. This ensures consistency between what users can create in the editor and what is allowed after sanitization.
 
 Basic Configuration
-==================
+===================
 
 The configuration system uses a declarative format that defines:
 
@@ -17,11 +17,11 @@ The configuration system uses a declarative format that defines:
 3. Server-side sanitization rules derived from the configuration
 
 Example Configuration
---------------------
+---------------------
 
 .. code-block:: python
 
-    from django_prose_editor.fields import ConfigurableProseEditorField
+    from django_prose_editor.configurable import ConfigurableProseEditorField
 
     class Article(models.Model):
         content = ConfigurableProseEditorField(
@@ -31,6 +31,7 @@ Example Configuration
                 "italic": True,
                 "strike": True,
                 "underline": True,
+                "hardBreak": True,
 
                 # Structure
                 "heading": {
@@ -131,10 +132,10 @@ table          <table>, <tr>,          rowspan, colspan
 ============== ======================= ============================
 
 Advanced Configuration
-=====================
+======================
 
 Custom Extensions
-----------------
+-----------------
 
 The configuration system supports custom Tiptap extensions. This allows you to extend
 the editor with your own functionality while still maintaining the synchronized
@@ -148,7 +149,7 @@ First, create a JavaScript file with your custom Tiptap extension:
 .. code-block:: javascript
 
     // myapp/static/myapp/extensions/custom-extension.js
-    import { Extension } from '@tiptap/core'
+    import { Extension } from "django-prose-editor/editor"
 
     export default Extension.create({
       name: 'myCustomExtension',
@@ -166,11 +167,11 @@ First, create a JavaScript file with your custom Tiptap extension:
 Step 2: Register Your Extension
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Create a preset that includes your extension:
+Create an implementation that includes your extension:
 
 .. code-block:: javascript
 
-    // myapp/static/myapp/extensions/custom-preset.js
+    // myapp/static/myapp/extensions/custom-implementation.js
     import {
       Document, Paragraph, Text, Bold, Italic, // etc...
       createTextareaEditor, initializeEditors,
@@ -203,7 +204,7 @@ Create a preset that includes your extension:
     initializeEditors(createEditor, `[${marker}]`)
 
 Step 3: Register Your Extension and Implementation in Django Settings
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Configure your extension and JavaScript implementation in Django settings:
 
@@ -228,7 +229,7 @@ Configure your extension and JavaScript implementation in Django settings:
     # Register your custom JavaScript implementation
     DJANGO_PROSE_EDITOR_IMPLEMENTATIONS = {
         "custom": [
-            JS("myapp/extensions/custom-preset.js", {"type": "module"}),
+            JS("myapp/extensions/custom-implementation.js", {"type": "module"}),
         ],
     }
 

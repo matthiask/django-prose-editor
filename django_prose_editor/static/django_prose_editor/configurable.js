@@ -82,6 +82,7 @@ const EXTENSION_MAP = {
   underline: Underline,
   subscript: Subscript,
   superscript: Superscript,
+  hardBreak: HardBreak,
 
   // Code features
   code: Code,
