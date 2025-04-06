@@ -26,6 +26,20 @@ def get_custom_extensions():
 
 # Feature processors
 # These functions update a shared sanitization config
+
+
+def add_tags_and_attributes(shared_config, tags, attributes):
+    # Add tags to the config
+    shared_config["tags"].update(tags)
+
+    # Add attributes to the config
+    if attributes:
+        for tag, allowed_attrs in attributes.items():
+            if tag not in shared_config["attributes"]:
+                shared_config["attributes"][tag] = set()
+            shared_config["attributes"][tag].update(allowed_attrs)
+
+
 def create_simple_processor(tags, attributes=None, *, js_module=None):
     """
     Create a simple processor function that adds tags and attributes to the sanitization config.
@@ -40,15 +54,7 @@ def create_simple_processor(tags, attributes=None, *, js_module=None):
     """
 
     def processor(feature_config, shared_config):
-        # Add tags to the config
-        shared_config["tags"].update(tags)
-
-        # Add attributes to the config
-        attrs = attributes or {}
-        for tag, allowed_attrs in attrs.items():
-            if tag not in shared_config["attributes"]:
-                shared_config["attributes"][tag] = set()
-            shared_config["attributes"][tag].update(allowed_attrs)
+        add_tags_and_attributes(shared_config, tags, attributes)
 
         # Add JavaScript module if provided
         if js_module:
@@ -59,34 +65,26 @@ def create_simple_processor(tags, attributes=None, *, js_module=None):
 
 def process_heading(config, shared_config):
     """Process heading feature configuration."""
-    tags = ["h1", "h2", "h3", "h4", "h5", "h6"]
-
-    # Filter tags based on levels if specified
-    if isinstance(config, dict) and "levels" in config:
-        levels = config["levels"]
-        tags = [f"h{level}" for level in levels if 1 <= level <= 6]
-
-    # Add tags to the shared config
-    shared_config["tags"].update(tags)
+    levels = (
+        c["levels"]
+        if isinstance(config, dict) and (c := config.get("levels"))
+        else range(1, 7)
+    )
+    tags = [f"h{level}" for level in levels]
+    add_tags_and_attributes(shared_config, tags, None)
 
 
 def process_link(config, shared_config):
     """Process link feature configuration."""
-    # Add the a tag to allowed tags
-    shared_config["tags"].update(["a"])
-
-    # Initialize attributes for the a tag if not present
-    if "a" not in shared_config["attributes"]:
-        shared_config["attributes"]["a"] = set()
-
-    # Add standard attributes
-    shared_config["attributes"]["a"].update(["href", "rel", "title"])
+    # Prepare tags and attributes
+    tags = ["a"]
+    attributes = {"a": ["href", "rel", "title"]}
 
     # Include target attribute unless explicitly disabled
     target_allowed = True
     if isinstance(config, dict):
-        if "allowTargetBlank" in config:
-            target_allowed = bool(config["allowTargetBlank"])
+        if "enableTarget" in config:
+            target_allowed = bool(config["enableTarget"])
 
         # Include URL schemes if specified (for nh3 sanitization)
         if "protocols" in config:
@@ -97,74 +95,85 @@ def process_link(config, shared_config):
             # to preserve the rel attribute
             shared_config["link_rel"] = None
 
+    # Add target attribute if allowed
     if target_allowed:
-        shared_config["attributes"]["a"].add("target")
+        attributes["a"].append("target")
+
+    # Add tags and attributes to the shared config
+    add_tags_and_attributes(shared_config, tags, attributes)
 
 
 # Additional processors for other extensions
 def process_code_block(config, shared_config):
     """Process code block feature configuration."""
-    # Add tags
-    shared_config["tags"].update(["pre", "code"])
+    # Prepare tags and attributes
+    tags = ["pre", "code"]
+    attributes = {}
 
     # Include language attribute if supported
     if isinstance(config, dict) and config.get("languageClassPrefix"):
-        # Add pre attributes
-        if "pre" not in shared_config["attributes"]:
-            shared_config["attributes"]["pre"] = set()
-        shared_config["attributes"]["pre"].add("class")
+        attributes["pre"] = ["class"]
+        attributes["code"] = ["class"]
 
-        # Add code attributes
-        if "code" not in shared_config["attributes"]:
-            shared_config["attributes"]["code"] = set()
-        shared_config["attributes"]["code"].add("class")
+    # Add tags and attributes to the shared config
+    add_tags_and_attributes(shared_config, tags, attributes)
 
 
 def process_figure(config, shared_config):
     """Process figure feature configuration."""
-    # Add tags
-    shared_config["tags"].update(["figure", "figcaption", "img"])
+    # Prepare tags and attributes
+    tags = ["figure", "figcaption", "img"]
+    attributes = {
+        "img": ["src", "alt", "width", "height"],
+        "figure": ["class"],
+    }
 
-    # Add attributes for img
-    if "img" not in shared_config["attributes"]:
-        shared_config["attributes"]["img"] = set()
-    shared_config["attributes"]["img"].update(["src", "alt", "width", "height"])
-
-    # Add attributes for figure
-    if "figure" not in shared_config["attributes"]:
-        shared_config["attributes"]["figure"] = set()
-    shared_config["attributes"]["figure"].add("class")
+    # Add tags and attributes to the shared config
+    add_tags_and_attributes(shared_config, tags, attributes)
 
 
 def process_image(config, shared_config):
     """Process image feature configuration."""
-    # Add img tag
-    shared_config["tags"].add("img")
+    # Prepare tags and attributes
+    tags = ["img"]
+    attributes = {
+        "img": ["src", "alt", "width", "height"],
+    }
 
-    # Add attributes for img
-    if "img" not in shared_config["attributes"]:
-        shared_config["attributes"]["img"] = set()
-    shared_config["attributes"]["img"].update(["src", "alt", "width", "height"])
+    # Add tags and attributes to the shared config
+    add_tags_and_attributes(shared_config, tags, attributes)
 
 
 def process_text_align(config, shared_config):
     """Process text alignment feature configuration."""
+    # Text align typically uses classes, not new tags
+    tags = []
     # Text align adds style and class attributes to various elements
-    for tag in ["p", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote"]:
-        if tag not in shared_config["attributes"]:
-            shared_config["attributes"][tag] = set()
-        shared_config["attributes"][tag].update(["style", "class"])
+    attributes = {
+        "p": ["style", "class"],
+        "h1": ["style", "class"],
+        "h2": ["style", "class"],
+        "h3": ["style", "class"],
+        "h4": ["style", "class"],
+        "h5": ["style", "class"],
+        "h6": ["style", "class"],
+        "blockquote": ["style", "class"],
+    }
+
+    # Add tags and attributes to the shared config
+    add_tags_and_attributes(shared_config, tags, attributes)
 
 
 def process_color_highlight(config, shared_config):
     """Process color and highlighting feature configuration."""
-    # Add span tag
-    shared_config["tags"].add("span")
+    # Prepare tags and attributes
+    tags = ["span"]
+    attributes = {
+        "span": ["style", "class"],
+    }
 
-    # Add style and class attributes for span
-    if "span" not in shared_config["attributes"]:
-        shared_config["attributes"]["span"] = set()
-    shared_config["attributes"]["span"].update(["style", "class"])
+    # Add tags and attributes to the shared config
+    add_tags_and_attributes(shared_config, tags, attributes)
 
 
 # Default feature-to-HTML mapping with processors as the single source of truth

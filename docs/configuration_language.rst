@@ -42,7 +42,7 @@ Example Configuration
 
                 # Advanced features
                 "link": {
-                    "allowTargetBlank": True,  # Enable "open in new window"
+                    "enableTarget": True,  # Enable "open in new window"
                     "protocols": ["http", "https", "mailto"],  # Limit protocols
                 },
                 "table": True,
@@ -79,7 +79,7 @@ The `features` parameter allows you to specify exactly which features you want t
             "bold": True,
             "italic": True,
             "heading": {"levels": [1, 2, 3]},  # Only allow H1-H3
-            "link": {"allowTargetBlank": True},  # Enable "open in new tab"
+            "link": {"enableTarget": True},  # Enable "open in new tab"
             "table": True,
         }
     )
