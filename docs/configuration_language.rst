@@ -54,41 +54,35 @@ Example Configuration
             }
         )
 
-Predefined Feature Groups
--------------------------
+Configuring Features
+------------------
 
-For convenience, several predefined feature groups are available:
-
-.. code-block:: python
-
-    # Minimal configuration (text formatting only)
-    content = ConfigurableProseEditorField(group="minimal")
-
-    # Basic configuration (text + lists + links)
-    content = ConfigurableProseEditorField(group="basic")
-
-    # Standard configuration (most features except tables)
-    content = ConfigurableProseEditorField(group="standard")
-
-    # Full configuration (all available features)
-    content = ConfigurableProseEditorField(group="full")
-
-You can extend predefined groups:
+The `features` parameter allows you to specify exactly which features you want to enable in your editor:
 
 .. code-block:: python
 
+    # Simple configuration with basic text formatting and links
     content = ConfigurableProseEditorField(
-        group="basic",
         features={
-            "table": True,  # Add table support to basic group
-            "link": {
-                "allowTargetBlank": False  # Override link settings
-            }
+            "bold": True,
+            "italic": True,
+            "strike": True,
+            "link": True,
+            "bulletList": True,
+            "orderedList": True,
         }
     )
 
-For backwards compatibility, you can still use the old parameter name `preset`
-instead of `group` when specifying feature groups:
+    # More advanced configuration with specific settings for features
+    content = ConfigurableProseEditorField(
+        features={
+            "bold": True,
+            "italic": True,
+            "heading": {"levels": [1, 2, 3]},  # Only allow H1-H3
+            "link": {"allowTargetBlank": True},  # Enable "open in new tab"
+            "table": True,
+        }
+    )
 
 Server-side Sanitization
 ~~~~~~~~~~~~~~~~~~~~~~~~

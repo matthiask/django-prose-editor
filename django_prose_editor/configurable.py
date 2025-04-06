@@ -22,30 +22,15 @@ class ConfigurableProseEditorField(ProseEditorField):
 
     Args:
         features: Dictionary mapping feature names to their configuration
-        group: Optional feature group name to use as a base configuration
         preset: Optional JavaScript preset name to override the default
         sanitize: Whether to enable sanitization (True/False) or a custom sanitizer function
     """
 
     def __init__(self, *args, **kwargs):
         self.features = kwargs.pop("features", {})
-        self.group = kwargs.pop("group", None)
 
-        # Allow backwards compatibility with "preset" for feature groups
-        old_preset = kwargs.pop("preset", None)
-        if old_preset and not self.group:
-            self.group = old_preset
-
-        # Get the preset (renamed from js_implementation)
+        # Get the preset for JavaScript implementation
         self.preset = kwargs.pop("preset", "configurable")
-
-        # Convert group to feature configuration
-        if self.group and not self.features:
-            # If only group is specified, use it directly
-            self.features = {"group": self.group}
-        elif self.group:
-            # If both are specified, add group to features
-            self.features["group"] = self.group
 
         # Handle sanitization
         sanitize = kwargs.get("sanitize")

@@ -193,76 +193,7 @@ FEATURE_DEPENDENCIES = {
     "highlight": ["textStyle"],
 }
 
-# Predefined feature sets (groups)
-FEATURE_GROUPS = {
-    "minimal": {
-        "bold": True,
-        "italic": True,
-        "strike": True,
-        "paragraph": True,
-        "hardBreak": True,
-        "history": True,
-    },
-    "basic": {
-        "bold": True,
-        "italic": True,
-        "strike": True,
-        "underline": True,
-        "paragraph": True,
-        "bulletList": True,
-        "orderedList": True,
-        "hardBreak": True,
-        "link": True,
-        "history": True,
-        "html": True,
-    },
-    "standard": {
-        "bold": True,
-        "italic": True,
-        "strike": True,
-        "underline": True,
-        "subscript": True,
-        "superscript": True,
-        "paragraph": True,
-        "heading": {"levels": [1, 2, 3, 4, 5, 6]},
-        "bulletList": True,
-        "orderedList": True,
-        "blockquote": True,
-        "horizontalRule": True,
-        "hardBreak": True,
-        "link": {"allowTargetBlank": True},
-        "history": True,
-        "html": True,
-        "typographic": True,
-    },
-    "full": {
-        "bold": True,
-        "italic": True,
-        "strike": True,
-        "underline": True,
-        "subscript": True,
-        "superscript": True,
-        "code": True,
-        "codeBlock": True,
-        "paragraph": True,
-        "heading": {"levels": [1, 2, 3, 4, 5, 6]},
-        "bulletList": True,
-        "orderedList": True,
-        "blockquote": True,
-        "horizontalRule": True,
-        "hardBreak": True,
-        "link": {"allowTargetBlank": True},
-        "table": True,
-        "image": True,
-        "figure": True,
-        "color": True,
-        "highlight": True,
-        "textAlign": True,
-        "history": True,
-        "html": True,
-        "typographic": True,
-    },
-}
+# Feature groups were removed to simplify the API
 
 # Core features that are always enabled
 CORE_FEATURES = ["document", "paragraph", "text"]
@@ -280,12 +211,7 @@ def expand_features(features: dict[str, Any]) -> dict[str, Any]:
     """
     expanded = {}
 
-    # Start with a feature group if specified
-    group_name = features.get("group")
-    if group_name and group_name in FEATURE_GROUPS:
-        expanded.update(FEATURE_GROUPS[group_name])
-
-    # Override with user-specified features
+    # Include user-specified features
     expanded.update(features)
 
     # Always include core features
