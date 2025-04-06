@@ -63,18 +63,16 @@ const marker = "data-django-prose-editor-configurable"
 
 // Core extensions that are always included
 const CORE_EXTENSIONS = [
-  Document,
   Dropcursor,
   Gapcursor,
-  Paragraph,
-  Text,
-  Menu,
-  NoSpellCheck,
 ]
 
 // Extension instances indexed by their names
 const EXTENSIONS = {
   // Extension classes are available directly by their class name
+  Document,
+  Paragraph,
+  Text,
   HardBreak,
   History,
 
@@ -118,6 +116,7 @@ const EXTENSIONS = {
   // Special extensions
   Link,
   HTML,
+  NoSpellCheck,
   Typographic,
   Fullscreen,
 
