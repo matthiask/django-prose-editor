@@ -83,9 +83,8 @@ class SanitizedProseEditorField(ConfigurableProseEditorField):
                 "typographic": True,
             }
 
-        # Use the legacy sanitizer directly for backward compatibility
-        # This bypasses any issues with the configurable field sanitizer
-        kwargs["sanitize"] = _nh3_sanitizer()
+        if "sanitize" not in kwargs:
+            kwargs["sanitize"] = _nh3_sanitizer()
 
         # Call parent with transformed parameters
         super().__init__(*args, features=features, **kwargs)
