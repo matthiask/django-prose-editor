@@ -26,7 +26,7 @@ def get_custom_extensions():
 
 # Feature processors
 # These functions return allowlist information based on feature configuration
-def create_simple_processor(tags, attributes=None, js_module=None):
+def create_simple_processor(tags, attributes=None, *, js_module=None):
     """
     Create a simple processor function that returns a fixed set of tags and attributes.
 

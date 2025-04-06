@@ -142,7 +142,7 @@ You can define processor functions in your Django settings, which will determine
 .. code-block:: python
 
     # In settings.py
-    from django.templatetags.static import static
+    from js_asset import static_lazy
     from django_prose_editor.config import create_simple_processor
 
     # Define your custom extensions with their processors
@@ -151,14 +151,14 @@ You can define processor functions in your Django settings, which will determine
         "myCustomExtension": create_simple_processor(
             tags=["div"],
             attributes={"div": ["data-custom"]},
-            js_module=static("myapp/extensions/custom-extension.js")
+            js_module=static_lazy("myapp/extensions/custom-extension.js")
         ),
 
         # Blue bold extension with a direct processor
         "blueBold": create_simple_processor(
             tags=["strong"],
             attributes={"strong": ["style", "class"]},
-            js_module=static("myapp/extensions/blue-bold.js")
+            js_module=static_lazy("myapp/extensions/blue-bold.js")
         ),
 
         # Extension with a processor imported from a Python path
@@ -384,7 +384,7 @@ The processor function is the core of custom extensions. It determines what HTML
         Returns:
             Dictionary with "tags", "attributes", and optionally "js_module" keys
         """
-        from django.templatetags.static import static
+        from js_asset import static_lazy
 
         # Default allowlist
         allowlist = {
@@ -394,7 +394,7 @@ The processor function is the core of custom extensions. It determines what HTML
                 "span": ["class"],
             },
             # JavaScript module URL
-            "js_module": static("myapp/extensions/complex-extension.js")
+            "js_module": static_lazy("myapp/extensions/complex-extension.js")
         }
 
         # Example: Modify allowlist based on configuration
@@ -415,13 +415,14 @@ The processor function is the core of custom extensions. It determines what HTML
     }
 
     # For simple cases, you can use the built-in create_simple_processor function
+    from js_asset import static_lazy
     from django_prose_editor.config import create_simple_processor
 
     DJANGO_PROSE_EDITOR_EXTENSIONS = {
         "simpleExtension": create_simple_processor(
             tags=["div", "span"],
             attributes={"div": ["class"], "span": ["class"]},
-            js_module=static("myapp/extensions/simple-extension.js")
+            js_module=static_lazy("myapp/extensions/simple-extension.js")
         )
     }
 
