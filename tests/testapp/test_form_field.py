@@ -62,6 +62,20 @@ class ProseEditorFormFieldTest(TestCase):
         self.assertTrue(form.is_valid())
         self.assertEqual(form.cleaned_data, {"content": "Hello"})
 
+    def test_form_field_extensions(self):
+        class Form(forms.Form):
+            content = ProseEditorFormField(extensions={"Bold": True})
+
+        form = Form({"content": "<strong>Hello</strong> <em>World</em>"})
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data, {"content": "<strong>Hello</strong> World"})
+
+        print(form.fields["content"].config)
+        print(form.fields["content"].preset)
+
+        self.assertIn("Bold", form.fields["content"].config["extensions"])
+        self.assertEqual(form.fields["content"].preset, "configurable")
+
 
 class FormWithProseEditorField(forms.Form):
     """A form using ProseEditorFormField with different widget configurations."""
