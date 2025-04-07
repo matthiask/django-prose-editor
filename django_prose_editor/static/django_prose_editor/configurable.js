@@ -228,8 +228,8 @@ function createEditor(textarea) {
   // Track this pending initialization
   pendingEditors.set(textarea, editorPromise)
 
-  // Return null since we're handling initialization asynchronously
-  return null
+  // Return the promise
+  return editorPromise
 }
 
 // Allow other components to get the editor promise
