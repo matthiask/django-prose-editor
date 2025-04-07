@@ -30,8 +30,6 @@ class ConfigurableProseEditorField(ProseEditorField):
     """
 
     def __init__(self, *args, **kwargs):
-        self.preset = kwargs.pop("preset", "configurable")
-
         extensions = kwargs.pop(
             "extensions",
             {
@@ -50,9 +48,8 @@ class ConfigurableProseEditorField(ProseEditorField):
             },
         )
 
-        self.extensions = expand_extensions(extensions)
-
-        extension_allowlist = extensions_to_allowlist(self.extensions)
+        extensions = expand_extensions(extensions)
+        extension_allowlist = extensions_to_allowlist(extensions)
         js_modules = extension_allowlist.pop("js_modules", set())
 
         # Handle sanitization - default to True for this field
@@ -64,7 +61,7 @@ class ConfigurableProseEditorField(ProseEditorField):
             # Pass through the sanitize value (False or custom function)
             kwargs["sanitize"] = sanitize
 
-        kwargs["config"] = self.extensions | {"_js_modules": list(js_modules)}
+        kwargs["config"] = extensions | {"_js_modules": list(js_modules)}
         kwargs.setdefault("preset", "configurable")
         super().__init__(*args, **kwargs)
 
