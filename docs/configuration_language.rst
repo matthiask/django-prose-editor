@@ -129,12 +129,12 @@ You can also access the generated sanitization rules directly:
 
 .. code-block:: python
 
-    from django_prose_editor.config import extensions_to_allowlist
+    from django_prose_editor.config import allowlist_from_extensions
 
     # Note! This is subject to change, because right now, the allowlist
     # not only contains data for the sanitizer but could also contain
     # JavaScript modules which should be loaded. That's a bit ugly.
-    allowlist = extensions_to_allowlist(extensions={"Bold": True, "Link": True})
+    allowlist = allowlist_from_extensions(extensions={"Bold": True, "Link": True})
     # Returns {"tags": ["strong", "a"], "attributes": {"a": ["href"]}}
 
 Creating Custom Sanitizers

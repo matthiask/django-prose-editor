@@ -8,8 +8,8 @@ from django.utils.html import strip_tags
 from django.utils.text import Truncator
 
 from django_prose_editor.config import (
+    allowlist_from_extensions,
     expand_extensions,
-    extensions_to_allowlist,
 )
 from django_prose_editor.widgets import AdminProseEditorWidget, ProseEditorWidget
 
@@ -40,7 +40,7 @@ def create_sanitizer(extensions):
             "Install django-prose-editor[sanitize] or pip install nh3"
         )
 
-    nh3_kwargs = extensions_to_allowlist(expand_extensions(extensions))
+    nh3_kwargs = allowlist_from_extensions(expand_extensions(extensions))
     return lambda html: _actually_empty(nh3.clean(html, **nh3_kwargs))
 
 

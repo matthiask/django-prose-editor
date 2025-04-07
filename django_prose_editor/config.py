@@ -5,55 +5,10 @@ This module provides a way to define editor extensions and generate
 corresponding sanitization rules for server-side HTML cleaning.
 """
 
-import warnings
 from typing import Any
 
 from django.conf import settings
 from django.utils.module_loading import import_string
-
-
-# Function to load custom extensions from settings
-def get_custom_extensions():
-    """
-    Load custom extensions from Django settings.
-
-    The DJANGO_PROSE_EDITOR_EXTENSIONS setting should be a list of dictionaries,
-    where each dictionary contains:
-    - 'js': A list of JavaScript assets (required)
-    - 'extensions': A dictionary mapping extension names to processor callables or dotted paths (required)
-
-    This structure allows for extensions that provide multiple related extensions
-    that share the same JavaScript assets. For example, a table extension might
-    provide 'Table', 'TableRow', and 'TableCell' extensions that all use the same JavaScript files.
-
-    Returns:
-        Tuple of (extension_processors, js_assets) where:
-        - extension_processors is a dictionary mapping extension names to processor callables
-        - js_assets is a dictionary mapping extension names to lists of JavaScript assets
-    """
-    extension_processors = {}
-    js_assets = {}
-
-    extensions = getattr(settings, "DJANGO_PROSE_EDITOR_EXTENSIONS", [])
-
-    # Process each extension group
-    for extension_group in extensions:
-        js = extension_group.get("js", [])
-        extensions_dict = extension_group.get("extensions", {})
-
-        # Add all extension processors to the global map
-        for extension_name, processor in extensions_dict.items():
-            extension_processors[extension_name] = processor
-
-            # Associate JavaScript assets with each extension
-            if js:
-                js_assets[extension_name] = list(js)
-
-    return extension_processors, js_assets
-
-
-# Extension processors
-# These functions update a shared sanitization config
 
 
 def add_tags_and_attributes(shared_config, tags, attributes):
@@ -297,7 +252,7 @@ def expand_extensions(extensions: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def get_extension_js_modules(
+def js_from_extensions(
     extensions: dict[str, Any],
 ) -> list[str]:
     """
@@ -307,24 +262,20 @@ def get_extension_js_modules(
         extensions: Dictionary of extension configurations
 
     Returns:
-        Set of JavaScript module paths
+        List of JavaScript module paths
     """
-    expanded = expand_extensions(extensions)
+    expanded = set(expand_extensions(extensions))
     js_modules = set()
 
-    # Get custom extensions and their JS assets
-    _, js_assets_map = get_custom_extensions()
-
-    # Collect JS modules for each enabled extension
-    for extension in expanded:
-        # Add JS assets for this extension if available
-        if extension in js_assets_map:
-            js_modules.update(js_assets_map[extension])
+    extensions = getattr(settings, "DJANGO_PROSE_EDITOR_EXTENSIONS", [])
+    for group in extensions:
+        if (js := group.get("js")) and expanded & group["extensions"].keys():
+            js_modules.update(js)
 
     return list(js_modules)
 
 
-def extensions_to_allowlist(
+def allowlist_from_extensions(
     extensions: dict[str, Any],
 ) -> dict[str, Any]:
     """
@@ -349,55 +300,21 @@ def extensions_to_allowlist(
     expanded = expand_extensions(extensions)
 
     # Initialize the combined configuration with empty sets
-    combined_config = {
+    nh3_config = {
         "tags": set(),
         "attributes": {},
     }
 
-    # Get custom extensions and their JS assets
-    custom_extensions, _ = get_custom_extensions()
+    extensions = getattr(settings, "DJANGO_PROSE_EDITOR_EXTENSIONS", [])
+    processors = EXTENSION_MAPPING.copy()
+    for group in extensions:
+        processors |= group["extensions"]
 
-    # Process each enabled extension
     for extension, config in expanded.items():
-        # Get the processor function
-        processor = None
+        # It's fine to have JavaScript-only extensions
+        if processor := processors.get(extension):
+            if isinstance(processor, str):
+                processors[extension] = import_string(extension)
+            processor(config, nh3_config)
 
-        # Check if it's a built-in extension
-        if extension in EXTENSION_MAPPING:
-            processor = EXTENSION_MAPPING[extension]
-        # Or a custom extension
-        elif extension in custom_extensions:
-            ext_processor = custom_extensions[extension]
-
-            if ext_processor:
-                if isinstance(ext_processor, str):
-                    # Import the processor function from the specified path
-                    try:
-                        processor = import_string(ext_processor)
-                    except (ImportError, AttributeError, ValueError) as e:
-                        warnings.warn(
-                            f"Could not import processor function {ext_processor} for {extension}: {e}",
-                            UserWarning,
-                            stacklevel=2,
-                        )
-                else:
-                    # If it's already a callable, use it directly
-                    processor = ext_processor
-
-        # Skip if we don't have a processor
-        if not processor:
-            continue
-
-        # Call the processor and let it modify the config directly
-        try:
-            processor(config, combined_config)
-        except Exception as e:
-            warnings.warn(
-                f"Error processing {extension}: {e}",
-                UserWarning,
-                stacklevel=2,
-            )
-
-    # Return the combined configuration directly with sets
-    # nh3 accepts sets for tags, attributes, and url_schemes
-    return combined_config
+    return nh3_config
