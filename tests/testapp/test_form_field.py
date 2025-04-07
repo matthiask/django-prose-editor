@@ -54,6 +54,14 @@ class ProseEditorFormFieldTest(TestCase):
         field = ProseEditorFormField(widget=ProseEditorWidget())
         self.assertIsInstance(field.widget, ProseEditorWidget)
 
+    def test_cleaning(self):
+        class Form(forms.Form):
+            content = ProseEditorFormField(sanitize=lambda html: "Hello")
+
+        form = Form({"content": "World"})
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data, {"content": "Hello"})
+
 
 class FormWithProseEditorField(forms.Form):
     """A form using ProseEditorFormField with different widget configurations."""
