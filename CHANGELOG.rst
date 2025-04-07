@@ -4,7 +4,11 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
-- **Potentially backwards incompatible:** The ``ProseEditorField`` now
+- Added a new way of configuring the ``ProseEditorField`` by using the
+  ``extensions`` argument. This allows specifying Tiptap extensions to use and
+  also optionally allows configuring them. nh3 sanitization rules are
+  automatically derived from the extension configuration and sanitization is
+  active by default if using this mechanism.
   automatically uses the new extensions mechanism except if you pass the old
   ``config`` keyword argument.
 - Added support for specifying editor extensions using the
