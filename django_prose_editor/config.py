@@ -191,12 +191,19 @@ EXTENSION_MAPPING = {
             "td": ["rowspan", "colspan"],
         },
     ),
+    "TableRow": html_tags([]),
+    "TableHeader": html_tags([]),
+    "TableCell": html_tags([]),
     # Special extensions (these don't produce HTML elements)
     "History": html_tags([]),
     "HTML": html_tags([]),
     "Typographic": html_tags([]),
     "Document": html_tags([]),
     "Text": html_tags([]),
+    "Dropcursor": html_tags([]),
+    "Gapcursor": html_tags([]),
+    "Menu": html_tags([]),
+    "NoSpellCheck": html_tags([]),
 }
 
 # Automatic dependencies (extensions that require other extensions)
@@ -314,10 +321,9 @@ def allowlist_from_extensions(
         processors |= group["extensions"]
 
     for extension, config in expanded.items():
-        # It's fine to have JavaScript-only extensions
-        if processor := processors.get(extension):
-            if isinstance(processor, str):
-                processors[extension] = import_string(extension)
-            processor(config, nh3_config)
+        processor = processors[extension]
+        if isinstance(processor, str):
+            processors[extension] = import_string(extension)
+        processor(config, nh3_config)
 
     return nh3_config
