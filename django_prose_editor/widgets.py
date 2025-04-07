@@ -1,5 +1,4 @@
 import json
-import warnings
 
 from django import forms
 from django.conf import settings
@@ -68,48 +67,6 @@ class ProseEditorWidget(forms.Textarea):
             ],
         }
 
-    def _convert_extension_names(self, config):
-        """
-        Convert legacy underscore_case extension names to Tiptap extension names.
-        This maintains backward compatibility for older ProseMirror style names.
-        """
-        if not config or "types" not in config or not config["types"]:
-            return config
-
-        pm_to_tiptap = {
-            "bullet_list": "BulletList",
-            "horizontal_rule": "HorizontalRule",
-            "list_item": "ListItem",
-            "ordered_list": "OrderedList",
-            "hard_break": "HardBreak",
-            "strong": "Bold",
-            "em": "Italic",
-            "strikethrough": "Strike",
-            "sub": "Subscript",
-            "sup": "Superscript",
-            "link": "Link",
-        }
-
-        types = []
-        old_types = {}
-
-        for ext_type in config["types"]:
-            if type := pm_to_tiptap.get(ext_type):
-                types.append(type)
-                old_types[ext_type] = type
-            else:
-                types.append(ext_type)
-
-        if old_types:
-            warnings.warn(
-                f"Deprecated extension names were found in the configuration of {self.__class__}: {list(old_types.keys())}. Convert them to their new names: {list(old_types.values())}.",
-                DeprecationWarning,
-                stacklevel=1,
-            )
-
-        config["types"] = types
-        return config
-
     def get_config(self):
         config = self.config or {
             "types": None,
@@ -120,9 +77,9 @@ class ProseEditorWidget(forms.Textarea):
 
         # New-style config with "extensions" key
         if isinstance(config, dict) and "extensions" in config:
-            return config | {"js_modules": js_from_extensions(config["extensions"])}
+            config = config | {"js_modules": js_from_extensions(config["extensions"])}
 
-        return self._convert_extension_names(config)
+        return config
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)

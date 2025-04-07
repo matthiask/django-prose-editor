@@ -40,43 +40,6 @@ function createEditor(textarea, config = null) {
     config = JSON.parse(textarea.getAttribute(marker))
   }
 
-  // Map of deprecated names to their new versions
-  const pmToTiptap = {
-    // Node names
-    "bullet_list": "BulletList",
-    "horizontal_rule": "HorizontalRule",
-    "list_item": "ListItem",
-    "ordered_list": "OrderedList",
-    "hard_break": "HardBreak",
-    // Mark names
-    "strong": "Bold",
-    "em": "Italic",
-    "strikethrough": "Strike",
-    "sub": "Subscript",
-    "sup": "Superscript",
-    "link": "Link",
-  }
-
-  // Check if any deprecated names are being used and log warnings
-  if (config.types?.length) {
-    const oldTypes = []
-    const newTypes = []
-
-    config.types.forEach(type => {
-      if (pmToTiptap[type]) {
-        oldTypes.push(type)
-        newTypes.push(pmToTiptap[type])
-      }
-    })
-
-    if (oldTypes.length) {
-      console.warn(
-        `[django-prose-editor] Deprecated extension names were found in the configuration: ${oldTypes.join(", ")}. ` +
-        `Convert them to their new names: ${newTypes.join(", ")}.`
-      )
-    }
-  }
-
   // Default extension types (table explicitly excluded)
   const DEFAULT_TYPES = [
     "Blockquote", "Bold", "BulletList", "Heading", "HorizontalRule",
