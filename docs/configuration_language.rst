@@ -441,31 +441,6 @@ The event provides an object in the `detail` property with:
 
 This is useful when you need to interact with editors programmatically or initialize other components that depend on the editor being fully loaded.
 
-**Accessing Editor Instances Programmatically**
-
-For more advanced use cases, you can import the `getEditorPromise` function to get a reference to a pending or completed editor initialization:
-
-.. code-block:: javascript
-
-    // In your custom script
-    import { getEditorPromise } from "django-prose-editor/configurable";
-
-    // Get the textarea element
-    const textarea = document.querySelector('#my-editor');
-
-    // Get the promise for this editor's initialization
-    const editorPromise = getEditorPromise(textarea);
-
-    if (editorPromise) {
-        // Wait for the editor to be fully initialized
-        editorPromise.then(editor => {
-            if (editor) {
-                // Do something with the editor instance
-                editor.commands.setContent('<p>New content</p>');
-            }
-        });
-    }
-
 Advanced Customization with Presets
 -----------------------------------
 

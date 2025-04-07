@@ -194,7 +194,7 @@ const pendingEditors = new WeakMap()
 function createEditor(textarea) {
   // Check if we already have a pending initialization for this textarea
   if (pendingEditors.has(textarea)) {
-    return null
+    return pendingEditors.get(textarea)
   }
 
   // Create a promise for the editor initialization
@@ -229,18 +229,10 @@ function createEditor(textarea) {
   return editorPromise
 }
 
-// Allow other components to get the editor promise
-function getEditorPromise(textarea) {
-  return pendingEditors.get(textarea) || null
-}
-
 // Initialize all editors with the configurable marker
 initializeEditors((textarea) => {
   return createEditor(textarea)
 }, `[${marker}]`)
 
 // Export utility functions for external use
-export {
-  createEditor,
-  getEditorPromise
-}
+export { createEditor }
