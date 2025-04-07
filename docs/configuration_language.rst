@@ -131,6 +131,9 @@ You can also access the generated sanitization rules directly:
 
     from django_prose_editor.config import extensions_to_allowlist
 
+    # Note! This is subject to change, because right now, the allowlist
+    # not only contains data for the sanitizer but could also contain
+    # JavaScript modules which should be loaded. That's a bit ugly.
     allowlist = extensions_to_allowlist(extensions={"Bold": True, "Link": True})
     # Returns {"tags": ["strong", "a"], "attributes": {"a": ["href"]}}
 
@@ -355,7 +358,7 @@ The processor function is the core of custom extensions. It determines what HTML
     ]
 
 Working Principles
-^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 
 This configuration system bridges the gap between front-end capabilities and server-side sanitization by:
 
@@ -365,7 +368,7 @@ This configuration system bridges the gap between front-end capabilities and ser
 4. Providing processor functions for complex configurations
 
 Common Extension Configurations
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Django Prose Editor provides special configuration options for common extensions:
 
@@ -389,7 +392,7 @@ and the sanitized output.
 For those who need more control, you can still use the lower-level configuration options or create custom presets as described in the main documentation.
 
 JavaScript Events
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 The configurable editor fires custom events that you can listen for in your frontend code:
 

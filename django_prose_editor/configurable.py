@@ -30,9 +30,11 @@ class ConfigurableProseEditorField(ProseEditorField):
     """
 
     def __init__(self, *args, **kwargs):
-        self.extensions = kwargs.pop("extensions", None)
-        if self.extensions is None:
-            self.extensions = {
+        self.preset = kwargs.pop("preset", "configurable")
+
+        extensions = kwargs.pop(
+            "extensions",
+            {
                 "Blockquote": True,
                 "Bold": True,
                 "BulletList": True,
@@ -45,16 +47,12 @@ class ConfigurableProseEditorField(ProseEditorField):
                 "Subscript": True,
                 "Superscript": True,
                 "Underline": True,
-            }
+            },
+        )
 
-        # Get the preset for JavaScript implementation
-        self.preset = kwargs.pop("preset", "configurable")
+        self.extensions = expand_extensions(extensions)
 
-        # Expand extensions to include all dependencies
-        expanded_extensions = expand_extensions(self.extensions)
-
-        # Get the full allowlist including JavaScript modules
-        extension_allowlist = extensions_to_allowlist(expanded_extensions)
+        extension_allowlist = extensions_to_allowlist(self.extensions)
         js_modules = extension_allowlist.pop("js_modules", set())
 
         # Handle sanitization - default to True for this field
@@ -66,32 +64,18 @@ class ConfigurableProseEditorField(ProseEditorField):
             # Pass through the sanitize value (False or custom function)
             kwargs["sanitize"] = sanitize
 
-        # Add JavaScript modules to the expanded extensions
-        if js_modules:
-            expanded_extensions["_js_modules"] = list(js_modules)
-
-        # Use config parameter for the expanded extensions
-        kwargs["config"] = expanded_extensions
-
-        # Set the preset
-        kwargs["preset"] = self.preset
-
+        kwargs["config"] = self.extensions | {"_js_modules": list(js_modules)}
+        kwargs.setdefault("preset", "configurable")
         super().__init__(*args, **kwargs)
 
     def _create_sanitizer(self, nh3_kwargs):
         """Create a sanitizer function based on extension configuration."""
         try:
-            import nh3  # noqa: F401
+            import nh3
         except ImportError:
             raise ImportError(
                 "You need to install nh3 to use automatic sanitization. "
                 "Install django-prose-editor[sanitize] or pip install nh3"
             )
-
-        # Create and return the sanitizer function
-        def sanitize_html(html):
-            import nh3
-
-            return _actually_empty(nh3.clean(html, **nh3_kwargs))
-
-        return sanitize_html
+        else:
+            return lambda html: _actually_empty(nh3.clean(html, **nh3_kwargs))
