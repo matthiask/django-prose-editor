@@ -48,31 +48,28 @@ class ConfigurableProseEditorField(ProseEditorField):
             },
         )
 
-        extensions = expand_extensions(extensions)
-        extension_allowlist = extensions_to_allowlist(extensions)
-        js_modules = extension_allowlist.pop("js_modules", set())
+        if kwargs.get("sanitize") is True:
+            kwargs["sanitize"] = create_sanitizer(extensions)
 
-        # Handle sanitization - default to True for this field
-        sanitize = kwargs.pop("sanitize", True)
-        if sanitize is True:
-            # If sanitize=True, use our automatic sanitizer based on extensions
-            kwargs["sanitize"] = self._create_sanitizer(extension_allowlist)
-        else:
-            # Pass through the sanitize value (False or custom function)
-            kwargs["sanitize"] = sanitize
+        extensions = expand_extensions(extensions)
+        js_modules = extensions_to_allowlist(extensions).get("js_modules", ())
 
         kwargs["config"] = extensions | {"_js_modules": list(js_modules)}
         kwargs.setdefault("preset", "configurable")
+
         super().__init__(*args, **kwargs)
 
-    def _create_sanitizer(self, nh3_kwargs):
-        """Create a sanitizer function based on extension configuration."""
-        try:
-            import nh3
-        except ImportError:
-            raise ImportError(
-                "You need to install nh3 to use automatic sanitization. "
-                "Install django-prose-editor[sanitize] or pip install nh3"
-            )
-        else:
-            return lambda html: _actually_empty(nh3.clean(html, **nh3_kwargs))
+
+def create_sanitizer(extensions):
+    """Create a sanitizer function based on extension configuration."""
+    try:
+        import nh3
+    except ImportError:
+        raise ImportError(
+            "You need to install nh3 to use automatic sanitization. "
+            "Install django-prose-editor[sanitize] or pip install nh3"
+        )
+
+    nh3_kwargs = extensions_to_allowlist(expand_extensions(extensions))
+    nh3_kwargs.pop("js_modules")
+    return lambda html: _actually_empty(nh3.clean(html, **nh3_kwargs))

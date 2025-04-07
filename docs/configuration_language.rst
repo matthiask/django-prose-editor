@@ -137,6 +137,27 @@ You can also access the generated sanitization rules directly:
     allowlist = extensions_to_allowlist(extensions={"Bold": True, "Link": True})
     # Returns {"tags": ["strong", "a"], "attributes": {"a": ["href"]}}
 
+Creating Custom Sanitizers
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can create a custom sanitizer function from any extension configuration using the `create_sanitizer` utility:
+
+.. code-block:: python
+
+    from django_prose_editor.configurable import create_sanitizer
+
+    # Create a sanitizer function for a specific set of extensions
+    my_sanitizer = create_sanitizer({
+        "Bold": True,
+        "Italic": True,
+        "Link": {"enableTarget": True}
+    })
+
+    # Use the sanitizer in your code
+    sanitized_html = my_sanitizer(unsafe_html)
+
+This is particularly useful when you need a standalone sanitizer that matches your editor configuration without using the entire field.
+
 Extension-to-HTML Mapping
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
