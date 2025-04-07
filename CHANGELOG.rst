@@ -4,6 +4,19 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+- **Potentially backwards incompatible:** The ``ProseEditorField`` now
+  automatically uses the new extensions mechanism except if you pass the old
+  ``config`` keyword argument.
+- Added support for specifying editor extensions using the
+  ``DJANGO_PROSE_EDITOR_EXTENSIONS`` setting, which allows transparently adding
+  JavaScript modules to the editor without having to write your own preset.
+  Writing presets is and will be supported for even more advanced use cases,
+  but the extensions mechanism hopefully covers 99% of all use cases.
+- Switched the JavaScript to use ES modules and importmaps. If you've been
+  using 0.10 you have to update your code to use ES modules (``<script
+  type="module">``) instead of deferred scripts. Sorry for the churn. Also
+  check the import locations, ProseMirror functions have been moved into the
+  ``pm.*`` namespace.
 - Fixed a bug where the link mark wasn't applied correctly. The buggy 0.10.0
   package has been yanked.
 - Applied the ``--prose-editor-background`` and ``--prose-editor-foreground``
@@ -11,12 +24,7 @@ Next version
 - Fixed the django-content-editor support tweak where an empty label would make
   the editor move to the left border.
 - Updated Tiptap.
-- Added Django 5.2a1.
-- Switched the JavaScript to use ES modules and importmaps. If you've been
-  using 0.10 you have to update your code to use ES modules (``<script
-  type="module">``) instead of deferred scripts. Sorry for the churn. Also
-  check the import locations, ProseMirror functions have been moved into the
-  ``pm.*`` namespace.
+- Added Django 5.2.
 - Modified the ``HTML`` extension to prettify the HTML code somewhat.
 - Added a new ``Fullscreen`` extension.
 - Changed the ``updateAttrsDialog`` to insert the dialog element into the
@@ -36,6 +44,8 @@ Next version
 - Disallowed overriding the default editor preset.
 - Hide the menubar when the editor is disabled.
 - Removed min and max width from the ``.prose-editor`` DIV.
+- Added an optional ``sanitize`` argument to the ``ProseEditorFormField`` which
+  allows form-level sanitization of HTML.
 
 
 0.10 (2024-12-17)

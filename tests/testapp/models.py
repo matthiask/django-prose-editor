@@ -1,6 +1,5 @@
 from django.db import models
 
-from django_prose_editor.configurable import ConfigurableProseEditorField
 from django_prose_editor.fields import ProseEditorField
 from django_prose_editor.sanitized import SanitizedProseEditorField
 
@@ -48,7 +47,7 @@ class TableProseEditorModel(models.Model):
 
 
 class ConfigurableProseEditorModel(models.Model):
-    description = ConfigurableProseEditorField(
+    description = ProseEditorField(
         extensions={
             "Bold": True,
             "Italic": True,

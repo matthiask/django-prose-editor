@@ -20,10 +20,10 @@ Example Configuration
 
 .. code-block:: python
 
-    from django_prose_editor.configurable import ConfigurableProseEditorField
+    from django_prose_editor.fields import ProseEditorField
 
     class Article(models.Model):
-        content = ConfigurableProseEditorField(
+        content = ProseEditorField(
             extensions={
                 # Core text formatting
                 "Bold": True,
@@ -62,7 +62,7 @@ The `extensions` parameter allows you to specify exactly which extensions you wa
 .. code-block:: python
 
     # Simple configuration with basic text formatting and links
-    content = ConfigurableProseEditorField(
+    content = ProseEditorField(
         extensions={
             "Bold": True,
             "Italic": True,
@@ -74,7 +74,7 @@ The `extensions` parameter allows you to specify exactly which extensions you wa
     )
 
     # More advanced configuration with specific settings for extensions
-    content = ConfigurableProseEditorField(
+    content = ProseEditorField(
         extensions={
             "Bold": True,
             "Italic": True,
@@ -88,17 +88,17 @@ Server-side Sanitization
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 The configuration automatically generates appropriate sanitization rules for nh3.
-Sanitization is enabled by default for the ConfigurableProseEditorField:
+Sanitization is enabled by default for the ``ProseEditorField``:
 
 .. code-block:: python
 
     # Automatically sanitizes based on extension configuration (sanitize=True is the default)
-    content = ConfigurableProseEditorField(
+    content = ProseEditorField(
         extensions={"Bold": True, "Link": True}
     )
 
     # You can explicitly disable sanitization if needed
-    content = ConfigurableProseEditorField(
+    content = ProseEditorField(
         extensions={"Bold": True, "Link": True},
         sanitize=False
     )
@@ -111,7 +111,7 @@ can restrict URLs to specific protocols:
 
 .. code-block:: python
 
-    content = ConfigurableProseEditorField(
+    content = ProseEditorField(
         extensions={
             "Link": {
                 "protocols": ["http", "https", "mailto"],  # Only allow these protocols
@@ -144,7 +144,7 @@ You can create a custom sanitizer function from any extension configuration usin
 
 .. code-block:: python
 
-    from django_prose_editor.configurable import create_sanitizer
+    from django_prose_editor.fields import create_sanitizer
 
     # Create a sanitizer function for a specific set of extensions
     my_sanitizer = create_sanitizer({
@@ -289,10 +289,10 @@ Then you can use your extension in your models:
 
 .. code-block:: python
 
-    from django_prose_editor.configurable import ConfigurableProseEditorField
+    from django_prose_editor.fields import ProseEditorField
 
     class Article(models.Model):
-        content = ConfigurableProseEditorField(
+        content = ProseEditorField(
             extensions={
                 "Bold": True,
                 "Italic": True,
@@ -399,7 +399,7 @@ You can restrict heading levels to a subset of H1-H6:
 
 .. code-block:: python
 
-    content = ConfigurableProseEditorField(
+    content = ProseEditorField(
         extensions={
             "Heading": {
                 "levels": [1, 2, 3],  # Only allow H1, H2, H3
@@ -465,3 +465,74 @@ For more advanced use cases, you can import the `getEditorPromise` function to g
             }
         });
     }
+
+Advanced Customization with Presets
+-----------------------------------
+
+For more advanced customization, you can create custom presets by
+adding additional assets to load:
+
+.. code-block:: python
+
+    from js_asset import JS
+
+    DJANGO_PROSE_EDITOR_PRESETS = {
+        "announcements": [
+            JS("prose-editors/announcements.js", {"type": "module"}),
+        ],
+    }
+
+The preset can be selected when instantiating the field:
+
+.. code-block:: python
+
+    text = ProseEditorField(_("text"), preset="announcements")
+
+The editor uses ES modules and importmaps; you can import extensions and
+utilities from the `django-prose-editor/editor` module. The importmap support
+is provided by `django-js-asset
+<https://github.com/matthiask/django-js-asset/>`_, check it's README to learn
+more.
+
+Here's the example:
+
+.. code-block:: javascript
+
+    import {
+      // Always recommended:
+      Document, Dropcursor, Gapcursor, Paragraph, HardBreak, Text,
+
+      // Add support for a few marks:
+      Bold, Italic, Subscript, Superscript, Link,
+
+      // A menu is always nice:
+      Menu,
+
+      // Helper which knows how to attach a prose editor to a textarea:
+      createTextareaEditor,
+
+      // Helper which runs the initialization on page load and when
+      // new textareas are added through Django admin inlines:
+      initializeEditors,
+    } from "django-prose-editor/editor"
+
+
+    // "announcements" is the name of the preset.
+    const marker = "data-django-prose-editor-announcements"
+
+    function createEditor(textarea) {
+      if (textarea.closest(".prose-editor")) return
+      const config = JSON.parse(textarea.getAttribute(marker))
+
+      const extensions = [
+        Document, Dropcursor, Gapcursor, Paragraph, HardBreak, Text,
+
+        Bold, Italic, Subscript, Superscript, Link,
+
+        Menu,
+      ]
+
+      return createTextareaEditor(textarea, extensions)
+    }
+
+    initializeEditors(createEditor, `[${marker}]`)

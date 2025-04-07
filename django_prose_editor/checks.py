@@ -1,6 +1,5 @@
-from django.apps import apps
 from django.conf import settings
-from django.core.checks import Error, Info, Warning, register
+from django.core.checks import Error, Warning, register
 
 
 @register()
@@ -144,39 +143,3 @@ def check_custom_extensions_configuration(app_configs, **kwargs):
                 )
 
     return errors
-
-
-@register()
-def check_for_sanitized_prose_editor_field(app_configs, **kwargs):
-    """
-    Check if SanitizedProseEditorField is being used and suggest ConfigurableProseEditorField as an alternative.
-    """
-
-    # Import SanitizedProseEditorField here to avoid circular imports
-    from django_prose_editor.sanitized import SanitizedProseEditorField
-
-    messages = []
-
-    # Get all the models from installed apps
-    if app_configs:
-        app_models = []
-        for app_config in app_configs:
-            app_models.extend(app_config.get_models())
-    else:
-        app_models = apps.get_models()
-
-    # Check each model for SanitizedProseEditorField usage
-    for model in app_models:
-        for field in model._meta.get_fields():
-            if isinstance(field, SanitizedProseEditorField):
-                # Found a SanitizedProseEditorField, add an info message
-                messages.append(
-                    Info(
-                        f"SanitizedProseEditorField is used in {model.__name__}.{field.name}. Consider using ConfigurableProseEditorField instead.",
-                        hint="ConfigurableProseEditorField provides better flexibility and control over extensions and sanitization.",
-                        obj=model,
-                        id="django_prose_editor.I001",
-                    )
-                )
-
-    return messages
