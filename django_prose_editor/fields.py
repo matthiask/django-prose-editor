@@ -1,4 +1,5 @@
 import re
+import warnings
 
 from django import forms
 from django.contrib.admin import widgets
@@ -6,6 +7,10 @@ from django.db import models
 from django.utils.html import strip_tags
 from django.utils.text import Truncator
 
+from django_prose_editor.config import (
+    expand_extensions,
+    extensions_to_allowlist,
+)
 from django_prose_editor.widgets import AdminProseEditorWidget, ProseEditorWidget
 
 
@@ -21,11 +26,91 @@ def _actually_empty(x):
     return x
 
 
+def _identity(x):
+    return x
+
+
+def create_sanitizer(extensions):
+    """Create a sanitizer function based on extension configuration."""
+    try:
+        import nh3
+    except ImportError:
+        raise ImportError(
+            "You need to install nh3 to use automatic sanitization. "
+            "Install django-prose-editor[sanitize] or pip install nh3"
+        )
+
+    nh3_kwargs = extensions_to_allowlist(expand_extensions(extensions))
+    nh3_kwargs.pop("js_modules")
+    return lambda html: _actually_empty(nh3.clean(html, **nh3_kwargs))
+
+
 class ProseEditorField(models.TextField):
+    """
+    The field has two modes: Legacy mode and normal mode. Legacy mode is activated
+    by passing a ``config`` keyword argument. The normal mode is described below.
+
+    A field that uses a unified configuration for both editor extensions and sanitization.
+
+    This field automatically synchronizes the editor capabilities with server-side
+    sanitization rules, ensuring that what users can create in the editor matches
+    what is allowed after sanitization.
+
+    Sanitization is enabled by default and automatically configured based on the
+    extensions you enable, so you don't need to specify HTML allowlists separately.
+
+    Args:
+        extensions: Dictionary mapping extension names to their configuration
+        preset: Optional JavaScript preset name to override the default
+        sanitize: Whether to enable sanitization (defaults to True) or a custom sanitizer function
+    """
+
     def __init__(self, *args, **kwargs):
-        self.sanitize = kwargs.pop("sanitize", _actually_empty)
-        self.config = kwargs.pop("config", {})
-        self.preset = kwargs.pop("preset", "default")
+        if "config" in kwargs:
+            # Legacy mode
+            warnings.warn(
+                "Using the 'config' parameter with ProseEditorField is deprecated and will be "
+                "removed in a future version. Please use the 'extensions' parameter instead, "
+                "which provides more powerful configuration capabilities.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            self.sanitize = kwargs.pop("sanitize", _actually_empty)
+            self.config = kwargs.pop("config", {})
+            self.preset = kwargs.pop("preset", "default")
+
+        else:
+            # Normal mode
+            extensions = kwargs.pop(
+                "extensions",
+                {
+                    "Blockquote": True,
+                    "Bold": True,
+                    "BulletList": True,
+                    "Heading": True,
+                    "HorizontalRule": True,
+                    "Italic": True,
+                    "Link": True,
+                    "OrderedList": True,
+                    "Strike": True,
+                    "Subscript": True,
+                    "Superscript": True,
+                    "Underline": True,
+                },
+            )
+
+            sanitize = kwargs.pop("sanitize", True)
+            if sanitize is True:
+                self.sanitize = create_sanitizer(extensions)
+            else:
+                self.sanitize = sanitize or _actually_empty
+
+            extensions = expand_extensions(extensions)
+            js_modules = extensions_to_allowlist(extensions).get("js_modules", ())
+
+            self.config = extensions | {"_js_modules": list(js_modules)}
+            self.preset = kwargs.pop("preset", "configurable")
+
         super().__init__(*args, **kwargs)
 
     def clean(self, value, instance):
@@ -71,6 +156,7 @@ class ProseEditorFormField(forms.CharField):
         config = kwargs.pop("config", {})
         preset = kwargs.pop("preset", "default")
         widget = kwargs.get("widget")
+        self.sanitize = kwargs.pop("sanitize", _identity)
 
         # We don't know if widget is set, and if it is, we do not know if it is
         # a class or an instance of the widget. The following if statement
@@ -83,3 +169,6 @@ class ProseEditorFormField(forms.CharField):
         super().__init__(*args, **kwargs)
         self.widget.config = config
         self.widget.preset = preset
+
+    def clean(self, value):
+        return self.sanitize(super().clean(value))

@@ -32,3 +32,8 @@ class SanitizedProseEditorModelAdmin(admin.ModelAdmin):
 @admin.register(models.TableProseEditorModel)
 class TableProseEditorModelAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(models.ConfigurableProseEditorModel)
+class ConfigurableProseEditorModelAdmin(admin.ModelAdmin):
+    pass

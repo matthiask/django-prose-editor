@@ -29,8 +29,8 @@ Install the package into your environment:
 
     pip install django-prose-editor
 
-To include nh3 as optional dependency for sanitized HTML, install the extra
-"sanitize":
+To include nh3 as optional (but recommended!) dependency for sanitized HTML,
+install the extra "sanitize":
 
 .. code-block:: shell
 
@@ -68,10 +68,40 @@ Security
 ProseMirror does a really good job of only allowing content which conforms to a
 particular scheme. Of course users can submit what they want, they are not
 constrainted by the HTML widgets you're using. You should still always sanitize
-the HTML submitted on the server side. A good way to do this is by using the
-``sanitize`` argument to the ``ProseEditorField``. You can use the following
-snippet to always pass HTML through `nh3
-<https://nh3.readthedocs.io/en/latest/>`__:
+the HTML submitted on the server side.
+
+Using Configurable Sanitization (Recommended)
+---------------------------------------------
+
+The recommended approach is to use the extensions mechanism for configuring the
+prose editor field which automatically synchronizes editor extensions with
+sanitization rules:
+
+.. code-block:: python
+
+    from django_prose_editor.fields import ProseEditorField
+
+    content = ProseEditorField(
+        extensions={
+            "Bold": True,
+            "Italic": True,
+            "BulletList": True,
+            "Link": True,
+        },
+        # sanitize=True is the default when using extensions
+    )
+
+This ensures that the HTML sanitization rules exactly match what the editor
+allows, preventing inconsistencies between editing capabilities and allowed
+output. Note that you need the nh3 library for this which is automatically
+installed when you specify the requirement as
+``django-prose-editor[sanitize]``.
+
+Old Approach
+------------
+
+For backward compatibility, you can still use the legacy
+``SanitizedProseEditorField``, although this approach is now discouraged:
 
 .. code-block:: python
 
@@ -79,8 +109,11 @@ snippet to always pass HTML through `nh3
 
     description = SanitizedProseEditorField()
 
-Install django-prose-editor with the extra "sanitize" to use
-``SanitizedProseEditorField``.
+You should be aware that this uses the default configuration of the nh3
+sanitizer which does prevent XSS but allows many HTML elements and attributes.
+
+I'd be interested to know why the extensions mechanism isn't sufficient for
+your requirements.
 
 Convenience
 ===========
@@ -95,14 +128,69 @@ above.
 Customization
 =============
 
-The editor can be customized in two ways: by using the config parameter to
-include/exclude specific extensions, or by creating custom presets.
+The editor can be customized in several ways:
 
-Simple Customization with Config
---------------------------------
+1. Using the new extensions mechanism with ``ProseEditorField`` (recommended).
+   For the new configuration language, see the :doc:`configuration_language`
+   documentation.
+2. Using the ``config`` parameter to include/exclude specific extensions
+   (legacy approach)
+3. Creating custom presets for more advanced customization
+
+Note that the ``ProseEditorField`` automatically uses the extension mechanism
+except if you initialize it with the legacy ``config`` dictionary.
+
+
+Simple customization with extensions
+------------------------------------
+
+.. code-block:: python
+
+    from django_prose_editor.fields import ProseEditorField
+
+    class Article(models.Model):
+        content = ProseEditorField(
+            extensions={
+                "HardBreak": True,
+                "Bold": True,
+                "Italic": True,
+                "BulletList": True,
+                "OrderedList": True,
+                "HorizontalRule": True,
+                "Link": True,
+                "Table": True,
+                "History": True,
+                "HTML": True,  # Enable HTML editing
+                "Typographic": True,  # Highlight typographic characters
+            },
+            # sanitize=True,  # It's the default.
+        )
+
+Some extensions also support additional configuration, for example:
+
+.. code-block:: python
+
+    extensions={
+        # ...
+        "Link": {"enableTarget": False},  # Disable the 'open in new window' checkbox
+        "Heading": {"levels": [1, 2, 3]},  # Offer a subset of H1-H6
+        # ...
+    }
+
+Available extension types include:
+
+* Text formatting: ``Bold``, ``Italic``, ``Strike``, ``Subscript``, ``Superscript``, ``Underline`` (all enabled by default)
+* Lists: ``BulletList``, ``OrderedList``, ``ListItem`` (enabled by default)
+* Structure: ``Blockquote``, ``Heading``, ``HorizontalRule`` (enabled by default)
+* Links: ``Link`` (enabled by default)
+* Tables: ``Table``, ``TableRow``, ``TableHeader``, ``TableCell`` (opt-in only, not enabled by default)
+
+
+Simple Customization with Config (Legacy)
+-----------------------------------------
 
 For basic customization, you can use the ``config`` parameter to specify which
-extensions should be enabled:
+extensions should be enabled (this is the legacy approach):
 
 .. code-block:: python
 
@@ -112,14 +200,14 @@ extensions should be enabled:
         content = ProseEditorField(
             config={
                 "types": [
-                    "bold",
-                    "italic",
-                    "strike",
-                    "bulletList",
-                    "orderedList",
-                    "horizontalRule",
-                    "link",
-                    "table",  # Enables full table support
+                    "Bold",
+                    "Italic",
+                    "Strike",
+                    "BulletList",
+                    "OrderedList",
+                    "HorizontalRule",
+                    "Link",
+                    "Table",  # Enables full table support
                 ],
                 "history": True,
                 "html": True,
@@ -127,94 +215,14 @@ extensions should be enabled:
             }
         )
 
-Extension names use camelCase format (e.g., ``bold``, ``italic``,
-``bulletList``, ``horizontalRule``), following the naming convention used by
-Tiptap. The following legacy names are still supported for backward
-compatibility, but are deprecated:
+All extension names now use the Tiptap names (e.g., ``Bold``, ``Italic``,
+``BulletList``, ``HorizontalRule``). For backward compatibility, the following legacy
+ProseMirror-style names are still supported but are deprecated:
 
-* ProseMirror node names: ``bullet_list`` → ``bulletList``, ``ordered_list`` →
-  ``orderedList``, ``horizontal_rule`` → ``horizontalRule``
-* ProseMirror mark names: ``strong`` → ``bold``, ``em`` → ``italic``,
-  ``strikethrough`` → ``strike``
-
-Available extension types include:
-
-* Text formatting: ``bold``, ``italic``, ``strike``, ``subscript``, ``superscript``, ``underline`` (all enabled by default)
-* Lists: ``bulletList``, ``orderedList`` (enabled by default)
-* Structure: ``blockquote``, ``heading``, ``horizontalRule`` (enabled by default)
-* Links: ``link`` (enabled by default)
-* Tables: ``table`` (opt-in only, not enabled by default)
-
-Advanced Customization with Presets
------------------------------------
-
-For more advanced customization, you can create custom presets by adding
-additional assets to load:
-
-.. code-block:: python
-
-    from js_asset import JS
-
-    DJANGO_PROSE_EDITOR_PRESETS = {
-        "announcements": [
-            JS("prose-editors/announcements.js", {"type": "module"}),
-        ],
-    }
-
-The preset can be selected when instantiating the field:
-
-.. code-block:: python
-
-    text = ProseEditorField(_("text"), preset="announcements")
-
-The editor uses ES modules and importmaps; you can import extensions and
-utilities from the `django-prose-editor/editor` module. The importmap support
-is provided by `django-js-asset
-<https://github.com/matthiask/django-js-asset/>`_, check it's README to learn
-more.
-
-Here's the example:
-
-.. code-block:: javascript
-
-    import {
-      // Always recommended:
-      Document, Dropcursor, Gapcursor, Paragraph, HardBreak, Text,
-
-      // Add support for a few marks:
-      Bold, Italic, Subscript, Superscript, Link,
-
-      // A menu is always nice:
-      Menu,
-
-      // Helper which knows how to attach a prose editor to a textarea:
-      createTextareaEditor,
-
-      // Helper which runs the initialization on page load and when
-      // new textareas are added through Django admin inlines:
-      initializeEditors,
-    } from "django-prose-editor/editor"
-
-
-    // "announcements" is the name of the preset.
-    const marker = "data-django-prose-editor-announcements"
-
-    function createEditor(textarea) {
-      if (textarea.closest(".prose-editor")) return
-      const config = JSON.parse(textarea.getAttribute(marker))
-
-      const extensions = [
-        Document, Dropcursor, Gapcursor, Paragraph, HardBreak, Text,
-
-        Bold, Italic, Subscript, Superscript, Link,
-
-        Menu,
-      ]
-
-      return createTextareaEditor(textarea, extensions)
-    }
-
-    initializeEditors(createEditor, `[${marker}]`)
+* Legacy node names: ``bullet_list`` → ``BulletList``, ``ordered_list`` →
+  ``OrderedList``, ``horizontal_rule`` → ``HorizontalRule``
+* Legacy mark names: ``strong`` → ``Bold``, ``em`` → ``Italic``,
+  ``strikethrough`` → ``Strike``, ``sub`` → ``Subscript``, ``sup`` → ``Superscript``
 
 
 Customization with JavaScript bundlers
@@ -261,8 +269,10 @@ If you're rendering the form in a template you have to include the form media:
 .. code-block:: html+django
 
     <form method="post">
-      {{ form.errors }} {# Always makes sense #}
+      {% csrf_token %}
       {{ form.media }}  {# This is the important line! #}
+
+      {{ form.errors }} {# Always makes sense #}
       {{ form.as_div }}
       <button type="submit">send</button>
     </form>

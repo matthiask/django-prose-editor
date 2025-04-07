@@ -43,17 +43,17 @@ function createEditor(textarea, config = null) {
   // Map of deprecated names to their new versions
   const pmToTiptap = {
     // Node names
-    "bullet_list": "bulletList",
-    "horizontal_rule": "horizontalRule",
-    "list_item": "listItem",
-    "ordered_list": "orderedList",
-    "hard_break": "hardBreak",
+    "bullet_list": "BulletList",
+    "horizontal_rule": "HorizontalRule",
+    "list_item": "ListItem",
+    "ordered_list": "OrderedList",
+    "hard_break": "HardBreak",
     // Mark names
-    "strong": "bold",
-    "em": "italic",
-    "strikethrough": "strike",
-    "sub": "subscript",
-    "sup": "superscript"
+    "strong": "Bold",
+    "em": "Italic",
+    "strikethrough": "Strike",
+    "sub": "Subscript",
+    "sup": "Superscript"
   }
 
   // Check if any deprecated names are being used and log warnings
@@ -78,9 +78,9 @@ function createEditor(textarea, config = null) {
 
   // Default extension types (table explicitly excluded)
   const DEFAULT_TYPES = [
-    "blockquote", "bold", "bulletList", "heading", "horizontalRule",
-    "italic", "link", "orderedList", "strike", "subscript",
-    "superscript", "underline"
+    "Blockquote", "Bold", "BulletList", "Heading", "HorizontalRule",
+    "Italic", "Link", "OrderedList", "Strike", "Subscript",
+    "Superscript", "Underline"
   ]
 
   const createIsTypeEnabled = (enabledTypes) => (...types) => {
@@ -103,28 +103,33 @@ function createEditor(textarea, config = null) {
     NoSpellCheck,
     config.typographic && Typographic,
     // Nodes and marks
-    isTypeEnabled("blockquote") && Blockquote,
-    isTypeEnabled("bold", "strong") && Bold,
-    isTypeEnabled("bulletList", "bullet_list") && BulletList,
-    isTypeEnabled("heading") &&
+    isTypeEnabled("Blockquote") && Blockquote,
+    isTypeEnabled("Bold", "strong") && Bold,
+    isTypeEnabled("BulletList", "bullet_list") && BulletList,
+    isTypeEnabled("Heading") &&
       Heading.configure({ levels: config.headingLevels || [1, 2, 3, 4, 5] }),
-    isTypeEnabled("horizontalRule", "horizontal_rule") && HorizontalRule,
-    isTypeEnabled("italic", "em") && Italic,
-    isTypeEnabled("link") && Link,
-    isTypeEnabled("bulletList", "bullet_list", "orderedList", "ordered_list") && ListItem,
-    isTypeEnabled("orderedList", "ordered_list") && OrderedList,
-    isTypeEnabled("strike", "strikethrough") && Strike,
-    isTypeEnabled("subscript", "sub") && Subscript,
-    isTypeEnabled("superscript", "sup") && Superscript,
-    isTypeEnabled("underline") && Underline,
+    isTypeEnabled("HorizontalRule", "horizontal_rule") && HorizontalRule,
+    isTypeEnabled("Italic", "em") && Italic,
+    isTypeEnabled("Link") && Link,
+    isTypeEnabled("BulletList", "bullet_list", "OrderedList", "ordered_list") && ListItem,
+    isTypeEnabled("OrderedList", "ordered_list") && OrderedList,
+    isTypeEnabled("Strike", "strikethrough") && Strike,
+    isTypeEnabled("Subscript", "sub") && Subscript,
+    isTypeEnabled("Superscript", "sup") && Superscript,
+    isTypeEnabled("Underline") && Underline,
     // Table support
-    isTypeEnabled("table") && Table,
-    isTypeEnabled("table") && TableRow,
-    isTypeEnabled("table") && TableHeader,
-    isTypeEnabled("table") && TableCell,
+    isTypeEnabled("Table") && Table,
+    isTypeEnabled("Table") && TableRow,
+    isTypeEnabled("Table") && TableHeader,
+    isTypeEnabled("Table") && TableCell,
   ].filter(Boolean)
 
-  return createTextareaEditor(textarea, extensions)
+  const editor = createTextareaEditor(textarea, extensions)
+  const event = new CustomEvent("prose-editor:ready", {
+    detail: { editor, textarea },
+    bubbles: true,
+  })
+  return editor
 }
 
 initializeEditors((textarea) => {
