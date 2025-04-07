@@ -18,7 +18,8 @@ The configuration system uses a declarative format that defines:
 Example Configuration
 ---------------------
 
-The `extensions` parameter allows you to specify exactly which extensions you want to enable in your editor:
+The ``extensions`` parameter allows you to specify exactly which extensions you
+want to enable in your editor:
 
 .. code-block:: python
 
@@ -403,8 +404,8 @@ This is useful when you need to interact with editors programmatically or initia
 Advanced Customization with Presets
 -----------------------------------
 
-For more advanced customization, you can create custom presets by
-adding additional assets to load:
+For even more advanced customization, you can create custom presets by adding
+additional assets to load:
 
 .. code-block:: python
 

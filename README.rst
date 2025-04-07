@@ -27,14 +27,10 @@ Install the package into your environment:
 
 .. code-block:: shell
 
-    pip install django-prose-editor
-
-To include nh3 as optional (but recommended!) dependency for sanitized HTML,
-install the extra "sanitize":
-
-.. code-block:: shell
-
     pip install django-prose-editor[sanitize]
+
+The ``sanitize`` extra automatically installs nh3 for the recommended HTML
+sanitization. You can omit this if you want to use a different HTML sanitizer.
 
 Add ``django_prose_editor`` to ``INSTALLED_APPS``:
 
@@ -56,7 +52,7 @@ Replace ``models.TextField`` with ``ProseEditorField`` where appropriate:
     from django_prose_editor.fields import ProseEditorField
 
     class Project(models.Model):
-        description = ProseEditorField()
+        description = ProseEditorField(extensions={"Bold": True, "Italic": True})
 
 Note! No migrations will be generated when switching from and to
 ``models.TextField``. That's by design. Those migrations are mostly annoying.
@@ -67,11 +63,8 @@ Configuration
 
 ProseMirror does a really good job of only allowing content which conforms to a
 particular scheme. Of course users can submit what they want, they are not
-constrainted by the HTML widgets you're using. You should still always sanitize
-the HTML submitted on the server side.
-
-Using Configurable Sanitization (Recommended)
----------------------------------------------
+constrainted by the HTML widgets you're using. You should always sanitize the
+HTML submitted on the server side.
 
 The recommended approach is to use the extensions mechanism for configuring the
 prose editor field which automatically synchronizes editor extensions with
@@ -101,7 +94,9 @@ Old Approach
 ------------
 
 For backward compatibility, you can still use the legacy
-``SanitizedProseEditorField``, although this approach is now discouraged:
+``SanitizedProseEditorField``, although this approach is now discouraged since
+it uses the default configuration of the nh3 sanitizer which is safe but allows
+many many HTML tags and attributes:
 
 .. code-block:: python
 
@@ -109,11 +104,8 @@ For backward compatibility, you can still use the legacy
 
     description = SanitizedProseEditorField()
 
-You should be aware that this uses the default configuration of the nh3
-sanitizer which does prevent XSS but allows many HTML elements and attributes.
-
-I'd be interested to know why the extensions mechanism isn't sufficient for
-your requirements.
+Alternatively, you can pass your own callable receiving and returning HTML
+using the ``sanitize`` keyword argument.
 
 Convenience
 ===========
@@ -131,8 +123,6 @@ Customization
 The editor can be customized in several ways:
 
 1. Using the new extensions mechanism with ``ProseEditorField`` (recommended).
-   For the new configuration language, see the ``configuration_language.rst``
-   documentation.
 2. Using the ``config`` parameter to include/exclude specific extensions
    (legacy approach)
 3. Creating custom presets for more advanced customization
@@ -174,23 +164,37 @@ Some extensions also support additional configuration, for example:
         # ...
         "Link": {"enableTarget": False},  # Disable the 'open in new window' checkbox
         "Heading": {"levels": [1, 2, 3]},  # Offer a subset of H1-H6
+        "OrderedList": {"enableListAttributes": False},  # Disable the start/type dialog
         # ...
     }
 
-Available extension types include:
+Available extensions include:
 
-* Text formatting: ``Bold``, ``Italic``, ``Strike``, ``Subscript``, ``Superscript``, ``Underline`` (all enabled by default)
-* Lists: ``BulletList``, ``OrderedList``, ``ListItem`` (enabled by default)
-* Structure: ``Blockquote``, ``Heading``, ``HorizontalRule`` (enabled by default)
-* Links: ``Link`` (enabled by default)
-* Tables: ``Table``, ``TableRow``, ``TableHeader``, ``TableCell`` (opt-in only, not enabled by default)
+* Text formatting: ``Bold``, ``Italic``, ``Strike``, ``Subscript``, ``Superscript``, ``Underline``
+* Lists: ``BulletList``, ``OrderedList``, ``ListItem``
+* Structure: ``Blockquote``, ``Heading``, ``HorizontalRule``
+* Links: ``Link``
+* Tables: ``Table``, ``TableRow``, ``TableHeader``, ``TableCell``
+
+Check the source code for more!
+
+The extensions which are enabled by default are ``Document``, ``Paragraph`` and
+``Text`` for the document, ``Menu``, ``History``, ``Dropcursor`` and
+``Gapcursor`` for the editor functionality and ``NoSpellCheck`` to avoid ugly
+spell checker interference. You may disable some of these core extensions e.g.
+by adding ``"History": False`` to the extensions dict.
+
+For additional details, check the ``docs/configuration_language.rst`` document.
 
 
-Simple Customization with Config (Legacy)
------------------------------------------
+Simple Customization with Config (Deprecated)
+---------------------------------------------
 
 For basic customization, you can use the ``config`` parameter to specify which
-extensions should be enabled (this is the legacy approach):
+extensions should be enabled. This was the only available way to configure the
+prose editor up to version 0.9. It's now deprecated because using the
+``extensions`` mechanism documented above is much more powerful, integrated and
+secure.
 
 .. code-block:: python
 
@@ -200,14 +204,8 @@ extensions should be enabled (this is the legacy approach):
         content = ProseEditorField(
             config={
                 "types": [
-                    "Bold",
-                    "Italic",
-                    "Strike",
-                    "BulletList",
-                    "OrderedList",
-                    "HorizontalRule",
-                    "Link",
-                    "Table",  # Enables full table support
+                    "Bold", "Italic", "Strike", "BulletList", "OrderedList",
+                    "HorizontalRule", "Link",
                 ],
                 "history": True,
                 "html": True,
@@ -226,13 +224,13 @@ ProseMirror-style names are still supported:
   ``link`` → ``Link``
 
 
-Customization with JavaScript bundlers
-======================================
+Usage with JavaScript bundlers
+==============================
 
 If you're using a bundler such as esbuild, rspack or webpack you have to ensure
-that the django-prose-editor JavaScript library is treated as an external. In
-the case of rspack this means adding the following lines to your rspack
-configuration:
+that the django-prose-editor JavaScript library is treated as an external and
+not bundled into a centeral JavaScript file. In the case of rspack this means
+adding the following lines to your rspack configuration:
 
 .. code-block:: javascript
 
@@ -241,12 +239,13 @@ configuration:
         experiments: { outputModule: true },
         externals: {
             "django-prose-editor/editor": "module django-prose-editor/editor",
+            "django-prose-editor/configurable": "module django-prose-editor/configurable",
         },
     }
 
 This makes rspack emit ES modules and preserves imports of
-``django-prose-editor/editor`` in the output instead of trying to bundle the
-library.
+``django-prose-editor/editor`` and similar in the output instead of trying to
+bundle the library.
 
 
 Usage outside the Django admin
@@ -337,28 +336,9 @@ into the repository.
 Browser Testing with Playwright
 -------------------------------
 
-This project uses Playwright for browser-based testing of the prose editor.
-
-To run the browser tests:
-
-1. Install the dependencies:
-
-   .. code-block:: shell
-
-       pip install -e ".[tests]"
-       playwright install
-
-2. Run the tests using tox:
-
-   .. code-block:: shell
-
-       tox -e playwright
-
-   Or directly with pytest:
-
-   .. code-block:: shell
-
-       pytest tests/testapp/test_prose_editor_e2e.py -v --browser chromium
+This project uses tox to describe environments and Playwright for browser-based
+testing of the prose editor. Browser tests are run as a part of the normal tests
+so just use tox as you normally would.
 
 Code Style and Linting
 ----------------------
