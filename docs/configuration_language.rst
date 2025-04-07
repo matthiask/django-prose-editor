@@ -401,6 +401,96 @@ The event provides an object in the `detail` property with:
 
 This is useful when you need to interact with editors programmatically or initialize other components that depend on the editor being fully loaded.
 
+Menu Customization
+-----------------
+
+Django Prose Editor provides a flexible menu system that can be extended by custom extensions. The menu is organized into groups, and each extension can register its own menu items and groups.
+
+**Global Menu Configuration**
+
+You can configure the menu behavior globally:
+
+.. code-block:: python
+
+    content = ProseEditorField(
+        menu={
+            # Configure default menu behavior
+            "menuItemsFromExtensions": True,  # Enable extension menu items (default: True)
+            # Define custom group order (optional)
+            "groupOrder": ["blockType", "marks", "myCustomGroup", "utility"],
+        },
+        extensions={
+            # Your extensions here...
+        }
+    )
+
+**Adding Menu Items in Python Configuration**
+
+Menu items can be configured at the Python level for custom extensions:
+
+.. code-block:: python
+
+    content = ProseEditorField(
+        extensions={
+            "MyCustomExtension": {
+                # Extension-specific configuration
+                "some_option": True,
+
+                # Menu items configuration - this will be passed to extension.storage.menuItems
+                "menuItems": {
+                    "group": "myCustomGroup",  # Group name for the menu items
+                    "options": {
+                        "index": 3  # Optional position in the menu order
+                    },
+                    "items": [
+                        {
+                            "title": "My Button",  # Button title for display
+                            "icon": "edit",        # Material icon name
+                            "command": "myCustomCommand"  # Command to execute
+                        }
+                    ]
+                }
+            }
+        }
+    )
+
+**Implementing Menu Items in Custom Extensions**
+
+Custom extensions can register menu items using extension storage:
+
+.. code-block:: javascript
+
+    // Example custom extension with menu items
+    import { Extension } from 'django-prose-editor/editor'
+    import { materialButton } from 'django-prose-editor/menu-utils'
+
+    export const MyExtension = Extension.create({
+      name: 'myExtension',
+
+      // Set menu items in storage after extension is created
+      onCreate() {
+        // Initialize storage if needed
+        this.storage = this.storage || {}
+
+        this.storage.menuItems = {
+          group: 'myCustomGroup',  // Group name for the menu items
+          options: {
+            index: 3  // Optional position in menu order
+          },
+          items: [
+            {
+              command: (editor) => {
+                editor.chain().focus().myCommand().run()
+              },
+              dom: materialButton('my_icon', 'My Command'),
+              active: (editor) => editor.isActive('myExtension'),
+              enabled: (editor) => editor.can().myCommand()
+            }
+          ]
+        }
+      }
+    })
+
 Advanced Customization with Presets
 -----------------------------------
 

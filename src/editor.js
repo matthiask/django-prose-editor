@@ -59,7 +59,18 @@ export { Figure, Caption } from "./figure.js"
 
 import { crel } from "./utils.js"
 
-export function createTextareaEditor(textarea, extensions) {
+/**
+ * Create an editor instance from a textarea element
+ * @param {HTMLElement} textarea - The textarea to replace with an editor
+ * @param {Array} extensions - The extensions to use in the editor
+ * @param {Object} extensionStorage - Optional storage for extensions
+ * @returns {Editor} - The editor instance
+ */
+export function createTextareaEditor(
+  textarea,
+  extensions,
+  extensionStorage = {},
+) {
   const disabled = textarea.hasAttribute("disabled")
 
   const element = crel("div", {
@@ -73,6 +84,8 @@ export function createTextareaEditor(textarea, extensions) {
     editable: !disabled,
     extensions,
     content: textarea.value,
+    // Add extension storage to the editor
+    extensionStorage,
     onUpdate({ editor }) {
       textarea.value = editor.getHTML()
       textarea.dispatchEvent(new Event("input", { bubbles: true }))

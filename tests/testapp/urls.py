@@ -6,4 +6,5 @@ from django.urls import path
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("editor/", lambda request: render(request, "editor.html")),
+    path("menu-test/", lambda request: render(request, "menu_test.html")),
 ]

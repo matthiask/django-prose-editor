@@ -1,6 +1,6 @@
 import { Link as BaseLink } from "@tiptap/extension-link"
-
 import { gettext, updateAttrsDialog } from "./utils.js"
+import { materialButton } from "./menu-utils.js"
 
 const linkDialogImpl = (editor, attrs, options) => {
   const properties = {
@@ -89,5 +89,90 @@ export const Link = BaseLink.extend({
         editor.commands.addLink()
       },
     }
+  },
+
+  // Set up our menu items after extension is created
+  onCreate() {
+    console.log("[LINK] Link extension onCreate called")
+
+    // Make sure storage exists
+    this.storage = this.storage || {}
+    console.log(
+      "[LINK] Link extension storage before:",
+      JSON.stringify(this.storage),
+    )
+
+    // If menuItems are provided via configuration, use them
+    // Otherwise, create the default menu items
+    if (!this.storage.menuItems) {
+      console.log("[LINK] Creating default menu items")
+      this.storage.menuItems = {
+        group: "link",
+        items: [
+          {
+            command: (editor) => {
+              editor.chain().addLink().focus().run()
+            },
+            enabled: (editor) => {
+              return !editor.state.selection.empty || editor.isActive("link")
+            },
+            dom: materialButton("insert_link", "insert link"),
+            active: (editor) => {
+              return editor.isActive("link")
+            },
+          },
+          {
+            command: (editor) => {
+              editor.chain().focus().unsetLink().run()
+            },
+            dom: materialButton("link_off", "remove link"),
+            hidden: (editor) => {
+              return !editor.isActive("link")
+            },
+          },
+        ],
+      }
+    } else {
+      console.log(
+        "[LINK] Using provided menu items:",
+        JSON.stringify(this.storage.menuItems),
+      )
+    }
+
+    // If menuItems.items is empty, add default items to the custom group
+    if (
+      Array.isArray(this.storage.menuItems.items) &&
+      this.storage.menuItems.items.length === 0
+    ) {
+      console.log("[LINK] Adding default items to empty custom group")
+      this.storage.menuItems.items = [
+        {
+          command: (editor) => {
+            editor.chain().addLink().focus().run()
+          },
+          enabled: (editor) => {
+            return !editor.state.selection.empty || editor.isActive("link")
+          },
+          dom: materialButton("insert_link", "insert link"),
+          active: (editor) => {
+            return editor.isActive("link")
+          },
+        },
+        {
+          command: (editor) => {
+            editor.chain().focus().unsetLink().run()
+          },
+          dom: materialButton("link_off", "remove link"),
+          hidden: (editor) => {
+            return !editor.isActive("link")
+          },
+        },
+      ]
+    }
+
+    console.log(
+      "[LINK] Link extension storage after:",
+      JSON.stringify(this.storage),
+    )
   },
 })

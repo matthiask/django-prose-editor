@@ -1,22 +1,75 @@
 import { Extension } from "@tiptap/core"
-import { Plugin } from "@tiptap/pm/state"
+import { Plugin, PluginKey } from "@tiptap/pm/state"
 import { crel, gettext } from "./utils.js"
+import {
+  materialButton,
+  svgButton,
+  createHeadingButton,
+  createMarkButton,
+  findExtension,
+} from "./menu-utils.js"
 
-const findExtension = (editor, extension) =>
-  editor.extensionManager.extensions.find((e) => e.name === extension)
+// Registry for extensions to register their menu items
+export class MenuRegistry {
+  constructor() {
+    // Main registry for menu items
+    this.groups = new Map()
 
-export const menuItemsFromEditor = (editor) => {
-  // Basic menu items
-  return [
-    blockTypeMenuItems(editor),
-    nodesMenuItems(editor),
-    linkMenuItems(editor),
-    markMenuItems(editor),
-    textAlignMenuItems(editor),
-    tableMenuItems(editor),
-    historyMenuItems(editor),
-    utilityMenuItems(editor),
-  ].filter(Boolean)
+    // Default group order
+    this.groupOrder = [
+      "blockType",
+      "marks",
+      "nodes",
+      "link",
+      "textAlign",
+      "table",
+      "history",
+      "utility",
+      // Custom groups will be added at the end in registration order
+    ]
+  }
+
+  /**
+   * Register a group of menu items
+   * @param {string} groupName - The name of the group
+   * @param {Array} items - Array of menu items
+   * @param {Object} options - Optional configuration
+   * @param {number} options.index - Optional index to insert at specific position in groupOrder
+   */
+  registerGroup(groupName, items, options = {}) {
+    // Skip registration if items is empty or null
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return
+    }
+
+    if (!this.groups.has(groupName)) {
+      // Create new group
+      this.groups.set(groupName, items)
+    } else {
+      // Append to existing group
+      const existingItems = this.groups.get(groupName) || []
+      this.groups.set(groupName, [...existingItems, ...items])
+    }
+
+    // Add to group order if not already there
+    if (!this.groupOrder.includes(groupName)) {
+      if (typeof options.index === "number") {
+        this.groupOrder.splice(options.index, 0, groupName)
+      } else {
+        this.groupOrder.push(groupName)
+      }
+    }
+  }
+
+  /**
+   * Get all menu item groups in order
+   * @returns {Array} - Array of menu item groups
+   */
+  getAllGroups() {
+    return this.groupOrder
+      .map((groupName) => this.groups.get(groupName))
+      .filter(Boolean)
+  }
 }
 
 export const Menu = Extension.create({
@@ -24,23 +77,34 @@ export const Menu = Extension.create({
 
   addOptions() {
     return {
-      menuItems: menuItemsFromEditor,
+      // Whether to collect menu items from extensions
+      menuItemsFromExtensions: true,
     }
   },
 
   addProseMirrorPlugins() {
     const editor = this.editor
-    const menuItems = this.options.menuItems(editor)
 
     return [
       new Plugin({
-        view() {
-          const menuView = new MenuView(editor, menuItems)
-          const editorDomParent = editor.view.dom.parentNode
+        key: new PluginKey("prose-menu"),
 
-          // Insert both the placeholder and menubar
-          editorDomParent.insertBefore(menuView.placeholder, editor.view.dom)
-          editorDomParent.insertBefore(menuView.dom, editor.view.dom)
+        view(editorView) {
+          // Create a fresh registry for this view
+          const registry = new MenuRegistry()
+
+          // Register built-in menu items
+          registerBuiltInMenuItems(registry, editor)
+
+          // Get all menu groups
+          const menuItems = registry.getAllGroups()
+
+          // Create and insert the menu view
+          const menuView = new MenuView(editor, menuItems)
+          const editorDomParent = editorView.dom.parentNode
+
+          editorDomParent.insertBefore(menuView.placeholder, editorView.dom)
+          editorDomParent.insertBefore(menuView.dom, editorView.dom)
 
           return menuView
         },
@@ -49,9 +113,114 @@ export const Menu = Extension.create({
   },
 })
 
+// Register all menu items
+function registerBuiltInMenuItems(registry, editor) {
+  // Default built-in menu items
+  registry.registerGroup("blockType", getBlockTypeMenuItems(editor))
+  registry.registerGroup("nodes", getNodesMenuItems(editor))
+  registry.registerGroup("marks", getMarkMenuItems(editor))
+  registry.registerGroup("textAlign", getTextAlignMenuItems(editor))
+  registry.registerGroup("table", getTableMenuItems(editor))
+  registry.registerGroup("history", getHistoryMenuItems(editor))
+  registry.registerGroup("utility", getUtilityMenuItems(editor))
+
+  // Backup link menu items to ensure they're always available
+  registry.registerGroup("link", getLinkMenuItems(editor))
+
+  // Skip if extension manager is not available
+  if (!editor.extensionManager || !editor.extensionManager.extensions) {
+    console.warn("No extension manager available for menu item registration")
+    return
+  }
+
+  console.log(
+    "[MENU] Available extensions:",
+    editor.extensionManager.extensions.map((e) => e.name),
+  )
+  console.log("[MENU] Editor storage:", JSON.stringify(editor.storage))
+
+  // Look for extensions with menuItems in their storage
+  editor.extensionManager.extensions.forEach((extension) => {
+    // Skip menu extension itself
+    if (extension.name === "menu") return
+
+    console.log(
+      `[MENU] Checking extension: ${extension.name}`,
+      editor.storage?.[extension.name]
+        ? JSON.stringify(editor.storage[extension.name])
+        : "NO STORAGE",
+    )
+
+    try {
+      // Get menu items from extension storage
+      const storage = editor.storage?.[extension.name]
+
+      if (storage?.menuItems) {
+        console.log(
+          `[MENU] Found menuItems in ${extension.name}:`,
+          JSON.stringify(storage.menuItems),
+        )
+        const { group, items, options = {} } = storage.menuItems
+        if (group && Array.isArray(items) && items.length > 0) {
+          console.log(
+            `[MENU] Registering group ${group} with ${items.length} items from ${extension.name}`,
+          )
+          registry.registerGroup(group, items, options)
+        }
+      }
+    } catch (error) {
+      console.error(
+        `[MENU] Error registering menu items from extension ${extension.name}:`,
+        error,
+      )
+    }
+  })
+}
+
+// Link menu items as a fallback
+function getLinkMenuItems(editor) {
+  if (
+    !editor ||
+    !editor.schema ||
+    !editor.schema.marks ||
+    !editor.schema.marks.link
+  ) {
+    return []
+  }
+
+  console.log("[MENU] Adding fallback link menu items")
+  return [
+    {
+      command: (editor) => {
+        editor.chain().addLink().focus().run()
+      },
+      enabled: (editor) => {
+        return !editor.state.selection.empty || editor.isActive("link")
+      },
+      dom: materialButton("insert_link", "insert link"),
+      active: (editor) => {
+        return editor.isActive("link")
+      },
+    },
+    {
+      command: (editor) => {
+        editor.chain().focus().unsetLink().run()
+      },
+      dom: materialButton("link_off", "remove link"),
+      hidden: (editor) => {
+        return !editor.isActive("link")
+      },
+    },
+  ]
+}
+
 class MenuView {
   constructor(editor, itemGroups) {
-    this.items = itemGroups.flat()
+    // Collect all items from groups
+    this.items = Array.isArray(itemGroups)
+      ? itemGroups.flat().filter(Boolean)
+      : []
+
     this.editor = editor
     this.isFloating = false
 
@@ -62,13 +231,19 @@ class MenuView {
     this.placeholder = crel("div", { className: "prose-menubar-placeholder" })
 
     // Create menu groups
-    itemGroups
-      .filter((group) => group.length)
-      .forEach((group) => {
-        const groupDOM = crel("div", { className: "prose-menubar__group" })
-        this.dom.append(groupDOM)
-        group.forEach(({ dom }) => groupDOM.append(dom))
-      })
+    if (Array.isArray(itemGroups)) {
+      itemGroups
+        .filter((group) => group && Array.isArray(group) && group.length)
+        .forEach((group) => {
+          const groupDOM = crel("div", { className: "prose-menubar__group" })
+          this.dom.append(groupDOM)
+          group.forEach((item) => {
+            if (item?.dom) {
+              groupDOM.append(item.dom)
+            }
+          })
+        })
+    }
 
     // Initial update of button states
     this.update()
@@ -77,9 +252,9 @@ class MenuView {
     this.dom.addEventListener("mousedown", (e) => {
       e.preventDefault()
       editor.view.focus()
-      this.items.forEach(({ command, dom }) => {
-        if (dom.contains(e.target)) {
-          command(editor)
+      this.items.forEach((item) => {
+        if (item?.dom && item.command && item.dom.contains(e.target)) {
+          item.command(editor)
         }
       })
     })
@@ -150,13 +325,19 @@ class MenuView {
         hidden = () => false,
         update = null,
       }) => {
-        dom.classList.toggle("disabled", !enabled(this.editor))
-        dom.classList.toggle("active", !!active(this.editor))
-        dom.classList.toggle("hidden", !!hidden(this.editor))
+        if (!dom) return
 
-        // Call update if provided to update dynamic content
-        if (update) {
-          update(this.editor)
+        try {
+          dom.classList.toggle("disabled", !enabled(this.editor))
+          dom.classList.toggle("active", !!active(this.editor))
+          dom.classList.toggle("hidden", !!hidden(this.editor))
+
+          // Call update if provided to update dynamic content
+          if (update) {
+            update(this.editor)
+          }
+        } catch (error) {
+          console.error("Error updating menu item:", error)
         }
       },
     )
@@ -173,65 +354,60 @@ class MenuView {
   }
 }
 
-/*
-function textButton(textContent, title = "") {
-  return crel("span", {
-    className: "prose-menubar__button",
-    textContent,
-    title,
-  })
-}
-*/
+// Menu item getter functions
 
-function materialButton(textContent, title) {
-  return crel("span", {
-    className: "prose-menubar__button material-icons",
-    textContent,
-    title,
-  })
-}
-
-function svgButton(innerHTML, title = "") {
-  return crel("span", {
-    className: "prose-menubar__button",
-    innerHTML,
-    title,
-  })
-}
-
-const headingButton = (level) => {
-  const dom = crel("span", {
-    className: "prose-menubar__button prose-menubar__button--heading",
-    title: `heading ${level}`,
-  })
-  dom.append(
-    crel("span", { className: "material-icons", textContent: "title" }),
-    crel("span", { className: "level", textContent: `${level}` }),
-  )
-
-  return {
-    command: (editor) => {
-      editor.chain().focus().toggleHeading({ level }).run()
-    },
-    dom,
-    active(editor) {
-      return editor.isActive("heading", { level })
-    },
-    enabled(editor) {
-      return editor.can().toggleHeading({ level })
-    },
+function getMarkMenuItems(editor) {
+  if (!editor || !editor.schema || !editor.schema.marks) {
+    return []
   }
+
+  return [
+    createMarkButton(editor, "bold", materialButton("format_bold", "bold")),
+    createMarkButton(
+      editor,
+      "italic",
+      materialButton("format_italic", "italic"),
+    ),
+    createMarkButton(
+      editor,
+      "underline",
+      materialButton("format_underline", "underline"),
+    ),
+    createMarkButton(
+      editor,
+      "strike",
+      materialButton("format_strikethrough", "strike"),
+    ),
+    createMarkButton(
+      editor,
+      "subscript",
+      materialButton("subscript", "subscript"),
+    ),
+    createMarkButton(
+      editor,
+      "superscript",
+      materialButton("superscript", "superscript"),
+    ),
+  ].filter(Boolean)
 }
 
-function blockTypeMenuItems(editor) {
+function getBlockTypeMenuItems(editor) {
+  if (!editor || !editor.schema) {
+    return []
+  }
+
   const schema = editor.schema
+  const items = []
 
-  const extension = findExtension(editor, "heading")
-  const levels = extension ? extension.options.levels : []
-  const items = levels.map((level) => headingButton(level))
+  // Add heading buttons
+  const headingExt = findExtension(editor, "heading")
+  if (headingExt?.options.levels) {
+    const levels = headingExt.options.levels
+    items.push(...levels.map((level) => createHeadingButton(level)))
+  }
 
-  let type
-  if ((type = schema.nodes.bulletList)) {
+  // Add bullet list button
+  if (schema.nodes.bulletList) {
     items.push({
       command(editor) {
         editor.chain().focus().toggleBulletList().run()
@@ -245,7 +421,9 @@ function blockTypeMenuItems(editor) {
       },
     })
   }
-  if ((type = schema.nodes.orderedList)) {
+
+  // Add ordered list button
+  if (schema.nodes.orderedList) {
     items.push({
       command(editor) {
         editor.chain().focus().toggleOrderedList().run()
@@ -256,7 +434,7 @@ function blockTypeMenuItems(editor) {
       },
     })
 
-    // Add list properties button only if list attributes are enabled
+    // Add list properties button if list attributes are enabled
     const orderedListExt = findExtension(editor, "orderedList")
     if (orderedListExt?.options.enableListAttributes) {
       items.push({
@@ -271,11 +449,9 @@ function blockTypeMenuItems(editor) {
     }
   }
 
-  if (!items.length) return null
-
-  return [
-    ...items,
-    {
+  // Add paragraph button
+  if (items.length > 0) {
+    items.push({
       command(editor) {
         editor.chain().focus().setParagraph().run()
       },
@@ -286,15 +462,22 @@ function blockTypeMenuItems(editor) {
       enabled(editor) {
         return editor.can().setParagraph()
       },
-    },
-  ]
+    })
+  }
+
+  return items
 }
 
-function nodesMenuItems(editor) {
+function getNodesMenuItems(editor) {
+  if (!editor || !editor.schema) {
+    return []
+  }
+
   const schema = editor.schema
   const items = []
-  let type
-  if ((type = schema.nodes.blockquote)) {
+
+  // Add blockquote button
+  if (schema.nodes.blockquote) {
     items.push({
       command(editor) {
         editor.chain().focus().toggleBlockquote().run()
@@ -308,7 +491,9 @@ function nodesMenuItems(editor) {
       },
     })
   }
-  if ((type = schema.nodes.horizontalRule)) {
+
+  // Add horizontal rule button
+  if (schema.nodes.horizontalRule) {
     items.push({
       command(editor) {
         editor.chain().focus().setHorizontalRule().run()
@@ -322,7 +507,9 @@ function nodesMenuItems(editor) {
       },
     })
   }
-  if ((type = schema.nodes.figure)) {
+
+  // Add figure button
+  if (schema.nodes.figure) {
     items.push({
       command(editor) {
         editor.chain().focus().insertFigure().run()
@@ -334,93 +521,48 @@ function nodesMenuItems(editor) {
       // TODO implement hidden(editor) and/or enabled(editor)
     })
   }
+
   return items
 }
 
-function markMenuItems(editor) {
-  const mark = (markType, dom) =>
-    markType in editor.schema.marks
-      ? {
-          command(editor) {
-            editor.chain().focus().toggleMark(markType).run()
-          },
-          dom,
-          active: (editor) => editor.isActive(markType),
-          enabled: (editor) => editor.can().toggleMark(markType),
-        }
-      : null
-
-  return [
-    mark("bold", materialButton("format_bold", "bold")),
-    mark("italic", materialButton("format_italic", "italic")),
-    mark("underline", materialButton("format_underline", "underline")),
-    mark("strike", materialButton("format_strikethrough", "strike")),
-    mark("subscript", materialButton("subscript", "subscript")),
-    mark("superscript", materialButton("superscript", "superscript")),
-  ].filter(Boolean)
-}
-
-function linkMenuItems(editor) {
-  const mark = editor.schema.marks.link
-  if (!mark) return null
+function getHistoryMenuItems(editor) {
+  if (!findExtension(editor, "history")) {
+    return []
+  }
 
   return [
     {
       command(editor) {
-        editor.chain().addLink().focus().run()
+        editor.commands.undo()
       },
       enabled(editor) {
-        return !editor.state.selection.empty || editor.isActive("link")
+        return editor.can().undo()
       },
-      dom: materialButton("insert_link", "insert link"),
-      active(editor) {
-        return editor.isActive(mark)
+      dom: materialButton("undo", "undo"),
+      active() {
+        return false
       },
     },
     {
       command(editor) {
-        editor.chain().focus().unsetLink().run()
+        editor.commands.redo()
       },
-      dom: materialButton("link_off", "remove link"),
-      hidden(editor) {
-        return !editor.isActive("link")
+      enabled(editor) {
+        return editor.can().redo()
+      },
+      dom: materialButton("redo", "redo"),
+      active() {
+        return false
       },
     },
   ]
 }
 
-function historyMenuItems(editor) {
-  return findExtension(editor, "history")
-    ? [
-        {
-          command(editor) {
-            editor.commands.undo()
-          },
-          enabled(editor) {
-            return editor.can().undo()
-          },
-          dom: materialButton("undo", "undo"),
-          active() {
-            return false
-          },
-        },
-        {
-          command(editor) {
-            editor.commands.redo()
-          },
-          enabled(editor) {
-            return editor.can().redo()
-          },
-          dom: materialButton("redo", "redo"),
-          active() {
-            return false
-          },
-        },
-      ]
-    : null
-}
+function getTextAlignMenuItems(editor) {
+  if (!findExtension(editor, "textAlign")) {
+    return []
+  }
 
-function textAlignMenuItems(editor) {
   const alignmentItem = (alignment) => ({
     command(editor) {
       editor.chain().focus().setTextAlign(alignment).run()
@@ -431,18 +573,18 @@ function textAlignMenuItems(editor) {
     },
   })
 
-  return findExtension(editor, "textAlign")
-    ? [
-        alignmentItem("left"),
-        alignmentItem("center"),
-        alignmentItem("right"),
-        alignmentItem("justify"),
-      ]
-    : null
+  return [
+    alignmentItem("left"),
+    alignmentItem("center"),
+    alignmentItem("right"),
+    alignmentItem("justify"),
+  ]
 }
 
-function tableMenuItems(editor) {
-  if (!findExtension(editor, "table")) return null
+function getTableMenuItems(editor) {
+  if (!findExtension(editor, "table")) {
+    return []
+  }
 
   const tableManipulationItem = (command, dom) => ({
     command,
@@ -548,7 +690,7 @@ function tableMenuItems(editor) {
   ]
 }
 
-function utilityMenuItems(editor) {
+function getUtilityMenuItems(editor) {
   const items = []
 
   if (findExtension(editor, "html")) {
