@@ -87,6 +87,7 @@ class ProseEditorWidget(forms.Textarea):
             "strikethrough": "Strike",
             "sub": "Subscript",
             "sup": "Superscript",
+            "link": "Link",
         }
 
         types = []

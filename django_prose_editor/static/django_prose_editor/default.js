@@ -53,7 +53,8 @@ function createEditor(textarea, config = null) {
     "em": "Italic",
     "strikethrough": "Strike",
     "sub": "Subscript",
-    "sup": "Superscript"
+    "sup": "Superscript",
+    "link": "Link",
   }
 
   // Check if any deprecated names are being used and log warnings
@@ -110,7 +111,7 @@ function createEditor(textarea, config = null) {
       Heading.configure({ levels: config.headingLevels || [1, 2, 3, 4, 5] }),
     isTypeEnabled("HorizontalRule", "horizontal_rule") && HorizontalRule,
     isTypeEnabled("Italic", "em") && Italic,
-    isTypeEnabled("Link") && Link,
+    isTypeEnabled("Link", "link") && Link,
     isTypeEnabled("BulletList", "bullet_list", "OrderedList", "ordered_list") && ListItem,
     isTypeEnabled("OrderedList", "ordered_list") && OrderedList,
     isTypeEnabled("Strike", "strikethrough") && Strike,
