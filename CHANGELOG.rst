@@ -51,7 +51,7 @@ Next version
 0.10 (2024-12-17)
 ~~~~~~~~~~~~~~~~~
 
-- Changed the editor foundation to use `Tiptap <https://tiptap.dev/>__` and
+- Changed the editor foundation to use `Tiptap <https://tiptap.dev/>`__ and
   bundled many of the available extensions. Tiptap uses ProseMirror under the
   hood, but offers an extension framework which I'd have to reinvent and
   there's really no point to do that. The change should be backwards compatible
@@ -64,7 +64,7 @@ Next version
 - Fixed a misbehavior where the ``ProseEditorFormField`` would override a
   manually defined ``ProseEditorWidget``.
 - Added a dependency on `django-js-asset
-  <https://pypi.org/project/django-js-asset/>__` for our JavaScript and JSON
+  <https://pypi.org/project/django-js-asset/>`__ for our JavaScript and JSON
   shipping needs.
 - Changed the way editor dialogs are built from unsafe ``innerHTML``
   manipulation to proper DOM manipulation.

@@ -131,7 +131,7 @@ Customization
 The editor can be customized in several ways:
 
 1. Using the new extensions mechanism with ``ProseEditorField`` (recommended).
-   For the new configuration language, see the :doc:`configuration_language`
+   For the new configuration language, see the ``configuration_language.rst``
    documentation.
 2. Using the ``config`` parameter to include/exclude specific extensions
    (legacy approach)

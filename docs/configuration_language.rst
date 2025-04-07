@@ -16,7 +16,7 @@ The configuration system uses a declarative format that defines:
 3. Server-side sanitization rules derived from the configuration
 
 Example Configuration
-^^^^^^^^^^^^^^^^^^^
+------------------------
 
 .. code-block:: python
 
@@ -104,7 +104,7 @@ Sanitization is enabled by default for the ``ProseEditorField``:
     )
 
 Advanced Sanitization Options
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Some extensions support additional sanitization options. For example, the Link extension
 can restrict URLs to specific protocols:
@@ -123,7 +123,7 @@ This restriction is enforced both in the editor UI and during server-side saniti
 URLs not matching these protocols will be removed during sanitization.
 
 Accessing Sanitization Rules Directly
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can also access the generated sanitization rules directly:
 
@@ -138,7 +138,7 @@ You can also access the generated sanitization rules directly:
     # Returns {"tags": ["strong", "a"], "attributes": {"a": ["href"]}}
 
 Creating Custom Sanitizers
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can create a custom sanitizer function from any extension configuration using the `create_sanitizer` utility:
 
@@ -252,7 +252,7 @@ The JavaScript module should export the extension as a named export:
     })
 
 Simple Example: Blue Bold Text
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------
 
 Here's a minimal example of a custom extension that adds a blue color to bold text:
 
@@ -312,7 +312,7 @@ Technical Details
 ~~~~~~~~~~~~~~~~~
 
 Custom Processor Functions
-^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The processor function is the core of custom extensions. It determines what HTML elements, attributes, and JavaScript modules are used:
 
@@ -379,7 +379,7 @@ The processor function is the core of custom extensions. It determines what HTML
     ]
 
 Working Principles
-^^^^^^^^^^^^^^^^^^
+------------------
 
 This configuration system bridges the gap between front-end capabilities and server-side sanitization by:
 
@@ -389,7 +389,7 @@ This configuration system bridges the gap between front-end capabilities and ser
 4. Providing processor functions for complex configurations
 
 Common Extension Configurations
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------
 
 Django Prose Editor provides special configuration options for common extensions:
 
