@@ -42,11 +42,11 @@ async function loadExtensionModules(moduleUrls) {
   await Promise.all(loadPromises)
 }
 
-async function createEditorAsync(textarea) {
+async function createEditorAsync(textarea, config=null) {
   if (textarea.closest(".prose-editor")) return null
 
   // Get the extension configuration
-  const config = JSON.parse(textarea.getAttribute(marker) || "{}")
+  config = config || JSON.parse(textarea.getAttribute(marker) || "{}")
 
   const extensionInstances = []
 
@@ -76,14 +76,14 @@ async function createEditorAsync(textarea) {
 const pendingEditors = new WeakMap()
 
 // Function for the initializeEditors callback
-function createEditor(textarea) {
+function createEditor(textarea, config=null) {
   // Check if we already have a pending initialization for this textarea
   if (pendingEditors.has(textarea)) {
     return pendingEditors.get(textarea)
   }
 
   // Create a promise for the editor initialization
-  const editorPromise = createEditorAsync(textarea)
+  const editorPromise = createEditorAsync(textarea, config)
     .then(editor => {
       // The editor is initialized and ready to use
       if (editor) {
