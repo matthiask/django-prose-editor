@@ -21,6 +21,10 @@ def _actually_empty(x):
     return x
 
 
+def _identity(x):
+    return x
+
+
 class ProseEditorField(models.TextField):
     def __init__(self, *args, **kwargs):
         self.sanitize = kwargs.pop("sanitize", _actually_empty)
@@ -71,6 +75,7 @@ class ProseEditorFormField(forms.CharField):
         config = kwargs.pop("config", {})
         preset = kwargs.pop("preset", "default")
         widget = kwargs.get("widget")
+        self.sanitize = kwargs.pop("sanitize", _identity)
 
         # We don't know if widget is set, and if it is, we do not know if it is
         # a class or an instance of the widget. The following if statement
@@ -83,3 +88,6 @@ class ProseEditorFormField(forms.CharField):
         super().__init__(*args, **kwargs)
         self.widget.config = config
         self.widget.preset = preset
+
+    def clean(self, value):
+        return self.sanitize(super().clean(value))
