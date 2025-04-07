@@ -62,8 +62,8 @@ Note! No migrations will be generated when switching from and to
 ``models.TextField``. That's by design. Those migrations are mostly annoying.
 
 
-Security
-========
+Configuration
+=============
 
 ProseMirror does a really good job of only allowing content which conforms to a
 particular scheme. Of course users can submit what they want, they are not
@@ -217,12 +217,13 @@ extensions should be enabled (this is the legacy approach):
 
 All extension names now use the Tiptap names (e.g., ``Bold``, ``Italic``,
 ``BulletList``, ``HorizontalRule``). For backward compatibility, the following legacy
-ProseMirror-style names are still supported but are deprecated:
+ProseMirror-style names are still supported:
 
 * Legacy node names: ``bullet_list`` → ``BulletList``, ``ordered_list`` →
   ``OrderedList``, ``horizontal_rule`` → ``HorizontalRule``
 * Legacy mark names: ``strong`` → ``Bold``, ``em`` → ``Italic``,
-  ``strikethrough`` → ``Strike``, ``sub`` → ``Subscript``, ``sup`` → ``Superscript``
+  ``strikethrough`` → ``Strike``, ``sub`` → ``Subscript``, ``sup`` → ``Superscript``,
+  ``link`` → ``Link``
 
 
 Customization with JavaScript bundlers

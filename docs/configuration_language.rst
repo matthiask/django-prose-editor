@@ -16,7 +16,9 @@ The configuration system uses a declarative format that defines:
 3. Server-side sanitization rules derived from the configuration
 
 Example Configuration
-------------------------
+---------------------
+
+The `extensions` parameter allows you to specify exactly which extensions you want to enable in your editor:
 
 .. code-block:: python
 
@@ -54,32 +56,16 @@ Example Configuration
             }
         )
 
-Configuring Extensions
-~~~~~~~~~~~~~~~~~~~~~~
-
-The `extensions` parameter allows you to specify exactly which extensions you want to enable in your editor:
+You can also pass additional configurations to extensions:
 
 .. code-block:: python
 
-    # Simple configuration with basic text formatting and links
-    content = ProseEditorField(
-        extensions={
-            "Bold": True,
-            "Italic": True,
-            "Strike": True,
-            "Link": True,
-            "BulletList": True,
-            "OrderedList": True,
-        }
-    )
-
-    # More advanced configuration with specific settings for extensions
     content = ProseEditorField(
         extensions={
             "Bold": True,
             "Italic": True,
             "Heading": {"levels": [1, 2, 3]},  # Only allow H1-H3
-            "Link": {"enableTarget": True},  # Enable "open in new tab"
+            "Link": {"enableTarget": False},  # Disable "open in new tab"
             "Table": True,
         }
     )
@@ -131,11 +117,8 @@ You can also access the generated sanitization rules directly:
 
     from django_prose_editor.config import allowlist_from_extensions
 
-    # Note! This is subject to change, because right now, the allowlist
-    # not only contains data for the sanitizer but could also contain
-    # JavaScript modules which should be loaded. That's a bit ugly.
     allowlist = allowlist_from_extensions(extensions={"Bold": True, "Link": True})
-    # Returns {"tags": ["strong", "a"], "attributes": {"a": ["href"]}}
+    # Returns {"tags": ["strong", "a"], "attributes": {"a": ["href", "title", "rel", "target"]}}
 
 Creating Custom Sanitizers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -177,7 +160,7 @@ BulletList     <ul>, <li>              -
 OrderedList    <ol>, <li>              start, type
 Blockquote     <blockquote>            -
 HorizontalRule <hr>                    -
-Link           <a>                     href, target, rel
+Link           <a>                     href, title, target, rel
 Table          <table>, <tr>,          rowspan, colspan
                <th>, <td>
 ============== ======================= ============================
@@ -185,8 +168,10 @@ Table          <table>, <tr>,          rowspan, colspan
 Custom Extensions
 ~~~~~~~~~~~~~~~~~
 
-The configurable preset allows you to add custom Tiptap extensions without having to create a custom preset.
-You can define extension groups in your Django settings, with each group containing related extensions that share the same JavaScript assets:
+The configurable preset allows you to add custom Tiptap extensions without
+having to create a custom preset. You can define extension groups in your
+Django settings, with each group containing related extensions that share the
+same JavaScript assets:
 
 .. code-block:: python
 
@@ -196,21 +181,6 @@ You can define extension groups in your Django settings, with each group contain
 
     # Define your custom extensions with their processors
     DJANGO_PROSE_EDITOR_EXTENSIONS = [
-        # Simple extension group
-        {
-            # JavaScript assets shared by all extensions in this group
-            "js": [
-                static_lazy("myapp/extensions/custom-extension.js")
-            ],
-            # Extension processors for this group
-            "extensions": {
-                "MyCustomExtension": html_tags(
-                    tags=["div"],
-                    attributes={"div": ["data-custom"]}
-                )
-            }
-        },
-
         # Blue bold extension group
         {
             "js": [
@@ -238,23 +208,9 @@ You can define extension groups in your Django settings, with each group contain
         }
     ]
 
-The JavaScript module should export the extension as a named export:
 
-.. code-block:: javascript
-
-    // myapp/static/myapp/extensions/custom-extension.js
-    import { Extension } from "django-prose-editor/editor"
-
-    // Create the extension
-    export const MyCustomExtension = Extension.create({
-      name: 'MyCustomExtension',
-      // Extension implementation...
-    })
-
-Simple Example: Blue Bold Text
--------------------------------
-
-Here's a minimal example of a custom extension that adds a blue color to bold text:
+The JavaScript module should export the extension as a named export. Here's a
+minimal example of a custom extension that adds a blue color to bold text:
 
 .. code-block:: javascript
 
@@ -296,12 +252,6 @@ Then you can use your extension in your models:
             extensions={
                 "Bold": True,
                 "Italic": True,
-
-                # Enable your custom extension
-                "MyCustomExtension": {
-                    "option1": "value",  # Configuration options
-                },
-
                 # Enable the blue bold extension
                 "BlueBold": True
             }
@@ -314,18 +264,24 @@ Technical Details
 Custom Processor Functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The processor function is the core of custom extensions. It determines what HTML elements, attributes, and JavaScript modules are used:
+Extensions have two important parts: Editor extensions mapping to a processor
+function which defines allowed tags and attributes for each editor extension
+and a list of JavaScript modules implementing the editor part of said
+extensions.
+
+The base case of a hardcoded list of tags and attributes is handled by the
+``html_tags`` helper.
 
 .. code-block:: python
 
     # Example processor function in myapp/extensions.py
-    def process_complex_extension(config, shared_config):
+    def process_complex_extension(config, nh3_config):
         """
         Process custom extension configuration for sanitization.
 
         Args:
             config: The extension configuration (e.g., {"option1": "value"})
-            shared_config: The shared configuration dictionary to update
+            nh3_config: The shared configuration dictionary to update
         """
         # Prepare tags and attributes
         tags = ["div", "span"]
@@ -346,8 +302,8 @@ The processor function is the core of custom extensions. It determines what HTML
                 attributes["div"] = []
             attributes["div"].extend(["data-custom", "data-value"])
 
-        # Add tags and attributes to the shared config
-        add_tags_and_attributes(shared_config, tags, attributes)
+        # Add tags and attributes to the nh3 config
+        add_tags_and_attributes(nh3_config, tags, attributes)
 
     # Then in settings.py, register your processor by its dotted path:
     from js_asset import static_lazy
@@ -378,16 +334,6 @@ The processor function is the core of custom extensions. It determines what HTML
         }
     ]
 
-Working Principles
-------------------
-
-This configuration system bridges the gap between front-end capabilities and server-side sanitization by:
-
-1. Defining a clear mapping between editor extensions and HTML elements/attributes
-2. Automatically generating sanitization rules from the extension configuration
-3. Supporting extension with custom components
-4. Providing processor functions for complex configurations
-
 Common Extension Configurations
 --------------------------------
 
@@ -410,7 +356,20 @@ You can restrict heading levels to a subset of H1-H6:
 This configuration will only allow the specified heading levels in both the editor
 and the sanitized output.
 
-For those who need more control, you can still use the lower-level configuration options or create custom presets as described in the main documentation.
+**Links without 'open in new tab' functionality**
+
+.. code-block:: python
+
+    content = ProseEditorField(
+        extensions={
+            "Link": {
+                "enableTarget": False,
+            }
+        }
+    )
+
+The default is to show a checkbox for this function.
+
 
 JavaScript Events
 ~~~~~~~~~~~~~~~~~
@@ -461,7 +420,11 @@ The preset can be selected when instantiating the field:
 
 .. code-block:: python
 
-    text = ProseEditorField(_("text"), preset="announcements")
+    text = ProseEditorField(
+        _("text"),
+        preset="announcements",
+        sanitize=False,  # The default configuration may be too restrictive.
+    )
 
 The editor uses ES modules and importmaps; you can import extensions and
 utilities from the `django-prose-editor/editor` module. The importmap support
