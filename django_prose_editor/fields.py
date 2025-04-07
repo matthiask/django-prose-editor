@@ -46,8 +46,9 @@ def create_sanitizer(extensions):
 
 class ProseEditorField(models.TextField):
     """
-    The field has two modes: Legacy mode and normal mode. Legacy mode is activated
-    by passing a ``config`` keyword argument. The normal mode is described below.
+    The field has two modes: Legacy mode and normal mode. Normal mode is
+    activated by passing an ``extensions`` keyword argument. This mode is
+    described below. See the README for the legacy mode.
 
     A field that uses a unified configuration for both editor extensions and sanitization.
 
