@@ -5,36 +5,27 @@ const marker = "data-django-prose-editor-configurable"
 
 const EXTENSIONS = { ...editorModule }
 
-// Cache for module loading promises to avoid duplicate loading
-const moduleCache = new Map()
+const moduleLoadPromises = new Map()
 
-// Async function to dynamically import external modules in parallel
 async function loadExtensionModules(moduleUrls) {
   if (!moduleUrls || !moduleUrls.length) return
 
-  // Create a batch of promises for all requested modules
   const loadPromises = moduleUrls.map(url => {
-    // If we already have this module or its loading promise in cache, return it
-    if (moduleCache.has(url)) {
-      return moduleCache.get(url)
+    if (moduleLoadPromises.has(url)) {
+      return moduleLoadPromises.get(url)
     }
 
-    // Create a new loading promise for this module
     const loadPromise = import(url)
       .then(module => {
-        // Register the loaded module
         Object.assign(EXTENSIONS, module)
-        return module
       })
       .catch(error => {
         console.error(`Error loading extension module from ${url}:`, error)
         // Remove failed modules from cache
-        moduleCache.delete(url)
-        return {}
+        moduleLoadPromises.delete(url)
       })
 
-    // Store the promise in the cache
-    moduleCache.set(url, loadPromise)
+    moduleLoadPromises.set(url, loadPromise)
     return loadPromise
   })
 
@@ -45,16 +36,13 @@ async function loadExtensionModules(moduleUrls) {
 async function createEditorAsync(textarea, config=null) {
   if (textarea.closest(".prose-editor")) return null
 
-  // Get the extension configuration
   config = config || JSON.parse(textarea.getAttribute(marker) || "{}")
 
-  const extensionInstances = []
+  if (config.js_modules && config.js_modules.length) {
+    await loadExtensionModules(config.js_modules)
+  }
 
-  // Check for custom JS modules
-  const customModules = config.js_modules || []
-
-  // Load custom extension modules - this will merge them directly into EXTENSIONS
-  await loadExtensionModules(customModules)
+  const extensions = []
 
   // Process all extensions from the config
   for (const [extensionName, extensionConfig] of Object.entries(config.extensions)) {
@@ -62,14 +50,14 @@ async function createEditorAsync(textarea, config=null) {
     if (extension) {
       // If the extension has a configuration object (not empty), pass it to the extension
       if (typeof extensionConfig === 'object') {
-        extensionInstances.push(extension.configure(extensionConfig))
+        extensions.push(extension.configure(extensionConfig))
       } else {
-        extensionInstances.push(extension)
+        extensions.push(extension)
       }
     }
   }
 
-  return createTextareaEditor(textarea, extensionInstances)
+  return createTextareaEditor(textarea, extensions)
 }
 
 // Track pending editor initializations
@@ -87,9 +75,6 @@ function createEditor(textarea, config=null) {
     .then(editor => {
       // The editor is initialized and ready to use
       if (editor) {
-        console.debug('Prose editor initialized with custom extensions')
-
-        // Dispatch an event for other components to know when the editor is ready
         const event = new CustomEvent('prose-editor:ready', {
           detail: { editor, textarea },
           bubbles: true
@@ -115,9 +100,7 @@ function createEditor(textarea, config=null) {
 }
 
 // Initialize all editors with the configurable marker
-initializeEditors((textarea) => {
-  return createEditor(textarea)
-}, `[${marker}]`)
+initializeEditors(createEditor, `[${marker}]`)
 
 // Export utility functions for external use
 export { createEditor }
