@@ -30,7 +30,22 @@ class ConfigurableProseEditorField(ProseEditorField):
     """
 
     def __init__(self, *args, **kwargs):
-        self.extensions = kwargs.pop("extensions", {})
+        self.extensions = kwargs.pop("extensions", None)
+        if self.extensions is None:
+            self.extensions = {
+                "Blockquote": True,
+                "Bold": True,
+                "BulletList": True,
+                "Heading": True,
+                "HorizontalRule": True,
+                "Italic": True,
+                "Link": True,
+                "OrderedList": True,
+                "Strike": True,
+                "Subscript": True,
+                "Superscript": True,
+                "Underline": True,
+            }
 
         # Get the preset for JavaScript implementation
         self.preset = kwargs.pop("preset", "configurable")
