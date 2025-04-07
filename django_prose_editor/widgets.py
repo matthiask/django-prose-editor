@@ -6,6 +6,8 @@ from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from js_asset import JS, importmap, static_lazy
 
+from django_prose_editor.config import get_extension_js_modules
+
 
 importmap.update(
     {
@@ -114,6 +116,12 @@ class ProseEditorWidget(forms.Textarea):
             "html": True,
             "typographic": True,
         }
+
+        # New-style config with "extensions" key
+        if isinstance(config, dict) and "extensions" in config:
+            return config | {
+                "js_modules": get_extension_js_modules(config["extensions"])
+            }
 
         return self._convert_extension_names(config)
 

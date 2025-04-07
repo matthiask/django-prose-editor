@@ -22,31 +22,28 @@ class ConfigurableFormTestCase(TestCase):
         form = TestForm()
         widget = form.fields["description"].widget
 
-        # Get the expanded extensions from the widget attributes
-
         context = widget.get_context("description", "", {})
-        expanded_extensions = json.loads(
+        config = json.loads(
             context["widget"]["attrs"]["data-django-prose-editor-configurable"]
         )
 
-        # Make sure the expanded_extensions include all dependencies
         # The original extensions only had Bold, Italic, and Table
-        self.assertIn("Bold", expanded_extensions)
-        self.assertIn("Italic", expanded_extensions)
-        self.assertIn("Table", expanded_extensions)
+        self.assertIn("Bold", config["extensions"])
+        self.assertIn("Italic", config["extensions"])
+        self.assertIn("Table", config["extensions"])
 
         # The custom BlueBold extension should also be included
-        self.assertIn("BlueBold", expanded_extensions)
+        self.assertIn("BlueBold", config["extensions"])
 
         # The following should be included as dependencies
-        self.assertIn("TableRow", expanded_extensions)
-        self.assertIn("TableHeader", expanded_extensions)
-        self.assertIn("TableCell", expanded_extensions)
+        self.assertIn("TableRow", config["extensions"])
+        self.assertIn("TableHeader", config["extensions"])
+        self.assertIn("TableCell", config["extensions"])
 
         # Core extensions should always be included
-        self.assertIn("Paragraph", expanded_extensions)
-        self.assertIn("Document", expanded_extensions)
-        self.assertIn("Text", expanded_extensions)
+        self.assertIn("Paragraph", config["extensions"])
+        self.assertIn("Document", config["extensions"])
+        self.assertIn("Text", config["extensions"])
 
     def test_heading_levels_config(self):
         """Test that heading levels are properly passed to the widget."""
@@ -62,16 +59,15 @@ class ConfigurableFormTestCase(TestCase):
         # Get the expanded extensions from the widget attributes
 
         context = widget.get_context("description", "", {})
-        expanded_extensions = json.loads(
+        config = json.loads(
             context["widget"]["attrs"]["data-django-prose-editor-configurable"]
         )
 
-        # Check that Heading is in expanded_extensions with the proper configuration
-        self.assertIn("Heading", expanded_extensions)
-        self.assertEqual(expanded_extensions["Heading"]["levels"], [1, 2, 3])
+        # Check that Heading is in extensions with the proper configuration
+        self.assertIn("Heading", config["extensions"])
+        self.assertEqual(config["extensions"]["Heading"]["levels"], [1, 2, 3])
 
-        # Check that we're using the config parameter for the expanded extensions
-        self.assertEqual(widget.config, expanded_extensions)
+        self.assertEqual(widget.config["extensions"], config["extensions"])
 
     def test_sanitization_works(self):
         """Test that basic sanitization works correctly with ConfigurableProseEditorField."""

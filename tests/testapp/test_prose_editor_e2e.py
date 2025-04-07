@@ -311,7 +311,7 @@ def test_configurable_prose_editor_admin(page, live_server):
     config = json.loads(configurable_attr)
 
     # Verify BlueBold extension is present in the configuration
-    assert "BlueBold" in config
+    assert "BlueBold" in config["extensions"]
 
     # Check the <head> for the blue-bold.js script in the import map or as a script tag
     page_content = page.content()
@@ -320,18 +320,18 @@ def test_configurable_prose_editor_admin(page, live_server):
     )
 
     # Verify other expected extensions are present
-    assert "Bold" in config
-    assert "Italic" in config
-    assert "Table" in config
-    assert "Heading" in config
+    assert "Bold" in config["extensions"]
+    assert "Italic" in config["extensions"]
+    assert "Table" in config["extensions"]
+    assert "Heading" in config["extensions"]
 
     # Verify Heading is configured with correct levels
-    assert "levels" in config["Heading"]
-    assert config["Heading"]["levels"] == [1, 2, 3]
+    assert "levels" in config["extensions"]["Heading"]
+    assert config["extensions"]["Heading"]["levels"] == [1, 2, 3]
 
     # Verify the BlueBold JS module is included in the configuration
-    assert "_js_modules" in config
-    assert any("blue-bold.js" in js_path for js_path in config["_js_modules"])
+    assert "js_modules" in config
+    assert any("blue-bold.js" in js_path for js_path in config["js_modules"])
 
     # Add content using the editor to test BlueBold extension
     editor = page.locator(".ProseMirror")

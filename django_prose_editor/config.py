@@ -297,6 +297,33 @@ def expand_extensions(extensions: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def get_extension_js_modules(
+    extensions: dict[str, Any],
+) -> list[str]:
+    """
+    Get JavaScript modules required by the enabled extensions.
+
+    Args:
+        extensions: Dictionary of extension configurations
+
+    Returns:
+        Set of JavaScript module paths
+    """
+    expanded = expand_extensions(extensions)
+    js_modules = set()
+
+    # Get custom extensions and their JS assets
+    _, js_assets_map = get_custom_extensions()
+
+    # Collect JS modules for each enabled extension
+    for extension in expanded:
+        # Add JS assets for this extension if available
+        if extension in js_assets_map:
+            js_modules.update(js_assets_map[extension])
+
+    return list(js_modules)
+
+
 def extensions_to_allowlist(
     extensions: dict[str, Any],
 ) -> dict[str, Any]:
@@ -317,7 +344,7 @@ def extensions_to_allowlist(
         extensions: Dictionary of extension configurations
 
     Returns:
-        Dictionary with sanitization config and 'js_modules' key
+        Dictionary with sanitization config
     """
     expanded = expand_extensions(extensions)
 
@@ -325,12 +352,10 @@ def extensions_to_allowlist(
     combined_config = {
         "tags": set(),
         "attributes": {},
-        # Track JavaScript modules separately as it's not for nh3
-        "js_modules": set(),
     }
 
     # Get custom extensions and their JS assets
-    custom_extensions, js_assets_map = get_custom_extensions()
+    custom_extensions, _ = get_custom_extensions()
 
     # Process each enabled extension
     for extension, config in expanded.items():
@@ -358,12 +383,6 @@ def extensions_to_allowlist(
                 else:
                     # If it's already a callable, use it directly
                     processor = ext_processor
-
-            # Add JS assets for this extension if available
-            if extension in js_assets_map:
-                if "js_modules" not in combined_config:
-                    combined_config["js_modules"] = set()
-                combined_config["js_modules"].update(js_assets_map[extension])
 
         # Skip if we don't have a processor
         if not processor:

@@ -41,7 +41,6 @@ def create_sanitizer(extensions):
         )
 
     nh3_kwargs = extensions_to_allowlist(expand_extensions(extensions))
-    nh3_kwargs.pop("js_modules")
     return lambda html: _actually_empty(nh3.clean(html, **nh3_kwargs))
 
 
@@ -105,10 +104,12 @@ class ProseEditorField(models.TextField):
             else:
                 self.sanitize = sanitize or _actually_empty
 
-            extensions = expand_extensions(extensions)
-            js_modules = extensions_to_allowlist(extensions).get("js_modules", ())
+            # Expand extensions to include dependencies
+            expanded_extensions = expand_extensions(extensions)
 
-            self.config = extensions | {"_js_modules": list(js_modules)}
+            # Place extended extensions inside an "extensions" key to clearly
+            # differentiate from old-style config
+            self.config = {"extensions": expanded_extensions}
             self.preset = kwargs.pop("preset", "configurable")
 
         super().__init__(*args, **kwargs)

@@ -161,26 +161,23 @@ async function createEditorAsync(textarea) {
   if (textarea.closest(".prose-editor")) return null
 
   // Get the extension configuration
-  const extensionsConfig = JSON.parse(textarea.getAttribute(marker) || "{}")
+  const config = JSON.parse(textarea.getAttribute(marker) || "{}")
 
   const extensionInstances = []
 
   // Check for custom JS modules
-  const customModules = extensionsConfig._js_modules || []
+  const customModules = config.js_modules || []
 
   // Load custom extension modules - this will merge them directly into EXTENSIONS
   await loadExtensionModules(customModules)
 
   // Process all extensions from the config
-  for (const [extensionName, config] of Object.entries(extensionsConfig)) {
-    // Skip the _js_modules key which isn't an extension
-    if (extensionName === '_js_modules') continue
-
+  for (const [extensionName, extensionConfig] of Object.entries(config.extensions)) {
     const extension = EXTENSIONS[extensionName]
     if (extension) {
       // If the extension has a configuration object (not empty), pass it to the extension
-      if (typeof config === 'object') {
-        extensionInstances.push(extension.configure(config))
+      if (typeof extensionConfig === 'object') {
+        extensionInstances.push(extension.configure(extensionConfig))
       } else {
         extensionInstances.push(extension)
       }
