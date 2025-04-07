@@ -65,39 +65,8 @@ class ProseEditorField(models.TextField):
     """
 
     def __init__(self, *args, **kwargs):
-        if "config" in kwargs:
-            # Legacy mode
-            warnings.warn(
-                "Using the 'config' parameter with ProseEditorField is deprecated and will be "
-                "removed in a future version. Please use the 'extensions' parameter instead, "
-                "which provides more powerful configuration capabilities.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-            self.sanitize = kwargs.pop("sanitize", _actually_empty)
-            self.config = kwargs.pop("config", {})
-            self.preset = kwargs.pop("preset", "default")
-
-        else:
+        if extensions := kwargs.pop("extensions", None):
             # Normal mode
-            extensions = kwargs.pop(
-                "extensions",
-                {
-                    "Blockquote": True,
-                    "Bold": True,
-                    "BulletList": True,
-                    "Heading": True,
-                    "HorizontalRule": True,
-                    "Italic": True,
-                    "Link": True,
-                    "OrderedList": True,
-                    "Strike": True,
-                    "Subscript": True,
-                    "Superscript": True,
-                    "Underline": True,
-                },
-            )
-
             sanitize = kwargs.pop("sanitize", True)
             if sanitize is True:
                 self.sanitize = create_sanitizer(extensions)
@@ -111,6 +80,19 @@ class ProseEditorField(models.TextField):
             # differentiate from old-style config
             self.config = {"extensions": expanded_extensions}
             self.preset = kwargs.pop("preset", "configurable")
+
+        else:
+            # Legacy mode
+            warnings.warn(
+                "Using the 'config' parameter with ProseEditorField is deprecated and will be "
+                "removed in a future version. Please use the 'extensions' parameter instead, "
+                "which provides more powerful configuration capabilities.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            self.sanitize = kwargs.pop("sanitize", _actually_empty)
+            self.config = kwargs.pop("config", {})
+            self.preset = kwargs.pop("preset", "default")
 
         super().__init__(*args, **kwargs)
 
