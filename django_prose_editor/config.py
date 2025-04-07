@@ -238,18 +238,21 @@ def expand_extensions(extensions: dict[str, Any]) -> dict[str, Any]:
     # Include user-specified extensions
     expanded.update(extensions)
 
-    # Resolve dependencies
-    for extension, deps in EXTENSION_DEPENDENCIES.items():
-        if extension in expanded and (expanded[extension] is not False):
-            for dep in deps:
-                if dep not in expanded:
-                    expanded[dep] = True
-
-    return {
+    # Filter out disabled extensions
+    expanded = {
         extension: config
         for extension, config in expanded.items()
         if config is not False
     }
+
+    # Resolve dependencies
+    for extension, deps in EXTENSION_DEPENDENCIES.items():
+        if extension in expanded:
+            for dep in deps:
+                if dep not in expanded:
+                    expanded[dep] = True
+
+    return expanded
 
 
 def js_from_extensions(
