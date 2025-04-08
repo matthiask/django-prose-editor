@@ -1,5 +1,6 @@
 import { Link as BaseLink } from "@tiptap/extension-link"
 
+import { materialMenuButton } from "./menu.js"
 import { gettext, updateAttrsDialog } from "./utils.js"
 
 const linkDialogImpl = (editor, attrs, options) => {
@@ -55,6 +56,8 @@ export const Link = BaseLink.extend({
   },
 
   addCommands() {
+    this.editor.storage.menu.addItems("link", menuItems)
+
     return {
       ...this.parent?.(),
       addLink:
@@ -91,3 +94,27 @@ export const Link = BaseLink.extend({
     }
   },
 })
+
+const menuItems = () => [
+  {
+    command(editor) {
+      editor.chain().addLink().focus().run()
+    },
+    enabled(editor) {
+      return !editor.state.selection.empty || editor.isActive("link")
+    },
+    dom: materialMenuButton("insert_link", "insert link"),
+    active(editor) {
+      return editor.isActive("link")
+    },
+  },
+  {
+    command(editor) {
+      editor.chain().focus().unsetLink().run()
+    },
+    dom: materialMenuButton("link_off", "remove link"),
+    hidden(editor) {
+      return !editor.isActive("link")
+    },
+  },
+]

@@ -5,37 +5,55 @@ import { crel, gettext } from "./utils.js"
 const findExtension = (editor, extension) =>
   editor.extensionManager.extensions.find((e) => e.name === extension)
 
-export const menuItemsFromEditor = (editor) => {
-  // Basic menu items
-  return [
-    blockTypeMenuItems(editor),
-    nodesMenuItems(editor),
-    linkMenuItems(editor),
-    markMenuItems(editor),
-    textAlignMenuItems(editor),
-    tableMenuItems(editor),
-    historyMenuItems(editor),
-    utilityMenuItems(editor),
-  ].filter(Boolean)
-}
-
 export const Menu = Extension.create({
   name: "menu",
 
-  addOptions() {
-    return {
-      menuItems: menuItemsFromEditor,
+  addStorage() {
+    // Menu items
+    const _items = {}
+    // Menu item groups in order
+    const _groups = []
+    const addItems = (group, items = 0, before = 0) => {
+      if (!_groups.includes(group)) {
+        let pos
+        if (before && (pos = _groups.indexOf(before)) !== -1) {
+          _groups.splice(pos, 0, group)
+        } else {
+          _groups.push(group)
+        }
+        _items[group] = []
+      }
+      const g = _items[group]
+      if (items && !g.includes(items)) {
+        g.push(items)
+      }
     }
+
+    const itemGroups = (args) => {
+      return _groups.map((group) =>
+        _items[group].flatMap((fn) => fn(args)).flat(),
+      )
+    }
+
+    addItems("blockType", blockTypeMenuItems)
+    addItems("nodes", nodesMenuItems)
+    addItems("marks", markMenuItems)
+    addItems("link")
+    addItems("textAlign", textAlignMenuItems)
+    addItems("history", historyMenuItems)
+    addItems("utility", utilityMenuItems)
+
+    return { _items, _groups, addItems, itemGroups }
   },
 
   addProseMirrorPlugins() {
     const editor = this.editor
-    const menuItems = this.options.menuItems(editor)
+    const itemGroups = this.storage.itemGroups({ editor })
 
     return [
       new Plugin({
         view() {
-          const menuView = new MenuView(editor, menuItems)
+          const menuView = new MenuView(editor, itemGroups)
           const editorDomParent = editor.view.dom.parentNode
 
           // Insert both the placeholder and menubar
@@ -183,7 +201,7 @@ function textButton(textContent, title = "") {
 }
 */
 
-function materialButton(textContent, title) {
+export function materialMenuButton(textContent, title) {
   return crel("span", {
     className: "prose-menubar__button material-icons",
     textContent,
@@ -191,7 +209,7 @@ function materialButton(textContent, title) {
   })
 }
 
-function svgButton(innerHTML, title = "") {
+export function svgMenuButton(innerHTML, title = "") {
   return crel("span", {
     className: "prose-menubar__button",
     innerHTML,
@@ -223,7 +241,7 @@ const headingButton = (level) => {
   }
 }
 
-function blockTypeMenuItems(editor) {
+function blockTypeMenuItems({ editor }) {
   const schema = editor.schema
 
   const extension = findExtension(editor, "heading")
@@ -236,7 +254,7 @@ function blockTypeMenuItems(editor) {
       command(editor) {
         editor.chain().focus().toggleBulletList().run()
       },
-      dom: materialButton("format_list_bulleted", "unordered list"),
+      dom: materialMenuButton("format_list_bulleted", "unordered list"),
       active(_editor) {
         return false
       },
@@ -250,7 +268,7 @@ function blockTypeMenuItems(editor) {
       command(editor) {
         editor.chain().focus().toggleOrderedList().run()
       },
-      dom: materialButton("format_list_numbered", "ordered list"),
+      dom: materialMenuButton("format_list_numbered", "ordered list"),
       active(editor) {
         return editor.isActive("orderedList")
       },
@@ -263,7 +281,7 @@ function blockTypeMenuItems(editor) {
         command(editor) {
           editor.chain().focus().updateListAttributes().run()
         },
-        dom: materialButton("tune", gettext("List properties")),
+        dom: materialMenuButton("tune", gettext("List properties")),
         hidden(editor) {
           return !editor.isActive("orderedList")
         },
@@ -271,7 +289,7 @@ function blockTypeMenuItems(editor) {
     }
   }
 
-  if (!items.length) return null
+  if (!items.length) return []
 
   return [
     ...items,
@@ -279,7 +297,7 @@ function blockTypeMenuItems(editor) {
       command(editor) {
         editor.chain().focus().setParagraph().run()
       },
-      dom: materialButton("notes", "paragraph"),
+      dom: materialMenuButton("notes", "paragraph"),
       active(_editor) {
         return false
       },
@@ -290,7 +308,7 @@ function blockTypeMenuItems(editor) {
   ]
 }
 
-function nodesMenuItems(editor) {
+function nodesMenuItems({ editor }) {
   const schema = editor.schema
   const items = []
   let type
@@ -299,7 +317,7 @@ function nodesMenuItems(editor) {
       command(editor) {
         editor.chain().focus().toggleBlockquote().run()
       },
-      dom: materialButton("format_quote", "blockquote"),
+      dom: materialMenuButton("format_quote", "blockquote"),
       active(editor) {
         return editor.isActive("blockquote")
       },
@@ -313,7 +331,7 @@ function nodesMenuItems(editor) {
       command(editor) {
         editor.chain().focus().setHorizontalRule().run()
       },
-      dom: materialButton("horizontal_rule", "horizontal rule"),
+      dom: materialMenuButton("horizontal_rule", "horizontal rule"),
       active(_editor) {
         return false
       },
@@ -327,7 +345,7 @@ function nodesMenuItems(editor) {
       command(editor) {
         editor.chain().focus().insertFigure().run()
       },
-      dom: materialButton("image", "figure"),
+      dom: materialMenuButton("image", "figure"),
       active(editor) {
         return editor.isActive("figure")
       },
@@ -337,7 +355,7 @@ function nodesMenuItems(editor) {
   return items
 }
 
-function markMenuItems(editor) {
+function markMenuItems({ editor }) {
   const mark = (markType, dom) =>
     markType in editor.schema.marks
       ? {
@@ -351,45 +369,16 @@ function markMenuItems(editor) {
       : null
 
   return [
-    mark("bold", materialButton("format_bold", "bold")),
-    mark("italic", materialButton("format_italic", "italic")),
-    mark("underline", materialButton("format_underline", "underline")),
-    mark("strike", materialButton("format_strikethrough", "strike")),
-    mark("subscript", materialButton("subscript", "subscript")),
-    mark("superscript", materialButton("superscript", "superscript")),
+    mark("bold", materialMenuButton("format_bold", "bold")),
+    mark("italic", materialMenuButton("format_italic", "italic")),
+    mark("underline", materialMenuButton("format_underline", "underline")),
+    mark("strike", materialMenuButton("format_strikethrough", "strike")),
+    mark("subscript", materialMenuButton("subscript", "subscript")),
+    mark("superscript", materialMenuButton("superscript", "superscript")),
   ].filter(Boolean)
 }
 
-function linkMenuItems(editor) {
-  const mark = editor.schema.marks.link
-  if (!mark) return null
-
-  return [
-    {
-      command(editor) {
-        editor.chain().addLink().focus().run()
-      },
-      enabled(editor) {
-        return !editor.state.selection.empty || editor.isActive("link")
-      },
-      dom: materialButton("insert_link", "insert link"),
-      active(editor) {
-        return editor.isActive(mark)
-      },
-    },
-    {
-      command(editor) {
-        editor.chain().focus().unsetLink().run()
-      },
-      dom: materialButton("link_off", "remove link"),
-      hidden(editor) {
-        return !editor.isActive("link")
-      },
-    },
-  ]
-}
-
-function historyMenuItems(editor) {
+function historyMenuItems({ editor }) {
   return findExtension(editor, "history")
     ? [
         {
@@ -399,7 +388,7 @@ function historyMenuItems(editor) {
           enabled(editor) {
             return editor.can().undo()
           },
-          dom: materialButton("undo", "undo"),
+          dom: materialMenuButton("undo", "undo"),
           active() {
             return false
           },
@@ -411,7 +400,7 @@ function historyMenuItems(editor) {
           enabled(editor) {
             return editor.can().redo()
           },
-          dom: materialButton("redo", "redo"),
+          dom: materialMenuButton("redo", "redo"),
           active() {
             return false
           },
@@ -420,12 +409,12 @@ function historyMenuItems(editor) {
     : null
 }
 
-function textAlignMenuItems(editor) {
+function textAlignMenuItems({ editor }) {
   const alignmentItem = (alignment) => ({
     command(editor) {
       editor.chain().focus().setTextAlign(alignment).run()
     },
-    dom: materialButton(`format_align_${alignment}`, alignment),
+    dom: materialMenuButton(`format_align_${alignment}`, alignment),
     active() {
       return editor.isActive({ textAlign: alignment })
     },
@@ -438,117 +427,10 @@ function textAlignMenuItems(editor) {
         alignmentItem("right"),
         alignmentItem("justify"),
       ]
-    : null
+    : []
 }
 
-function tableMenuItems(editor) {
-  if (!findExtension(editor, "table")) return null
-
-  const tableManipulationItem = (command, dom) => ({
-    command,
-    dom,
-    hidden() {
-      return !editor.isActive("table")
-    },
-  })
-
-  return [
-    {
-      command(editor) {
-        editor.chain().focus().insertTableWithOptions().run()
-      },
-      dom: materialButton("grid_on", "Insert table"),
-    },
-    tableManipulationItem(
-      (editor) => {
-        editor.chain().focus().addColumnAfter().run()
-      },
-      svgButton(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2"/>
-      <line x1="9" y1="3" x2="9" y2="21"/>
-      <rect x="15" y="3" width="6" height="18" rx="1" fill="#4CAF50" fill-opacity="0.3" stroke="#4CAF50"/>
-      <line x1="18" y1="9" x2="18" y2="15" stroke="#4CAF50" stroke-width="2"/>
-      <line x1="15" y1="12" x2="21" y2="12" stroke="#4CAF50" stroke-width="2"/>
-    </svg>`,
-        "Add column",
-      ),
-    ),
-    tableManipulationItem(
-      (editor) => {
-        editor.chain().focus().deleteColumn().run()
-      },
-      svgButton(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2"/>
-      <line x1="9" y1="3" x2="9" y2="21"/>
-      <rect x="15" y="3" width="6" height="18" rx="1" fill="#F44336" fill-opacity="0.3" stroke="#F44336"/>
-      <line x1="15" y1="12" x2="21" y2="12" stroke="#F44336" stroke-width="2"/>
-    </svg>`,
-        "Delete column",
-      ),
-    ),
-    tableManipulationItem(
-      (editor) => {
-        editor.chain().focus().addRowAfter().run()
-      },
-      svgButton(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2"/>
-      <line x1="3" y1="9" x2="21" y2="9"/>
-      <rect x="3" y="15" width="18" height="6" rx="1" fill="#4CAF50" fill-opacity="0.3" stroke="#4CAF50"/>
-      <line x1="12" y1="15" x2="12" y2="21" stroke="#4CAF50" stroke-width="2"/>
-      <line x1="9" y1="18" x2="15" y2="18" stroke="#4CAF50" stroke-width="2"/>
-    </svg>`,
-        "Add row",
-      ),
-    ),
-    tableManipulationItem(
-      (editor) => {
-        editor.chain().focus().deleteRow().run()
-      },
-      svgButton(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2"/>
-      <line x1="3" y1="9" x2="21" y2="9"/>
-      <rect x="3" y="15" width="18" height="6" rx="1" fill="#F44336" fill-opacity="0.3" stroke="#F44336"/>
-      <line x1="9" y1="18" x2="15" y2="18" stroke="#F44336" stroke-width="2"/>
-    </svg>`,
-        "Delete row",
-      ),
-    ),
-    tableManipulationItem(
-      (editor) => {
-        editor.chain().focus().mergeCells().run()
-      },
-      materialButton("call_merge", "Merge cells"),
-    ),
-    tableManipulationItem(
-      (editor) => {
-        editor.chain().focus().splitCell().run()
-      },
-      materialButton("call_split", "Split cell"),
-    ),
-    // Toggle header cell (works on selected cells or current cell)
-    tableManipulationItem(
-      (editor) => {
-        editor.chain().focus().toggleHeaderCell().run()
-      },
-      svgButton(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2"/>
-      <rect x="3" y="3" width="18" height="6" rx="1" fill="#2196F3" fill-opacity="0.3" stroke="#2196F3"/>
-      <line x1="3" y1="9" x2="21" y2="9" stroke-width="2"/>
-      <line x1="9" y1="3" x2="9" y2="21"/>
-      <line x1="15" y1="3" x2="15" y2="21"/>
-    </svg>`,
-        "Toggle header cell",
-      ),
-    ),
-  ]
-}
-
-function utilityMenuItems(editor) {
+function utilityMenuItems({ editor }) {
   const items = []
 
   if (findExtension(editor, "html")) {
@@ -556,13 +438,13 @@ function utilityMenuItems(editor) {
       command(editor) {
         editor.commands.editHTML()
       },
-      dom: materialButton("code", "edit HTML"),
+      dom: materialMenuButton("code", "edit HTML"),
     })
   }
 
   if (findExtension(editor, "fullscreen")) {
     // Create button with dynamic content based on fullscreen state
-    const dom = materialButton("", gettext("Toggle fullscreen"))
+    const dom = materialMenuButton("", gettext("Toggle fullscreen"))
 
     items.push({
       command(editor) {

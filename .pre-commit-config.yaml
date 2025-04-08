@@ -13,10 +13,6 @@ repos:
       - id: end-of-file-fixer
       - id: mixed-line-ending
       - id: trailing-whitespace
-  - repo: https://github.com/rstcheck/rstcheck
-    rev: v6.2.0
-    hooks:
-      - id: rstcheck
   - repo: local
     hooks:
       - id: forbid-sourcemap

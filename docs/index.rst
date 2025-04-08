@@ -5,5 +5,6 @@
    :caption: Advanced Topics
 
    configuration_language
+   custom_extensions
 
 .. include:: ../CHANGELOG.rst
