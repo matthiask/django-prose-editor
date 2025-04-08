@@ -406,7 +406,7 @@ function historyMenuItems({ editor }) {
           },
         },
       ]
-    : null
+    : []
 }
 
 function textAlignMenuItems({ editor }) {
