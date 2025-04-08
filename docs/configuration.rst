@@ -1,19 +1,52 @@
-Editor Configuration Language
-=============================
+Configuration
+=============
+
+Introduction
+------------
+
+ProseMirror does a really good job of only allowing content which conforms to a
+particular scheme. Of course users can submit what they want, they are not
+constrainted by the HTML widgets you're using. You should always sanitize the
+HTML submitted on the server side.
+
+The recommended approach is to use the extensions mechanism for configuring the
+prose editor field which automatically synchronizes editor extensions with
+sanitization rules:
+
+.. code-block:: python
+
+    from django_prose_editor.fields import ProseEditorField
+
+    content = ProseEditorField(
+        extensions={
+            "Bold": True,
+            "Italic": True,
+            "BulletList": True,
+            "Link": True,
+        },
+        # sanitize=True is the default when using extensions
+    )
+
+This ensures that the HTML sanitization rules exactly match what the editor
+allows, preventing inconsistencies between editing capabilities and allowed
+output. Note that you need the nh3 library for this which is automatically
+installed when you specify the requirement as
+``django-prose-editor[sanitize]``.
+
 
 Overview
-~~~~~~~~
+--------
 
-Django Prose Editor provides a unified configuration approach that synchronizes front-end editor capabilities with server-side sanitization rules. This ensures consistency between what users can create in the editor and what is allowed after sanitization.
+The editor can be customized in several ways:
 
-Basic Configuration
-~~~~~~~~~~~~~~~~~~~
+1. Using the new extensions mechanism with ``ProseEditorField`` (recommended).
+2. Using the ``config`` parameter to include/exclude specific extensions
+   (legacy approach)
+3. Creating custom presets for more advanced customization
 
-The configuration system uses a declarative format that defines:
+Note that the ``ProseEditorField`` automatically uses the extension mechanism
+when passing ``extensions`` and falls back to the legacy behavior otherwise.
 
-1. Editor extensions (Tiptap extensions)
-2. HTML elements and attributes allowed by these extensions
-3. Server-side sanitization rules derived from the configuration
 
 Example Configuration
 ---------------------
@@ -70,6 +103,22 @@ You can also pass additional configurations to extensions:
             "Table": True,
         }
     )
+
+Available extensions include:
+
+* Text formatting: ``Bold``, ``Italic``, ``Strike``, ``Subscript``, ``Superscript``, ``Underline``
+* Lists: ``BulletList``, ``OrderedList``, ``ListItem``
+* Structure: ``Blockquote``, ``Heading``, ``HorizontalRule``
+* Links: ``Link``
+* Tables: ``Table``, ``TableRow``, ``TableHeader``, ``TableCell``
+
+Check the source code for more!
+
+The extensions which are enabled by default are ``Document``, ``Paragraph`` and
+``Text`` for the document, ``Menu``, ``History``, ``Dropcursor`` and
+``Gapcursor`` for the editor functionality and ``NoSpellCheck`` to avoid ugly
+spell checker interference. You may disable some of these core extensions e.g.
+by adding ``"History": False`` to the extensions dict.
 
 Server-side Sanitization
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -475,3 +524,59 @@ Here's the example:
     }
 
     initializeEditors(createEditor, `[${marker}]`)
+
+
+Old Approach
+------------
+
+For backward compatibility, you can still use the legacy
+``SanitizedProseEditorField``, although this approach is now discouraged since
+it uses the default configuration of the nh3 sanitizer which is safe but allows
+many many HTML tags and attributes:
+
+.. code-block:: python
+
+    from django_prose_editor.sanitized import SanitizedProseEditorField
+
+    description = SanitizedProseEditorField()
+
+Alternatively, you can pass your own callable receiving and returning HTML
+using the ``sanitize`` keyword argument.
+
+Simple Customization with Config (Deprecated)
+---------------------------------------------
+
+For basic customization, you can use the ``config`` parameter to specify which
+extensions should be enabled. This was the only available way to configure the
+prose editor up to version 0.9. It's now deprecated because using the
+``extensions`` mechanism documented above is much more powerful, integrated and
+secure.
+
+For backwards compatibility, sanitization is off by default.
+
+.. code-block:: python
+
+    from django_prose_editor.fields import ProseEditorField
+
+    class Article(models.Model):
+        content = ProseEditorField(
+            config={
+                "types": [
+                    "Bold", "Italic", "Strike", "BulletList", "OrderedList",
+                    "HorizontalRule", "Link",
+                ],
+                "history": True,
+                "html": True,
+                "typographic": True,
+            }
+        )
+
+All extension names now use the Tiptap names (e.g., ``Bold``, ``Italic``,
+``BulletList``, ``HorizontalRule``). For backward compatibility, the following legacy
+ProseMirror-style names are still supported:
+
+* Legacy node names: ``bullet_list`` → ``BulletList``, ``ordered_list`` →
+  ``OrderedList``, ``horizontal_rule`` → ``HorizontalRule``
+* Legacy mark names: ``strong`` → ``Bold``, ``em`` → ``Italic``,
+  ``strikethrough`` → ``Strike``, ``sub`` → ``Subscript``, ``sup`` → ``Superscript``,
+  ``link`` → ``Link``
