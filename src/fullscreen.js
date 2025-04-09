@@ -30,7 +30,7 @@ export const Fullscreen = Extension.create({
 
           // Force the menu to update after state change
           setTimeout(() => {
-            editor.view.update([])
+            editor.view.dispatch(editor.view.state.tr)
           }, 0)
 
           if (editor.storage.fullscreen.fullscreen) {
