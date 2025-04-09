@@ -71,7 +71,9 @@ export function createTextareaEditor(textarea, extensions) {
   const editor = new Editor({
     element,
     editable: !disabled,
-    extensions,
+    // Force a unique extension instance per editor
+    // See https://github.com/ueberdosis/tiptap/pull/6060
+    extensions: extensions.map((extension) => extension.extend()),
     content: textarea.value,
     onUpdate({ editor }) {
       textarea.value = editor.getHTML()
