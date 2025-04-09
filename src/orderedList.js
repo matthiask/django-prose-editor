@@ -1,4 +1,4 @@
-import { OrderedList as TiptapOrderedList } from "@tiptap/extension-ordered-list"
+import { OrderedList as TiptapOrderedList } from "@tiptap/extension-list"
 
 import { gettext, updateAttrsDialog } from "./utils.js"
 

@@ -11,6 +11,7 @@
     "@tiptap/extension-highlight": "^3.0.0-next.8",
     "@tiptap/extension-image": "^3.0.0-next.8",
     "@tiptap/extension-link": "^3.0.0-next.8",
+    "@tiptap/extension-list": "^3.0.0-next.8",
     "@tiptap/extension-subscript": "^3.0.0-next.8",
     "@tiptap/extension-superscript": "^3.0.0-next.8",
     "@tiptap/extension-table": "^3.0.0-next.8",

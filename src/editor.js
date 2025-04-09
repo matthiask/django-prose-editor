@@ -13,13 +13,9 @@ export { Text } from "@tiptap/extension-text"
 
 export { Blockquote } from "@tiptap/extension-blockquote"
 export { Bold } from "@tiptap/extension-bold"
-export { BulletList } from "@tiptap/extension-bullet-list"
 export { Heading } from "@tiptap/extension-heading"
 export { HorizontalRule } from "@tiptap/extension-horizontal-rule"
 export { Italic } from "@tiptap/extension-italic"
-export { ListItem } from "@tiptap/extension-list-item"
-// We're replacing the default OrderedList with our custom version below
-// export { OrderedList } from "@tiptap/extension-ordered-list"
 export { Strike } from "@tiptap/extension-strike"
 export { Subscript } from "@tiptap/extension-subscript"
 export { Superscript } from "@tiptap/extension-superscript"
@@ -53,6 +49,7 @@ export * as pm from "./pm.js"
 
 // Import our custom OrderedList
 export { OrderedList } from "./orderedList.js"
+export { BulletList, ListItem } from "@tiptap/extension-list"
 
 // Import Figure extension
 export { Image } from "@tiptap/extension-image"

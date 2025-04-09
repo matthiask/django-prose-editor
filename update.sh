@@ -6,6 +6,7 @@ yarn upgrade \
 @tiptap/extension-highlight@next \
 @tiptap/extension-image@next \
 @tiptap/extension-link@next \
+@tiptap/extension-list@next \
 @tiptap/extension-subscript@next \
 @tiptap/extension-superscript@next \
 @tiptap/extension-table@next \
