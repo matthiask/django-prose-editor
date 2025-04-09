@@ -2,9 +2,11 @@ import "./editor.css"
 
 import { Editor } from "@tiptap/core"
 export { Document } from "@tiptap/extension-document"
-export { Dropcursor } from "@tiptap/extension-dropcursor"
-export { Gapcursor } from "@tiptap/extension-gapcursor"
-export { History } from "@tiptap/extension-history"
+
+export { Dropcursor } from "@tiptap/extensions"
+export { Gapcursor } from "@tiptap/extensions"
+export { TrailingNode } from "@tiptap/extensions"
+
 export { Paragraph } from "@tiptap/extension-paragraph"
 export { HardBreak } from "@tiptap/extension-hard-break"
 export { Text } from "@tiptap/extension-text"
@@ -33,9 +35,7 @@ export { TextStyle } from "@tiptap/extension-text-style"
 
 // export { Table } from "@tiptap/extension-table"
 export { Table } from "./table.js"
-export { TableCell } from "@tiptap/extension-table-cell"
-export { TableHeader } from "@tiptap/extension-table-header"
-export { TableRow } from "@tiptap/extension-table-row"
+export { TableCell, TableHeader, TableRow } from "@tiptap/extension-table"
 
 export { HTML } from "./html.js"
 export { Link } from "./link.js"
@@ -44,6 +44,7 @@ export { Typographic } from "./typographic.js"
 export { Fullscreen } from "./fullscreen.js"
 export { Plugin } from "@tiptap/pm/state"
 
+export * from "./history.js"
 export * from "./menu.js"
 export * from "./utils.js"
 export * from "@tiptap/core"
@@ -71,9 +72,7 @@ export function createTextareaEditor(textarea, extensions) {
   const editor = new Editor({
     element,
     editable: !disabled,
-    // Force a unique extension instance per editor
-    // See https://github.com/ueberdosis/tiptap/pull/6060
-    extensions: extensions.map((extension) => extension.extend()),
+    extensions,
     content: textarea.value,
     onUpdate({ editor }) {
       textarea.value = editor.getHTML()

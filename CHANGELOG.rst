@@ -27,7 +27,9 @@ Next version
   CSS variables to the ProseMirror editing area.
 - Fixed the django-content-editor support tweak where an empty label would make
   the editor move to the left border.
-- Updated Tiptap.
+- Updated Tiptap to the 3.0.0 pre-release. This was the easiest way to ensure
+  that extensions all get their unique storage per editor instance instead of
+  (unexpectedly!) shared storage without resorting to hacks.
 - Added Django 5.2.
 - Modified the ``HTML`` extension to prettify the HTML code somewhat.
 - Added a new ``Fullscreen`` extension.
