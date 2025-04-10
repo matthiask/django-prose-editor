@@ -37,9 +37,9 @@ def check_js_preset_configuration(app_configs, **kwargs):
 
 
 @register()
-def check_deprecated_config_parameter(app_configs, **kwargs):
+def check_extensions_parameter(app_configs, **kwargs):
     """
-    Check for usage of the deprecated 'config' parameter instead of 'extensions'.
+    Check for usage of 'extensions' parameter (because we want that!)
     """
     from django_prose_editor.fields import ProseEditorField
 
@@ -64,10 +64,12 @@ def check_deprecated_config_parameter(app_configs, **kwargs):
                 ):
                     warnings.append(
                         Warning(
-                            "Using the 'config' parameter with ProseEditorField is deprecated and will be "
-                            "removed in a future version. Use the 'extensions' parameter instead, "
-                            "which provides more powerful configuration capabilities.",
-                            hint="Replace 'config' with properly configured 'extensions' parameter and be aware that sanitization will be active by default if doing so.",
+                            "This ProseEditorField is using the legacy configuration format which is "
+                            "deprecated and will be removed in a future version. Add the 'extensions' "
+                            "parameter explicitly to use the new configuration format.",
+                            hint="Either you have an explicit 'config' parameter or you are using "
+                            "neither 'config' nor 'extensions.' "
+                            "Note that sanitization will be active by default with the new format.",
                             obj=f"{model._meta.label}.{field.name}",
                             id="django_prose_editor.W001",
                         )
