@@ -1,3 +1,4 @@
+#!/bin/sh
 yarn upgrade \
 @tiptap/core@next \
 @tiptap/extension-code@next \
