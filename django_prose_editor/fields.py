@@ -1,5 +1,4 @@
 import re
-import warnings
 
 from django import forms
 from django.contrib.admin import widgets
@@ -89,13 +88,6 @@ class ProseEditorField(models.TextField):
 
         else:
             # Legacy mode
-            warnings.warn(
-                "Using the 'config' parameter with ProseEditorField is deprecated and will be "
-                "removed in a future version. Please use the 'extensions' parameter instead, "
-                "which provides more powerful configuration capabilities.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
             self.sanitize = kwargs.pop("sanitize", _actually_empty)
             self.config = kwargs.pop("config", {})
             self.preset = kwargs.pop("preset", "default")

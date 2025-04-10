@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.conf import settings
 from django.core.checks import Error, Warning, register
 
@@ -33,6 +34,46 @@ def check_js_preset_configuration(app_configs, **kwargs):
             )
 
     return errors
+
+
+@register()
+def check_deprecated_config_parameter(app_configs, **kwargs):
+    """
+    Check for usage of the deprecated 'config' parameter instead of 'extensions'.
+    """
+    from django_prose_editor.fields import ProseEditorField
+
+    warnings = []
+
+    # Get models to check based on provided app_configs or all models
+    models_to_check = []
+    if app_configs:
+        for app_config in app_configs:
+            models_to_check.extend(app_config.get_models())
+    else:
+        models_to_check = apps.get_models()
+
+    # Check models for fields using deprecated config
+    for model in models_to_check:
+        for field in model._meta.fields:
+            if isinstance(field, ProseEditorField):
+                # Check if this field is using legacy config (no 'extensions' key)
+                if (
+                    not isinstance(field.config, dict)
+                    or "extensions" not in field.config
+                ):
+                    warnings.append(
+                        Warning(
+                            "Using the 'config' parameter with ProseEditorField is deprecated and will be "
+                            "removed in a future version. Use the 'extensions' parameter instead, "
+                            "which provides more powerful configuration capabilities.",
+                            hint="Replace 'config' with properly configured 'extensions' parameter and be aware that sanitization will be active by default if doing so.",
+                            obj=f"{model._meta.label}.{field.name}",
+                            id="django_prose_editor.W001",
+                        )
+                    )
+
+    return warnings
 
 
 @register()

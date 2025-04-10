@@ -11,6 +11,9 @@ Next version
   active by default if using this mechanism.
   automatically uses the new extensions mechanism except if you pass the old
   ``config`` keyword argument.
+- Using the ``ProseEditorField`` without the ``extensions`` parameter has been
+  deprecated, and a system check warning has been added for automatically
+  detecting this.
 - Added support for specifying editor extensions using the
   ``DJANGO_PROSE_EDITOR_EXTENSIONS`` setting, which allows transparently adding
   JavaScript modules to the editor without having to write your own preset.
