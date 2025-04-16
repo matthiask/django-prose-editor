@@ -49,7 +49,7 @@ Next version
   Django 5.0. Python 3.10 and Django 4.2 are still tested so we should be safe.
 - Added list style overrides to hopefully make lists usable with the Grappelli
   admin skin.
-- Disallowed overriding the default editor preset.
+- Disallowed overriding the ``default`` and the ``configurable`` editor preset.
 - Hide the menubar when the editor is disabled.
 - Removed min and max width from the ``.prose-editor`` DIV.
 - Added an optional ``sanitize`` argument to the ``ProseEditorFormField`` which
