@@ -30,6 +30,7 @@ django-prose-editor[sanitize]``) the following should get you started:
    configuration
    custom_extensions
    forms
+   system_checks
    bundlers
    development
    changelog

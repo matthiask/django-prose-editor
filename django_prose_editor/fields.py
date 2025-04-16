@@ -89,7 +89,9 @@ class ProseEditorField(models.TextField):
 
         if "extensions" in self.config:
             # Normal mode
-            self.sanitize = _create_sanitizer(kwargs.pop("sanitize", False), self.config)
+            self.sanitize = _create_sanitizer(
+                kwargs.pop("sanitize", False), self.config
+            )
             self.preset = kwargs.pop("preset", "configurable")
 
         else:
