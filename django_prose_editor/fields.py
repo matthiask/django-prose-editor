@@ -29,7 +29,7 @@ def _identity(x):
     return x
 
 
-def create_sanitizer(config):
+def create_sanitizer(extensions):
     """Create a sanitizer function based on extension configuration."""
     try:
         import nh3
@@ -39,7 +39,7 @@ def create_sanitizer(config):
             "Install django-prose-editor[sanitize] or pip install nh3"
         )
 
-    nh3_kwargs = allowlist_from_extensions(expand_extensions(config["extensions"]))
+    nh3_kwargs = allowlist_from_extensions(expand_extensions(extensions))
     return lambda html: _actually_empty(nh3.clean(html, **nh3_kwargs))
 
 
@@ -48,10 +48,13 @@ def _create_sanitizer(argument, config):
         return _actually_empty
 
     if argument is True:
-        return create_sanitizer(config)
+        return create_sanitizer(config["extensions"])
 
     if isinstance(argument, (list, tuple)):
-        argument = [fn(config) if fn == create_sanitizer else fn for fn in argument]
+        argument = [
+            fn(config["extensions"]) if fn == create_sanitizer else fn
+            for fn in argument
+        ]
 
         def apply(html):
             for fn in reversed(argument):
@@ -78,7 +81,7 @@ class ProseEditorField(models.TextField):
     Args:
         config: Dictionary mapping extension names to their configuration
         preset: Optional JavaScript preset name to override the default
-        sanitize: Whether to enable sanitization (defaults to True) or a custom sanitizer function
+        sanitize: Whether to enable sanitization or a custom sanitizer function
     """
 
     def __init__(self, *args, **kwargs):
@@ -141,6 +144,8 @@ class ProseEditorFormField(forms.CharField):
 
     def __init__(self, *args, **kwargs):
         self.config = kwargs.pop("config", {})
+        if extensions := kwargs.pop("extensions", None):
+            self.config["extensions"] = extensions
 
         if "extensions" in self.config:
             # Normal mode
