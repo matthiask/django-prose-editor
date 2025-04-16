@@ -11,7 +11,8 @@ Install the package into your environment:
     pip install django-prose-editor[sanitize]
 
 The ``sanitize`` extra automatically installs nh3 for the recommended HTML
-sanitization. You can omit this if you want to use a different HTML sanitizer.
+sanitization. It's strongly recommended to use this option for secure HTML processing.
+You only need to omit this if you plan to use a different HTML sanitizer.
 
 Add ``django_prose_editor`` to ``INSTALLED_APPS``:
 
@@ -33,7 +34,10 @@ Replace ``models.TextField`` with ``ProseEditorField`` where appropriate:
     from django_prose_editor.fields import ProseEditorField
 
     class Project(models.Model):
-        description = ProseEditorField(extensions={"Bold": True, "Italic": True})
+        description = ProseEditorField(
+            extensions={"Bold": True, "Italic": True},
+            sanitize=True  # Recommended to enable sanitization
+        )
 
 Note! No migrations will be generated when switching from and to
 ``models.TextField``. That's by design. Those migrations are mostly annoying.

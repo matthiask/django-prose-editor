@@ -18,7 +18,7 @@ django-prose-editor[sanitize]``) the following should get you started:
             "BulletList": True,
             "Link": True,
         },
-        # sanitize=True is the default when using extensions
+        sanitize=True  # Enable sanitization based on extension configuration
     )
 
 

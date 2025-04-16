@@ -9,7 +9,10 @@ respectively the widget includes the necessary CSS and JavaScript:
     from django_prose_editor.fields import ProseEditorFormField
 
     class Form(forms.Form):
-        text = ProseEditorFormField()
+        text = ProseEditorFormField(
+            extensions={"Bold": True, "Italic": True},
+            sanitize=True  # Recommended to enable sanitization
+        )
 
 Or maybe you want to use ``django_prose_editor.widgets.ProseEditorWidget``, but
 why make it more complicated than necessary.

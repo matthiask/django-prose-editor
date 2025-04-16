@@ -123,21 +123,17 @@ by adding ``"History": False`` to the extensions dict.
 Server-side Sanitization
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-The configuration automatically generates appropriate sanitization rules for nh3.
-Sanitization is enabled by default for the ``ProseEditorField``:
+The recommended approach for sanitization is to use the extensions mechanism with the ``sanitize=True`` parameter. This automatically generates appropriate sanitization rules for nh3 based on your specific extension configuration:
 
 .. code-block:: python
 
-    # Automatically sanitizes based on extension configuration (sanitize=True is the default)
-    content = ProseEditorField(
-        extensions={"Bold": True, "Link": True}
-    )
-
-    # You can explicitly disable sanitization if needed
+    # Enable sanitization based on extension configuration
     content = ProseEditorField(
         extensions={"Bold": True, "Link": True},
-        sanitize=False
+        sanitize=True
     )
+
+This ensures that the sanitization ruleset precisely matches your enabled extensions, providing strict security with minimal impact on legitimate content.
 
 Advanced Sanitization Options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -529,19 +525,32 @@ Here's the example:
 Old Approach
 ------------
 
-For backward compatibility, you can still use the legacy
-``SanitizedProseEditorField``, although this approach is now discouraged since
-it uses the default configuration of the nh3 sanitizer which is safe but allows
-many many HTML tags and attributes:
+The ``SanitizedProseEditorField`` is a legacy class that automatically enables
+sanitization but uses a broad sanitization approach that allows most HTML elements.
+While secure from XSS, it's not tailored to your specific extensions:
 
 .. code-block:: python
 
     from django_prose_editor.sanitized import SanitizedProseEditorField
 
-    description = SanitizedProseEditorField()
+    description = SanitizedProseEditorField()  # Not recommended
 
-Alternatively, you can pass your own callable receiving and returning HTML
-using the ``sanitize`` keyword argument.
+Instead, it's strongly recommended to use the extension-aware sanitization approach:
+
+.. code-block:: python
+
+    from django_prose_editor.fields import ProseEditorField
+
+    description = ProseEditorField(
+        extensions={"Bold": True, "Italic": True, "Link": True},
+        sanitize=True  # Uses sanitization rules specific to these extensions
+    )
+
+This provides better security by only allowing the specific HTML elements and attributes
+needed by your enabled extensions.
+
+You can also pass your own callable receiving and returning HTML
+using the ``sanitize`` keyword argument if you need custom sanitization logic.
 
 Simple Customization with Config (Deprecated)
 ---------------------------------------------
@@ -552,7 +561,7 @@ prose editor up to version 0.9. It's now deprecated because using the
 ``extensions`` mechanism documented above is much more powerful, integrated and
 secure.
 
-For backwards compatibility, sanitization is off by default.
+When using this legacy approach, sanitization is off by default. If you need sanitization, you should consider using the newer extensions approach with sanitize=True or switch to SanitizedProseEditorField.
 
 .. code-block:: python
 
