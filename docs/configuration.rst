@@ -24,7 +24,7 @@ sanitization rules:
             "BulletList": True,
             "Link": True,
         },
-        # sanitize=True is the default when using extensions
+        sanitize=True,  # Server side sanitization is strongly recommended.
     )
 
 This ensures that the HTML sanitization rules exactly match what the editor
@@ -561,7 +561,7 @@ prose editor up to version 0.9. It's now deprecated because using the
 ``extensions`` mechanism documented above is much more powerful, integrated and
 secure.
 
-When using this legacy approach, sanitization is off by default. If you need sanitization, you should consider using the newer extensions approach with sanitize=True or switch to SanitizedProseEditorField.
+This legacy approach doesn't support sanitization at all.
 
 .. code-block:: python
 

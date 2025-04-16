@@ -75,9 +75,6 @@ class ProseEditorField(models.TextField):
     sanitization rules, ensuring that what users can create in the editor matches
     what is allowed after sanitization.
 
-    Sanitization is enabled by default and automatically configured based on the
-    extensions you enable, so you don't need to specify HTML allowlists separately.
-
     Args:
         config: Dictionary mapping extension names to their configuration
         preset: Optional JavaScript preset name to override the default
@@ -86,6 +83,8 @@ class ProseEditorField(models.TextField):
 
     def __init__(self, *args, **kwargs):
         self.config = kwargs.pop("config", {})
+        if extensions := kwargs.pop("extensions", None):
+            self.config["extensions"] = extensions
 
         if "extensions" in self.config:
             # Normal mode

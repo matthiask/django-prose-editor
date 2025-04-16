@@ -22,7 +22,7 @@ django-prose-editor[sanitize]``) the following should get you started:
             "BulletList": True,
             "Link": True,
         },
-        # sanitize=True is the default when using extensions
+        sanitize=True,  # Server side sanitization is strongly recommended.
     )
 
 Check the `documentation <https://django-prose-editor.readthedocs.io>`__.
