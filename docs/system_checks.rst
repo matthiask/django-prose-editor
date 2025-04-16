@@ -4,7 +4,7 @@ System Checks
 Django Prose Editor includes several system checks that help ensure your configuration is secure and follows best practices. These checks run automatically when you run ``python manage.py check`` and during the normal Django startup process.
 
 Error Checks
------------
+------------
 
 The following checks will raise an ``Error`` which should be addressed before deploying your application:
 
@@ -71,7 +71,7 @@ The following checks will raise an ``Error`` which should be addressed before de
        **Solution:** Make sure the 'js' key is a list of JavaScript asset URLs.
 
 Warning Checks
--------------
+--------------
 
 The following checks will raise a ``Warning`` which indicates potential issues that should be addressed:
 
@@ -137,7 +137,7 @@ The following checks will raise a ``Warning`` which indicates potential issues t
            )
 
 Running the Checks
------------------
+------------------
 
 System checks run automatically during normal Django operation, but you can also run them manually:
 
