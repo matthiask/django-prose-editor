@@ -4,6 +4,7 @@ from django.test import SimpleTestCase, override_settings
 from django_prose_editor.checks import (
     check_extensions_parameter,
     check_js_preset_configuration,
+    check_sanitization_enabled,
 )
 
 
@@ -58,5 +59,74 @@ class ChecksTests(SimpleTestCase):
                 self.assertTrue(isinstance(warning, Warning))
                 self.assertEqual(warning.id, "django_prose_editor.W001")
                 self.assertIn("legacy configuration format", warning.msg)
-                self.assertIn("Add the 'extensions' parameter", warning.msg)
-                self.assertIn("extensions", warning.hint)
+                # self.assertIn("extensions", warning.hint)
+
+    def test_sanitization_check(self):
+        """Test that all ProseEditorField instances without sanitization are caught."""
+        # Run the check function on existing models
+        warnings = check_sanitization_enabled([])
+
+        # We expect warnings for ProseEditorModel since it doesn't have sanitization
+        # but not for SanitizedProseEditorModel (has sanitization) or ConfigurableProseEditorModel (has sanitize=True)
+        warning_objects = [w.obj for w in warnings]
+
+        # Check expected warnings
+        expected_warnings = any("ProseEditorModel.description" in obj for obj in warning_objects)
+        self.assertTrue(expected_warnings, "No warning for ProseEditorModel without sanitization")
+
+        # Check unexpected warnings
+        self.assertFalse(
+            any("SanitizedProseEditorModel" in obj for obj in warning_objects),
+            "Unexpected warning for SanitizedProseEditorModel which should have sanitization"
+        )
+        self.assertFalse(
+            any("ConfigurableProseEditorModel" in obj for obj in warning_objects),
+            "Unexpected warning for ConfigurableProseEditorModel which has sanitize=True"
+        )
+
+        # Test with different field configurations using a synthetic model
+        from django.db import models
+        from django_prose_editor.fields import ProseEditorField
+
+        class TestModel(models.Model):
+            class Meta:
+                app_label = "test_app_never_installed"
+
+            # Fields with different configurations, all without sanitization
+            with_extensions = ProseEditorField(
+                config={"extensions": {"Bold": True}},
+                sanitize=False
+            )
+
+            legacy_config = ProseEditorField(
+                config={"types": ["Bold"]},
+                sanitize=False
+            )
+
+            no_config = ProseEditorField(
+                sanitize=False
+            )
+
+        # Manually add our test model to the models to check
+        warnings = check_sanitization_enabled([type("AppConfig", (), {"get_models": lambda: [TestModel]})])
+
+        # Check that we got warnings for all three fields
+        self.assertEqual(len(warnings), 3)
+
+        # Check extension field warning
+        extension_warnings = [w for w in warnings if "test_app_never_installed.TestModel.with_extensions" in w.obj]
+        self.assertEqual(len(extension_warnings), 1)
+        self.assertIn("using extensions without sanitization", extension_warnings[0].msg)
+        self.assertIn("matches your configured extensions", extension_warnings[0].hint)
+
+        # Check legacy config field warning
+        legacy_warnings = [w for w in warnings if "test_app_never_installed.TestModel.legacy_config" in w.obj]
+        self.assertEqual(len(legacy_warnings), 1)
+        self.assertIn("doesn't have sanitization enabled", legacy_warnings[0].msg)
+        self.assertIn("extensions mechanism with sanitize=True", legacy_warnings[0].hint)
+
+        # Check no config field warning
+        no_config_warnings = [w for w in warnings if "test_app_never_installed.TestModel.no_config" in w.obj]
+        self.assertEqual(len(no_config_warnings), 1)
+        self.assertIn("doesn't have sanitization enabled", no_config_warnings[0].msg)
+        self.assertIn("extensions mechanism with sanitize=True", no_config_warnings[0].hint)

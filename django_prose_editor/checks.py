@@ -39,7 +39,7 @@ def check_js_preset_configuration(app_configs, **kwargs):
 @register()
 def check_extensions_parameter(app_configs, **kwargs):
     """
-    Check for usage of 'extensions' parameter (because we want that!)
+    Check for usage of 'extensions' (because we want that!)
     """
     from django_prose_editor.fields import ProseEditorField
 
@@ -66,10 +66,7 @@ def check_extensions_parameter(app_configs, **kwargs):
                         Warning(
                             "This ProseEditorField is using the legacy configuration format which is "
                             "deprecated and will be removed in a future version. Add the 'extensions' "
-                            "parameter explicitly to use the new configuration format.",
-                            hint="Either you have an explicit 'config' parameter or you are using "
-                            "neither 'config' nor 'extensions.' "
-                            "Note that sanitization will be active by default with the new format.",
+                            "configuration explicitly to use the new configuration format.",
                             obj=f"{model._meta.label}.{field.name}",
                             id="django_prose_editor.W001",
                         )
@@ -186,3 +183,59 @@ def check_custom_extensions_configuration(app_configs, **kwargs):
                 )
 
     return errors
+
+
+@register()
+def check_sanitization_enabled(app_configs, **kwargs):
+    """
+    Check that all ProseEditorField instances have sanitization enabled.
+    """
+    from django_prose_editor.fields import ProseEditorField, _actually_empty
+
+    warnings = []
+
+    # Get models to check based on provided app_configs or all models
+    models_to_check = []
+    if app_configs:
+        for app_config in app_configs:
+            models_to_check.extend(app_config.get_models())
+    else:
+        models_to_check = apps.get_models()
+
+    # Check all models for ProseEditorField without sanitization
+    for model in models_to_check:
+        for field in model._meta.fields:
+            if isinstance(field, ProseEditorField):
+                # Check if sanitization is disabled or set to the identity function
+                if field.sanitize == _actually_empty:
+                    # Different messages based on whether using extensions or legacy config
+                    if isinstance(field.config, dict) and "extensions" in field.config:
+                        message = (
+                            "This ProseEditorField is using extensions without sanitization. "
+                            "For security, it's recommended to enable sanitization with "
+                            "sanitize=True when using extensions."
+                        )
+                        hint = (
+                            "Add sanitize=True to this field definition for proper HTML sanitization "
+                            "that matches your configured extensions."
+                        )
+                    else:
+                        message = (
+                            "This ProseEditorField doesn't have sanitization enabled. "
+                            "For security, it's recommended to enable sanitization."
+                        )
+                        hint = (
+                            "Consider using the newer extensions mechanism with sanitize=True "
+                            "for proper HTML sanitization that matches your editor capabilities."
+                        )
+
+                    warnings.append(
+                        Warning(
+                            message,
+                            hint=hint,
+                            obj=f"{model._meta.label}.{field.name}",
+                            id="django_prose_editor.W004",
+                        )
+                    )
+
+    return warnings
