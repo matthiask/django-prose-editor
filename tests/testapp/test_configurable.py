@@ -67,7 +67,24 @@ class ConfigurableFormTestCase(TestCase):
         self.assertIn("Heading", config["extensions"])
         self.assertEqual(config["extensions"]["Heading"]["levels"], [1, 2, 3])
 
-        self.assertEqual(widget.config["extensions"], config["extensions"])
+        self.assertEqual(
+            config["extensions"],
+            widget.config["extensions"]
+            | {
+                "Document": True,
+                "Dropcursor": True,
+                "Gapcursor": True,
+                "Paragraph": True,
+                "Text": True,
+                "Menu": True,
+                "NoSpellCheck": True,
+                # Enable history by default unless explicitly disabled
+                "History": True,
+                "TableRow": True,
+                "TableCell": True,
+                "TableHeader": True,
+            },
+        )
 
     def test_sanitization_works(self):
         """Test that basic sanitization works correctly with ConfigurableProseEditorField."""

@@ -29,7 +29,7 @@ def _identity(x):
     return x
 
 
-def create_sanitizer(extensions):
+def create_sanitizer(config):
     """Create a sanitizer function based on extension configuration."""
     try:
         import nh3
@@ -39,32 +39,35 @@ def create_sanitizer(extensions):
             "Install django-prose-editor[sanitize] or pip install nh3"
         )
 
-    nh3_kwargs = allowlist_from_extensions(expand_extensions(extensions))
+    nh3_kwargs = allowlist_from_extensions(expand_extensions(config["extensions"]))
     return lambda html: _actually_empty(nh3.clean(html, **nh3_kwargs))
 
 
-def _configure(object, kwargs):
-    extensions = kwargs.pop("extensions")
-    sanitize = kwargs.pop("sanitize", True)
-    if sanitize is True:
-        object.sanitize = create_sanitizer(extensions)
-    else:
-        object.sanitize = sanitize or _actually_empty
+def _create_sanitizer(argument, config):
+    if argument is False:
+        return _actually_empty
 
-    # Expand extensions to include dependencies
-    expanded_extensions = expand_extensions(extensions)
+    if argument is True:
+        return create_sanitizer(config)
 
-    # Place extended extensions inside an "extensions" key to clearly
-    # differentiate from old-style config
-    object.config = {"extensions": expanded_extensions}
-    object.preset = kwargs.pop("preset", "configurable")
+    if isinstance(argument, (list, tuple)):
+        argument = [fn(config) if fn == create_sanitizer else fn for fn in argument]
+
+        def apply(html):
+            for fn in reversed(argument):
+                html = fn(html)
+            return html
+
+        return apply
+
+    return argument
 
 
 class ProseEditorField(models.TextField):
     """
     The field has two modes: Legacy mode and normal mode. Normal mode is
-    activated by passing an ``extensions`` keyword argument. This mode is
-    described below. See the README for the legacy mode.
+    activated by passing an ``config`` dict containing an ``extensions`` key.
+    This mode is described below. See the README for the legacy mode.
 
     A field that uses a unified configuration for both editor extensions and sanitization.
 
@@ -76,20 +79,22 @@ class ProseEditorField(models.TextField):
     extensions you enable, so you don't need to specify HTML allowlists separately.
 
     Args:
-        extensions: Dictionary mapping extension names to their configuration
+        config: Dictionary mapping extension names to their configuration
         preset: Optional JavaScript preset name to override the default
         sanitize: Whether to enable sanitization (defaults to True) or a custom sanitizer function
     """
 
     def __init__(self, *args, **kwargs):
-        if kwargs.get("extensions"):
+        self.config = kwargs.pop("config", {})
+
+        if "extensions" in self.config:
             # Normal mode
-            _configure(self, kwargs)
+            self.sanitize = _create_sanitizer(kwargs.pop("sanitize", True), self.config)
+            self.preset = kwargs.pop("preset", "configurable")
 
         else:
             # Legacy mode
             self.sanitize = kwargs.pop("sanitize", _actually_empty)
-            self.config = kwargs.pop("config", {})
             self.preset = kwargs.pop("preset", "default")
 
         super().__init__(*args, **kwargs)
@@ -134,12 +139,18 @@ class ProseEditorFormField(forms.CharField):
     widget = ProseEditorWidget
 
     def __init__(self, *args, **kwargs):
-        if kwargs.get("extensions"):
-            _configure(self, kwargs)
+        self.config = kwargs.pop("config", {})
+
+        if "extensions" in self.config:
+            # Normal mode
+            self.sanitize = _create_sanitizer(
+                kwargs.pop("sanitize", _identity), self.config
+            )
+            self.preset = kwargs.pop("preset", "configurable")
 
         else:
+            # Legacy mode
             self.sanitize = kwargs.pop("sanitize", _identity)
-            self.config = kwargs.pop("config", {})
             self.preset = kwargs.pop("preset", "default")
 
         widget = kwargs.get("widget")

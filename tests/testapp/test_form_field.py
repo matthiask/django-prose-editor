@@ -64,7 +64,9 @@ class ProseEditorFormFieldTest(TestCase):
 
     def test_form_field_extensions(self):
         class Form(forms.Form):
-            content = ProseEditorFormField(extensions={"Bold": True})
+            content = ProseEditorFormField(
+                config={"extensions": {"Bold": True}}, sanitize=True
+            )
 
         form = Form({"content": "<strong>Hello</strong> <em>World</em>"})
         self.assertTrue(form.is_valid())

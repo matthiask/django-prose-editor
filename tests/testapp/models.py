@@ -48,12 +48,14 @@ class TableProseEditorModel(models.Model):
 
 class ConfigurableProseEditorModel(models.Model):
     description = ProseEditorField(
-        extensions={
-            "Bold": True,
-            "Italic": True,
-            "Table": True,  # This should automatically include TableRow, TableHeader, TableCell
-            "Heading": {"levels": [1, 2, 3]},  # Limit to h1, h2, h3
-            "BlueBold": True,
+        config={
+            "extensions": {
+                "Bold": True,
+                "Italic": True,
+                "Table": True,  # This should automatically include TableRow, TableHeader, TableCell
+                "Heading": {"levels": [1, 2, 3]},  # Limit to h1, h2, h3
+                "BlueBold": True,
+            }
         },
         sanitize=True,
     )

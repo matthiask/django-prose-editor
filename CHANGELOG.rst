@@ -7,10 +7,9 @@ Next version
 - Added a new way of configuring the ``ProseEditorField`` by using the
   ``extensions`` argument. This allows specifying Tiptap extensions to use and
   also optionally allows configuring them. nh3 sanitization rules are
-  automatically derived from the extension configuration and sanitization is
-  active by default if using this mechanism.
-  automatically uses the new extensions mechanism except if you pass the old
-  ``config`` keyword argument.
+  automatically derived from the extension configuration when using
+  sanitization. A system check warning is emitted if you're using this
+  mechanism but haven't opted into sanitization.
 - Using the ``ProseEditorField`` without the ``extensions`` parameter has been
   deprecated, and a system check warning has been added for automatically
   detecting this.
@@ -55,6 +54,10 @@ Next version
 - Removed min and max width from the ``.prose-editor`` DIV.
 - Added an optional ``sanitize`` argument to the ``ProseEditorFormField`` which
   allows form-level sanitization of HTML.
+- The ``sanitize`` argument can also be a list of functions receiving and
+  returning HTML. The list is processed in reverse (the first function is
+  called last). If the ``create_sanitizer`` function is included, it's
+  automatically used to build a sanitizer for the configured editor extensions.
 
 
 0.10 (2024-12-17)

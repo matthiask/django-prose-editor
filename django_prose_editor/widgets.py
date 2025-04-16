@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from js_asset import JS, importmap, static_lazy
 
-from django_prose_editor.config import js_from_extensions
+from django_prose_editor.config import expand_extensions, js_from_extensions
 
 
 importmap.update(
@@ -77,7 +77,10 @@ class ProseEditorWidget(forms.Textarea):
 
         # New-style config with "extensions" key
         if isinstance(config, dict) and "extensions" in config:
-            config = config | {"js_modules": js_from_extensions(config["extensions"])}
+            config = config | {
+                "extensions": expand_extensions(config["extensions"]),
+                "js_modules": js_from_extensions(config["extensions"]),
+            }
 
         return config
 
