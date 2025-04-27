@@ -8,6 +8,9 @@ Next version
 - Fixed the menu to not run commands on click when the command is disabled.
 - Changed the ``addLink`` command to not do anything if the selection is empty
   or if the selection isn't inside a link mark currently.
+- Fixed the title attribute functionality of link marks. Titles have been
+  inadvertently broken since 0.10 because I missed the fact that the Tiptap
+  link extension doesn't define the attribute in the schema.
 
 
 0.11 (2025-04-16)

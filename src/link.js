@@ -51,6 +51,16 @@ export const Link = BaseLink.extend({
         target: null,
         rel: null,
         class: null,
+        title: "",
+      },
+    }
+  },
+
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      title: {
+        default: this.options.HTMLAttributes.title,
       },
     }
   },
