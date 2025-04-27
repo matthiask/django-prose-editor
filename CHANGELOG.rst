@@ -15,6 +15,7 @@ Next version
   cannot be inserted.
 - Updated the figure menu button to actually check whether figures can be
   inserted or not. (FIXME: Doesn't work yet.)
+- Added styles to selected nodes.
 
 
 0.11 (2025-04-16)
