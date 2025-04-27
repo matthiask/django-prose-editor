@@ -11,6 +11,8 @@ Next version
 - Fixed the title attribute functionality of link marks. Titles have been
   inadvertently broken since 0.10 because I missed the fact that the Tiptap
   link extension doesn't define the attribute in the schema.
+- Updated the figure menu button to actually check whether figures can be
+  inserted or not.
 
 
 0.11 (2025-04-16)

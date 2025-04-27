@@ -2,6 +2,14 @@ import { mergeAttributes, Node } from "@tiptap/core"
 
 import { gettext, updateAttrsDialog } from "./utils.js"
 
+const validInsertTestFigure = {
+  type: "figure",
+  content: {
+    type: "image",
+    attrs: { src: "http://example.com", alt: "" },
+  },
+}
+
 /**
  * Extension for adding figures with images and captions
  */
@@ -62,9 +70,21 @@ export const Figure = Node.create({
     return {
       insertFigure:
         () =>
-        ({ editor }) => {
-          // Check if a figure is currently selected
+        ({ editor, state, dispatch }) => {
           const isEditingFigure = editor.isActive("figure")
+          let canInsertFigure = isEditingFigure
+
+          if (!canInsertFigure) {
+            canInsertFigure = editor.can().insertContent(validInsertTestFigure)
+          }
+
+          // For can() checks, just return the result
+          if (!dispatch) {
+            return canInsertFigure
+          }
+
+          // Don't proceed if we can't insert a figure here
+          if (!canInsertFigure) return false
 
           // Get current figure data if we're editing
           let currentImageSrc = ""
@@ -158,7 +178,7 @@ export const Figure = Node.create({
           )
 
           dialogFn(editor, initialAttrs).then((attrs) => {
-            if (!attrs) return // Cancelled
+            if (!attrs) return true // Cancelled but command is considered successful
 
             const imageUrl = attrs.imageUrl.trim()
             const imageAlt = attrs.altText.trim()
@@ -167,7 +187,6 @@ export const Figure = Node.create({
             if (imageUrl) {
               if (isEditingFigure) {
                 // Then update the image source - find the image node within the figure
-                const { state } = editor
                 const { selection } = state
                 const { $from } = selection
 
@@ -252,7 +271,11 @@ export const Figure = Node.create({
                   .run()
               }
             }
+            return true
           })
+
+          // Return true as the dialog is async, and we've already checked permissions
+          return true
         },
     }
   },

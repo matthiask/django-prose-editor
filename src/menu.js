@@ -352,7 +352,9 @@ function nodesMenuItems({ editor }) {
       active(editor) {
         return editor.isActive("figure")
       },
-      // TODO implement hidden(editor) and/or enabled(editor)
+      enabled(editor) {
+        return editor.can().insertFigure()
+      },
     })
   }
   return items
