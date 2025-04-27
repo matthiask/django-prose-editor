@@ -30,8 +30,20 @@ export const Menu = Extension.create({
     }
 
     const itemGroups = (args) => {
+      const defaults = {
+        enabled: () => true,
+        active: () => false,
+        hidden: () => false,
+        update: () => {},
+      }
       return _groups.map((group) =>
-        _items[group].flatMap((fn) => fn(args)).flat(),
+        _items[group]
+          .flatMap((fn) => fn(args))
+          .flat()
+          .map((item) => ({
+            ...defaults,
+            ...item,
+          })),
       )
     }
 
@@ -95,11 +107,14 @@ class MenuView {
     this.dom.addEventListener("mousedown", (e) => {
       e.preventDefault()
       editor.view.focus()
-      this.items.forEach(({ command, dom }) => {
+      for (const { command, dom, enabled } of this.items) {
         if (dom.contains(e.target)) {
-          command(editor)
+          if (enabled(editor)) {
+            command(editor)
+          }
+          break
         }
-      })
+      }
     })
 
     // Set up scroll handling for floating menubar
@@ -160,24 +175,12 @@ class MenuView {
   }
 
   update() {
-    this.items.forEach(
-      ({
-        dom,
-        enabled = () => true,
-        active = () => false,
-        hidden = () => false,
-        update = null,
-      }) => {
-        dom.classList.toggle("disabled", !enabled(this.editor))
-        dom.classList.toggle("active", !!active(this.editor))
-        dom.classList.toggle("hidden", !!hidden(this.editor))
-
-        // Call update if provided to update dynamic content
-        if (update) {
-          update(this.editor)
-        }
-      },
-    )
+    this.items.forEach(({ dom, enabled, active, hidden, update }) => {
+      dom.classList.toggle("disabled", !enabled(this.editor))
+      dom.classList.toggle("active", !!active(this.editor))
+      dom.classList.toggle("hidden", !!hidden(this.editor))
+      update(this.editor)
+    })
   }
 
   destroy() {
