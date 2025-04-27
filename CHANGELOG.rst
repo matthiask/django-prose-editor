@@ -13,6 +13,8 @@ Next version
   link extension doesn't define the attribute in the schema.
 - Updated the figure menu button to actually check whether figures can be
   inserted or not.
+- Changed the ordered list menu button to disable itself when an ordered list
+  cannot be inserted.
 
 
 0.11 (2025-04-16)

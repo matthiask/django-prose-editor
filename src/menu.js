@@ -275,6 +275,9 @@ function blockTypeMenuItems({ editor }) {
       active(editor) {
         return editor.isActive("orderedList")
       },
+      enabled(editor) {
+        return editor.can().toggleOrderedList()
+      },
     })
 
     // Add list properties button only if list attributes are enabled
