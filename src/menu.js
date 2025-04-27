@@ -175,12 +175,12 @@ class MenuView {
   }
 
   update() {
-    this.items.forEach(({ dom, enabled, active, hidden, update }) => {
+    for (const { dom, enabled, active, hidden, update } of this.items) {
       dom.classList.toggle("disabled", !enabled(this.editor))
       dom.classList.toggle("active", !!active(this.editor))
       dom.classList.toggle("hidden", !!hidden(this.editor))
       update(this.editor)
-    })
+    }
   }
 
   destroy() {
