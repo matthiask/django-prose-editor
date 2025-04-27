@@ -4,6 +4,12 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+- Updated the Tiptap version to the released 3.0 beta.
+
+
+0.11 (2025-04-16)
+~~~~~~~~~~~~~~~~~
+
 - Added a new way of configuring the ``ProseEditorField`` by using the
   ``extensions`` argument. This allows specifying Tiptap extensions to use and
   also optionally allows configuring them. nh3 sanitization rules are
