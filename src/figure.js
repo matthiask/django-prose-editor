@@ -75,6 +75,8 @@ export const Figure = Node.create({
           let canInsertFigure = isEditingFigure
 
           if (!canInsertFigure) {
+            // FIXME this always succeeds but I don't know why, even if the
+            // schema disallows insertion. Same for horizontal rules!
             canInsertFigure = editor.can().insertContent(validInsertTestFigure)
           }
 
