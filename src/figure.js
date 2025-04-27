@@ -3,14 +3,6 @@ import { mergeAttributes, Node } from "@tiptap/core"
 import { gettext, updateAttrsDialog } from "./utils.js"
 import { canInsertNode } from "./utils/canInsertNode"
 
-const _validInsertTestFigure = {
-  type: "figure",
-  content: {
-    type: "image",
-    attrs: { src: "http://example.com", alt: "" },
-  },
-}
-
 /**
  * Extension for adding figures with images and captions
  */
