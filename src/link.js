@@ -63,20 +63,22 @@ export const Link = BaseLink.extend({
       addLink:
         () =>
         ({ editor }) => {
-          const attrs = editor.getAttributes(this.name)
+          if (!editor.state.selection.empty || editor.isActive("link")) {
+            const attrs = editor.getAttributes(this.name)
 
-          linkDialog(editor, attrs, this.options).then((attrs) => {
-            if (attrs) {
-              const cmd = editor
-                .chain()
-                .focus()
-                .extendMarkRange(this.name)
-                .unsetMark(this.name)
+            linkDialog(editor, attrs, this.options).then((attrs) => {
+              if (attrs) {
+                const cmd = editor
+                  .chain()
+                  .focus()
+                  .extendMarkRange(this.name)
+                  .unsetMark(this.name)
 
-              cmd.setMark(this.name, attrs)
-              cmd.run()
-            }
-          })
+                cmd.setMark(this.name, attrs)
+                cmd.run()
+              }
+            })
+          }
         },
     }
   },
