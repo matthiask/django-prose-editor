@@ -1,8 +1,9 @@
 import { mergeAttributes, Node } from "@tiptap/core"
 
 import { gettext, updateAttrsDialog } from "./utils.js"
+import { canInsertNode } from "./utils/canInsertNode"
 
-const validInsertTestFigure = {
+const _validInsertTestFigure = {
   type: "figure",
   content: {
     type: "image",
@@ -72,21 +73,17 @@ export const Figure = Node.create({
         () =>
         ({ editor, state, dispatch }) => {
           const isEditingFigure = editor.isActive("figure")
-          let canInsertFigure = isEditingFigure
+          const nodeType = state.schema.nodes[this.name]
 
-          if (!canInsertFigure) {
-            // FIXME this always succeeds but I don't know why, even if the
-            // schema disallows insertion. Same for horizontal rules!
-            canInsertFigure = editor.can().insertContent(validInsertTestFigure)
-          }
+          const canInsert = isEditingFigure || canInsertNode(state, nodeType)
 
-          // For can() checks, just return the result
           if (!dispatch) {
-            return canInsertFigure
+            return canInsert
           }
 
-          // Don't proceed if we can't insert a figure here
-          if (!canInsertFigure) return false
+          if (!canInsert) {
+            return false
+          }
 
           // Get current figure data if we're editing
           let currentImageSrc = ""

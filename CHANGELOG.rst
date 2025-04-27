@@ -14,7 +14,7 @@ Next version
 - Changed the ordered list menu button to disable itself when an ordered list
   cannot be inserted.
 - Updated the figure menu button to actually check whether figures can be
-  inserted or not. (FIXME: Doesn't work yet.)
+  inserted or not. Same for the horizontal rule menu button.
 - Added styles to selected nodes.
 
 
