@@ -15,7 +15,8 @@ Next version
   cannot be inserted.
 - Updated the figure menu button to actually check whether figures can be
   inserted or not. Same for the horizontal rule menu button.
-- Added styles to selected nodes.
+- Added styles to selected nodes so that e.g. selected horizontal rules are
+  shown as such.
 
 
 0.11 (2025-04-16)
