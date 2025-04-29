@@ -260,7 +260,9 @@
  * tiptap's copy in @tiptap/core/src/style.css is missing some rules */
 
 /* See https://github.com/ProseMirror/prosemirror/issues/1421#issuecomment-1759320191 */
-.ProseMirror [draggable][contenteditable=false] { user-select: text }
+.ProseMirror [draggable][contenteditable="false"] {
+  user-select: text;
+}
 
 .ProseMirror-selectednode {
   outline: 2px solid var(--_a, #8cf);
@@ -276,7 +278,9 @@ li.ProseMirror-selectednode:after {
   content: "";
   position: absolute;
   left: -32px;
-  right: -2px; top: -2px; bottom: -2px;
+  right: -2px;
+  top: -2px;
+  bottom: -2px;
   border: 2px solid #8cf;
   pointer-events: none;
 }

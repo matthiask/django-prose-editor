@@ -1,5 +1,5 @@
-import { Plugin } from "@tiptap/pm/state"
 import { Extension } from "@tiptap/core"
+import { Plugin } from "@tiptap/pm/state"
 
 export const NoSpellCheck = Extension.create({
   name: "noSpellCheck",

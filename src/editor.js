@@ -1,59 +1,47 @@
 import "./editor.css"
 
 import { Editor } from "@tiptap/core"
-export { Document } from "@tiptap/extension-document"
 
-export { Dropcursor } from "@tiptap/extensions"
-export { Gapcursor } from "@tiptap/extensions"
-export { TrailingNode } from "@tiptap/extensions"
-
-export { Paragraph } from "@tiptap/extension-paragraph"
-export { HardBreak } from "@tiptap/extension-hard-break"
-export { Text } from "@tiptap/extension-text"
-
+export * from "@tiptap/core"
 export { Blockquote } from "@tiptap/extension-blockquote"
 export { Bold } from "@tiptap/extension-bold"
+export { Code } from "@tiptap/extension-code"
+export { CodeBlock } from "@tiptap/extension-code-block"
+export { Color } from "@tiptap/extension-color"
+export { Document } from "@tiptap/extension-document"
+export { HardBreak } from "@tiptap/extension-hard-break"
 export { Heading } from "@tiptap/extension-heading"
-export { HorizontalRule } from "./horizontalRule.js"
+export { Highlight } from "@tiptap/extension-highlight"
+// Import Figure extension
+export { Image } from "@tiptap/extension-image"
 export { Italic } from "@tiptap/extension-italic"
+export { BulletList, ListItem } from "@tiptap/extension-list"
+export { Paragraph } from "@tiptap/extension-paragraph"
 export { Strike } from "@tiptap/extension-strike"
 export { Subscript } from "@tiptap/extension-subscript"
 export { Superscript } from "@tiptap/extension-superscript"
-export { Underline } from "@tiptap/extension-underline"
-
-export { Code } from "@tiptap/extension-code"
-export { CodeBlock } from "@tiptap/extension-code-block"
-
-export { Color } from "@tiptap/extension-color"
-export { Highlight } from "@tiptap/extension-highlight"
+export { TableCell, TableHeader, TableRow } from "@tiptap/extension-table"
+export { Text } from "@tiptap/extension-text"
 export { TextAlign } from "@tiptap/extension-text-align"
 export { TextStyle } from "@tiptap/extension-text-style"
-
-// export { Table } from "@tiptap/extension-table"
-export { Table } from "./table.js"
-export { TableCell, TableHeader, TableRow } from "@tiptap/extension-table"
-
+export { Underline } from "@tiptap/extension-underline"
+export { Dropcursor, Gapcursor, TrailingNode } from "@tiptap/extensions"
+export { Plugin } from "@tiptap/pm/state"
+export { Caption, Figure } from "./figure.js"
+export { Fullscreen } from "./fullscreen.js"
+export * from "./history.js"
+export { HorizontalRule } from "./horizontalRule.js"
 export { HTML } from "./html.js"
 export { Link } from "./link.js"
-export { NoSpellCheck } from "./nospellcheck.js"
-export { Typographic } from "./typographic.js"
-export { Fullscreen } from "./fullscreen.js"
-export { Plugin } from "@tiptap/pm/state"
-
-export * from "./history.js"
 export * from "./menu.js"
-export * from "./utils.js"
-export * from "@tiptap/core"
-
-export * as pm from "./pm.js"
-
+export { NoSpellCheck } from "./nospellcheck.js"
 // Import our custom OrderedList
 export { OrderedList } from "./orderedList.js"
-export { BulletList, ListItem } from "@tiptap/extension-list"
-
-// Import Figure extension
-export { Image } from "@tiptap/extension-image"
-export { Figure, Caption } from "./figure.js"
+export * as pm from "./pm.js"
+// export { Table } from "@tiptap/extension-table"
+export { Table } from "./table.js"
+export { Typographic } from "./typographic.js"
+export * from "./utils.js"
 
 import { crel } from "./utils.js"
 
