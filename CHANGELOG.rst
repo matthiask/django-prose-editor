@@ -4,7 +4,8 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
-- Updated the Tiptap version to the released 3.0 beta.
+- Updated the Tiptap version to the 3.0 beta to avoid problems with extensions
+  sharing storage over multiple editor instances.
 - Fixed the menu to not run commands on click when the command is disabled.
 - Changed the ``addLink`` command to not do anything if the selection is empty
   or if the selection isn't inside a link mark currently.
