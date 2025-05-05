@@ -18,6 +18,7 @@ Next version
   inserted or not. Same for the horizontal rule menu button.
 - Added styles to selected nodes so that e.g. selected horizontal rules are
   shown as such.
+- Started including source maps again.
 
 
 0.11 (2025-04-16)
