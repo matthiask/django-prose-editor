@@ -19,6 +19,7 @@ Next version
 - Added styles to selected nodes so that e.g. selected horizontal rules are
   shown as such.
 - Started including source maps again.
+- Convert textareas to use autogrow.
 
 
 0.11 (2025-04-16)

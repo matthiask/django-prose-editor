@@ -30,7 +30,15 @@ const formFieldForProperty = (name, config, attrValue, id) => {
     ])
   }
   if (config.format === "textarea") {
-    widget = crel("textarea", { id, name, value, cols: 80, rows: 30 })
+    const textarea = crel("textarea", { id, name, value, cols: 80, rows: 3 })
+    widget = crel(
+      "div",
+      { className: "prose-editor-grow-wrap", "data-value": textarea.value },
+      [textarea],
+    )
+    textarea.addEventListener("input", () => {
+      widget.dataset.value = textarea.value
+    })
   } else if (config.enum) {
     widget = crel(
       "select",

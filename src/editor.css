@@ -189,7 +189,8 @@
 
 .prose-editor-dialog input:not([type="checkbox"], [type="radio"]),
 .prose-editor-dialog select,
-.prose-editor-dialog textarea {
+.prose-editor-dialog textarea,
+.prose-editor-grow-wrap::after {
   width: 100%;
   padding: 0.5em;
   border: 1px solid var(--_r);
@@ -199,6 +200,7 @@
   transition:
     border-color 0.2s,
     box-shadow 0.2s;
+  font: inherit;
 }
 
 .prose-editor-dialog input:focus,
@@ -339,4 +341,26 @@ label:empty:has(+ .prose-editor) {
 .ProseMirror .figure img {
   max-width: 100%;
   height: auto;
+}
+
+/* Autogrowing textareas */
+.prose-editor-grow-wrap {
+  display: grid;
+}
+.prose-editor-grow-wrap::after {
+  content: attr(data-value) " ";
+  white-space: pre-wrap;
+  visibility: hidden;
+}
+.prose-editor-grow-wrap > textarea {
+  resize: none;
+  overflow: hidden;
+}
+.prose-editor-grow-wrap > textarea,
+.prose-editor-grow-wrap::after {
+  border: 1px solid black;
+  padding: 0.5rem;
+  font: inherit;
+
+  grid-area: 1 / 1 / 2 / 2;
 }
