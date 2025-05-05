@@ -27,13 +27,13 @@ repos:
       - id: django-upgrade
         args: [--target-version, "4.2"]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.11.7"
+    rev: "v0.11.8"
     hooks:
       - id: ruff
         args: [--unsafe-fixes]
       - id: ruff-format
   - repo: https://github.com/biomejs/pre-commit
-    rev: "v1.9.4"
+    rev: "v2.0.0-beta.2"
     hooks:
       - id: biome-check
         args: [--unsafe]

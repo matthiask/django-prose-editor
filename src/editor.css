@@ -196,7 +196,9 @@
   border-radius: 4px;
   margin-top: 0.5em;
   margin-bottom: 1em;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .prose-editor-dialog input:focus,
@@ -250,12 +252,16 @@ label:empty:has(+ .prose-editor) {
 
 .prose-editor-nbsp {
   background: var(--_t);
-  box-shadow: 0 2px 0 0 var(--_t), 0 -2px 0 0 var(--_t);
+  box-shadow:
+    0 2px 0 0 var(--_t),
+    0 -2px 0 0 var(--_t);
 }
 
 .prose-editor-shy {
   background: var(--_t);
-  box-shadow: 0 2px 0 1px var(--_t), 0 -2px 0 1px var(--_t);
+  box-shadow:
+    0 2px 0 1px var(--_t),
+    0 -2px 0 1px var(--_t);
 }
 
 /* Fullscreen mode styles */
