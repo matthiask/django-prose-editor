@@ -358,9 +358,5 @@ label:empty:has(+ .prose-editor) {
 }
 .prose-editor-grow-wrap > textarea,
 .prose-editor-grow-wrap::after {
-  border: 1px solid black;
-  padding: 0.5rem;
-  font: inherit;
-
   grid-area: 1 / 1 / 2 / 2;
 }
