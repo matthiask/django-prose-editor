@@ -23,6 +23,5 @@
 /venv
 /.vscode
 yarn-error.log
-*.map
 build
 test-results
