@@ -168,13 +168,13 @@
   border-bottom: 1px solid var(--_r);
 }
 
-.prose-editor-dialog p {
+.prose-editor-dialog-field {
   padding: 0;
-  margin: 0;
+  margin: 1em 0;
 }
 
-.prose-editor-dialog p:has(input[type="checkbox"]),
-.prose-editor-dialog p:has(input[type="radio"]) {
+.prose-editor-dialog-field:has(input[type="checkbox"]),
+.prose-editor-dialog-field:has(input[type="radio"]) {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
@@ -196,7 +196,7 @@
   border: 1px solid var(--_r);
   border-radius: 4px;
   margin-top: 0.5em;
-  margin-bottom: 1em;
+  margin-bottom: 0;
   transition:
     border-color 0.2s,
     box-shadow 0.2s;

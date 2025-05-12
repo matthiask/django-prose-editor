@@ -20,6 +20,9 @@ Next version
   shown as such.
 - Started including source maps again.
 - Convert textareas to use autogrow.
+- Changed the prose editor dialog to use ``div.prose-editor-dialog-field``
+  elements to wrap inputs and their labels instead of paragraphs.
+- Allowed callable default values in the ``updateAttrsDialog``.
 
 
 0.11 (2025-04-16)

@@ -20,11 +20,13 @@ const formFieldForProperty = (name, config, attrValue, id) => {
     htmlFor: id,
     textContent: config.title || name,
   })
-  const value = attrValue || config.default || ""
+  const defaultValue =
+    typeof config.default === "function" ? config.default() : config.default
+  const value = attrValue || defaultValue || ""
   let widget
 
   if (config.type === "boolean") {
-    return crel("p", {}, [
+    return crel("div", { className: "prose-editor-dialog-field" }, [
       crel("input", { id, name, type: "checkbox", checked: !!value }),
       label,
     ])
@@ -63,7 +65,10 @@ const formFieldForProperty = (name, config, attrValue, id) => {
     widget = crel("input", attrs)
   }
 
-  return crel("p", {}, [label, widget])
+  return crel("div", { className: "prose-editor-dialog-field" }, [
+    label,
+    widget,
+  ])
 }
 
 const valueForFormField = (name, config, form) => {
