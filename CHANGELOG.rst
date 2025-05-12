@@ -4,6 +4,10 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+
+0.12 (2025-05-12)
+~~~~~~~~~~~~~~~~~
+
 - Updated the Tiptap version to the 3.0 beta to avoid problems with extensions
   sharing storage over multiple editor instances.
 - Fixed the menu to not run commands on click when the command is disabled.
