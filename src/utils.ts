@@ -1,21 +1,60 @@
+import type { Editor } from "@tiptap/core"
+
+type GettextFunction = (s: string) => string
+
+// Configuration for form fields - values can come from JSON/user input
+// so they need to be flexible and handle string/number conversion
+interface PropertyConfig {
+  title?: string
+  default?: unknown | (() => unknown)
+  type?: string
+  format?: string
+  enum?: string[]
+  min?: unknown // Could be number, string, or undefined
+  max?: unknown // Could be number, string, or undefined
+  required?: unknown // Could be boolean, string, or undefined
+}
+
+interface DialogOptions {
+  title?: string
+  submitText?: string
+}
+
+// Accept any properties that can be assigned to DOM elements
+// This covers HTML attributes, data-*, aria-*, and element properties
+type CrelAttributes = Record<string, unknown>
+
 // Global counter to support unique IDs for dialog form elements
 let dialogId = 0
 
-export const crel = (tagName, attributes = null, children = []) => {
+export const crel = (
+  tagName: string,
+  attributes: CrelAttributes | null = null,
+  children: (HTMLElement | string)[] = [],
+): HTMLElement => {
   const dom = document.createElement(tagName)
   dom.append(...children)
   if (attributes) {
     for (const [name, value] of Object.entries(attributes)) {
-      if (/^data-|^aria-|^role/.test(name)) dom.setAttribute(name, value)
-      else dom[name] = value
+      if (/^data-|^aria-|^role/.test(name)) {
+        dom.setAttribute(name, String(value))
+      } else {
+        ;(dom as any)[name] = value
+      }
     }
   }
   return dom
 }
 
-export const gettext = window.gettext || ((s) => s)
+export const gettext: GettextFunction =
+  (window as any).gettext || ((s: string) => s)
 
-const formFieldForProperty = (name, config, attrValue, id) => {
+const formFieldForProperty = (
+  name: string,
+  config: PropertyConfig,
+  attrValue: unknown,
+  id: string,
+): HTMLElement => {
   const label = crel("label", {
     htmlFor: id,
     textContent: config.title || name,
@@ -23,7 +62,7 @@ const formFieldForProperty = (name, config, attrValue, id) => {
   const defaultValue =
     typeof config.default === "function" ? config.default() : config.default
   const value = attrValue || defaultValue || ""
-  let widget
+  let widget: HTMLElement
 
   if (config.type === "boolean") {
     return crel("div", { className: "prose-editor-dialog-field" }, [
@@ -32,7 +71,13 @@ const formFieldForProperty = (name, config, attrValue, id) => {
     ])
   }
   if (config.format === "textarea") {
-    const textarea = crel("textarea", { id, name, value, cols: 80, rows: 3 })
+    const textarea = crel("textarea", {
+      id,
+      name,
+      value: String(value),
+      cols: 80,
+      rows: 3,
+    }) as HTMLTextAreaElement
     widget = crel(
       "div",
       { className: "prose-editor-grow-wrap", "data-value": textarea.value },
@@ -44,15 +89,15 @@ const formFieldForProperty = (name, config, attrValue, id) => {
   } else if (config.enum) {
     widget = crel(
       "select",
-      { id, name, value },
+      { id, name, value: String(value) },
       config.enum.map((option) => crel("option", { textContent: option })),
     )
   } else {
     // Create input with appropriate attributes
-    const attrs = {
+    const attrs: CrelAttributes = {
       id,
       name,
-      value,
+      value: String(value),
       type: config.format || "text",
       size: 50,
     }
@@ -71,16 +116,24 @@ const formFieldForProperty = (name, config, attrValue, id) => {
   ])
 }
 
-const valueForFormField = (name, config, form) => {
+const valueForFormField = (
+  name: string,
+  config: PropertyConfig,
+  form: HTMLFormElement,
+): unknown => {
+  const element = form[name as any] as HTMLInputElement
   if (config.type === "boolean") {
-    return !!form[name].checked
+    return !!element.checked
   }
-  return form[name].value
+  return element.value
 }
 
 export const updateAttrsDialog =
-  (properties, options = {}) =>
-  (editor, attrs) => {
+  (properties: Record<string, PropertyConfig>, options: DialogOptions = {}) =>
+  (
+    editor: Editor,
+    attrs: Record<string, unknown>,
+  ): Promise<Record<string, unknown> | null> => {
     return new Promise((resolve) => {
       const submit = crel("button", {
         type: "submit",
@@ -93,7 +146,7 @@ export const updateAttrsDialog =
       })
 
       // Create form elements
-      const formElements = []
+      const formElements: HTMLElement[] = []
 
       // Add title if provided
       if (options.title) {
@@ -123,9 +176,9 @@ export const updateAttrsDialog =
         ]),
       ])
 
-      editor.view.dom.parentElement.append(div)
-      const dialog = div.querySelector("dialog")
-      const form = div.querySelector("form")
+      editor.view.dom.parentElement?.append(div)
+      const dialog = div.querySelector("dialog")!
+      const form = div.querySelector("form")! as HTMLFormElement
 
       cancel.addEventListener("click", () => {
         dialog.close()

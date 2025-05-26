@@ -11,11 +11,12 @@ export default defineConfig({
       bundle: true,
       format: "esm",
       syntax: "es6",
+      // dts: true,
     },
   ],
   source: {
     entry: {
-      editor: "./src/editor.js",
+      editor: "./src/editor.ts",
       overrides: "./src/overrides.css",
     },
   },

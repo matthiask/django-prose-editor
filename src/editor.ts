@@ -1,6 +1,6 @@
 import "./editor.css"
 
-import { Editor } from "@tiptap/core"
+import { Editor, type Extension } from "@tiptap/core"
 
 export * from "@tiptap/core"
 export { Blockquote } from "@tiptap/extension-blockquote"
@@ -27,25 +27,38 @@ export { TextStyle } from "@tiptap/extension-text-style"
 export { Underline } from "@tiptap/extension-underline"
 export { Dropcursor, Gapcursor, TrailingNode } from "@tiptap/extensions"
 export { Plugin } from "@tiptap/pm/state"
-export { Caption, Figure } from "./figure.js"
-export { Fullscreen } from "./fullscreen.js"
-export * from "./history.js"
-export { HorizontalRule } from "./horizontalRule.js"
-export { HTML } from "./html.js"
-export { Link } from "./link.js"
-export * from "./menu.js"
-export { NoSpellCheck } from "./nospellcheck.js"
+export { Caption, Figure } from "./figure"
+export { Fullscreen } from "./fullscreen"
+export * from "./history"
+export { HorizontalRule } from "./horizontalRule"
+export { HTML } from "./html"
+export { Link } from "./link"
+export * from "./menu"
+export { NoSpellCheck } from "./nospellcheck"
 // Import our custom OrderedList
-export { OrderedList } from "./orderedList.js"
-export * as pm from "./pm.js"
+export { OrderedList } from "./orderedList"
+export * as pm from "./pm"
 // export { Table } from "@tiptap/extension-table"
-export { Table } from "./table.js"
-export { Typographic } from "./typographic.js"
-export * from "./utils.js"
+export { Table } from "./table"
+export { Typographic } from "./typographic"
+export * from "./utils"
 
-import { crel } from "./utils.js"
+import { crel } from "./utils"
 
-export function createTextareaEditor(textarea, extensions) {
+type DjangoJQuery = (document: Document) => {
+  on(event: string, callback: (e: any) => void): void
+}
+
+interface DjangoWindow extends Window {
+  django?: {
+    jQuery?: DjangoJQuery
+  }
+}
+
+export function createTextareaEditor(
+  textarea: HTMLTextAreaElement,
+  extensions: Extension[],
+): Editor {
   const disabled = textarea.hasAttribute("disabled")
 
   const element = crel("div", {
@@ -72,19 +85,23 @@ export function createTextareaEditor(textarea, extensions) {
   return editor
 }
 
-export function initializeEditors(create, selector) {
-  function initializeEditor(container) {
+export function initializeEditors(
+  create: (el: HTMLElement) => void,
+  selector: string,
+): void {
+  function initializeEditor(container: Document | HTMLElement): void {
     for (const el of container.querySelectorAll(selector)) {
-      if (!el.id.includes("__prefix__")) {
-        create(el)
+      if (!(el as HTMLElement).id.includes("__prefix__")) {
+        create(el as HTMLElement)
       }
     }
   }
 
-  function initializeInlines() {
-    let o
-    if ((o = window.django) && (o = o.jQuery)) {
-      o(document).on("formset:added", (e) => {
+  function initializeInlines(): void {
+    const win = window as DjangoWindow
+    let o: any
+    if ((o = win.django) && (o = o.jQuery)) {
+      o(document).on("formset:added", (e: any) => {
         initializeEditor(e.target)
       })
     }

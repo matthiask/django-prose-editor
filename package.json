@@ -32,10 +32,12 @@
     "@tiptap/extensions": "^3.0.0-beta.5",
     "@tiptap/pm": "^3.0.0-beta.5",
     "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.3"
+    "postcss": "^8.5.3",
+    "typescript": "^5.7.0"
   },
   "scripts": {
     "dev": "rslib build --watch",
-    "prod": "NODE_ENV=production rslib build"
+    "prod": "NODE_ENV=production rslib build",
+    "types": "npx tsc --noEmit"
   }
 }

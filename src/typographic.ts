@@ -1,7 +1,8 @@
 // Plugin which shows typographic characters (currently only non-breaking spaces)
 
 import { Extension } from "@tiptap/core"
-
+import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
+import type { EditorState, Transaction } from "@tiptap/pm/state"
 import { Plugin } from "@tiptap/pm/state"
 import { Decoration, DecorationSet } from "@tiptap/pm/view"
 
@@ -17,7 +18,12 @@ export const Typographic = Extension.create({
 // Helper for iterating through the nodes in a document that changed
 // compared to the given previous document. Useful for avoiding
 // duplicate work on each transaction.
-function changedDescendants(old, cur, offset, f) {
+function changedDescendants(
+  old: ProseMirrorNode,
+  cur: ProseMirrorNode,
+  offset: number,
+  f: (node: ProseMirrorNode, offset: number) => void,
+): void {
   const oldSize = old.childCount
   const curSize = cur.childCount
   outer: for (let i = 0, j = 0; i < curSize; i++) {
@@ -37,13 +43,16 @@ function changedDescendants(old, cur, offset, f) {
   }
 }
 
-const classes = {
+const classes: Record<string, string> = {
   "\u00A0": "prose-editor-nbsp",
   "\u00AD": "prose-editor-shy",
 }
 
-const typographicDecorationsForNode = (node, position) => {
-  const decorations = []
+const typographicDecorationsForNode = (
+  node: ProseMirrorNode,
+  position: number,
+): Decoration[] => {
+  const decorations: Decoration[] = []
   if (node.text) {
     for (const match of node.text.matchAll(/(\u00A0|\u00AD)/g)) {
       const from = position + (match.index || 0)
@@ -57,36 +66,50 @@ const typographicDecorationsForNode = (node, position) => {
   return decorations
 }
 
-const typographicDecorations = (doc) => {
-  const decorations = []
-  doc.descendants((node, position) => {
-    decorations.push(typographicDecorationsForNode(node, position))
+const typographicDecorations = (doc: ProseMirrorNode): DecorationSet => {
+  const decorations: Decoration[] = []
+  doc.descendants((node: ProseMirrorNode, position: number) => {
+    decorations.push(...typographicDecorationsForNode(node, position))
   })
-  return DecorationSet.create(doc, decorations.flat())
+  return DecorationSet.create(doc, decorations)
 }
 
-const typographicPlugin = new Plugin({
+const typographicPlugin = new Plugin<DecorationSet>({
   state: {
-    init(_, { doc }) {
+    init(_, { doc }: { doc: ProseMirrorNode }): DecorationSet {
       return typographicDecorations(doc)
     },
-    apply(tr, set, oldState) {
+    apply(
+      tr: Transaction,
+      set: DecorationSet,
+      oldState: EditorState,
+    ): DecorationSet {
       // I fear that's not very performant. Maybe improve this "later".
       // return tr.docChanged ? typographicDecorations(tr.doc) : set
 
       let newSet = set.map(tr.mapping, tr.doc)
-      changedDescendants(oldState.doc, tr.doc, 0, (node, offset) => {
-        // First, remove our inline decorations for the current node
-        newSet = newSet.remove(newSet.find(offset, offset + node.content.size))
-        // Then, add decorations (including the new content)
-        newSet = newSet.add(tr.doc, typographicDecorationsForNode(node, offset))
-      })
+      changedDescendants(
+        oldState.doc,
+        tr.doc,
+        0,
+        (node: ProseMirrorNode, offset: number) => {
+          // First, remove our inline decorations for the current node
+          newSet = newSet.remove(
+            newSet.find(offset, offset + node.content.size),
+          )
+          // Then, add decorations (including the new content)
+          newSet = newSet.add(
+            tr.doc,
+            typographicDecorationsForNode(node, offset),
+          )
+        },
+      )
 
       return newSet
     },
   },
   props: {
-    decorations(state) {
+    decorations(state: EditorState): DecorationSet | null | undefined {
       return typographicPlugin.getState(state)
     },
   },

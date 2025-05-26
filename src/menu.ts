@@ -1,21 +1,48 @@
+import type { Editor, Extension as TiptapExtension } from "@tiptap/core"
 import { Extension } from "@tiptap/core"
 import { Plugin } from "@tiptap/pm/state"
-import { crel, gettext } from "./utils.js"
+import { crel, gettext } from "./utils"
 
-const findExtension = (editor, extension) =>
+interface MenuItem {
+  command: (editor: Editor) => void
+  enabled: (editor: Editor) => boolean
+  active: (editor: Editor) => boolean
+  hidden: (editor: Editor) => boolean
+  update: (editor: Editor) => void
+  dom: HTMLElement
+}
+
+interface MenuItemDefaults {
+  enabled: () => boolean
+  active: () => boolean
+  hidden: () => boolean
+  update: () => void
+}
+
+interface MenuStorage {
+  _items: Record<string, Array<(args: { editor: Editor }) => any>>
+  _groups: string[]
+  addItems: (group: string, items?: any, before?: string) => void
+  itemGroups: (args: { editor: Editor }) => MenuItem[][]
+}
+
+const findExtension = (
+  editor: Editor,
+  extension: string,
+): TiptapExtension | undefined =>
   editor.extensionManager.extensions.find((e) => e.name === extension)
 
-export const Menu = Extension.create({
+export const Menu = Extension.create<Record<string, never>, MenuStorage>({
   name: "menu",
 
-  addStorage() {
+  addStorage(): MenuStorage {
     // Menu items
-    const _items = {}
+    const _items: Record<string, Array<(args: { editor: Editor }) => any>> = {}
     // Menu item groups in order
-    const _groups = []
-    const addItems = (group, items = 0, before = 0) => {
+    const _groups: string[] = []
+    const addItems = (group: string, items: any = 0, before = ""): void => {
       if (!_groups.includes(group)) {
-        let pos
+        let pos: number
         if (before && (pos = _groups.indexOf(before)) !== -1) {
           _groups.splice(pos, 0, group)
         } else {
@@ -29,8 +56,8 @@ export const Menu = Extension.create({
       }
     }
 
-    const itemGroups = (args) => {
-      const defaults = {
+    const itemGroups = (args: { editor: Editor }): MenuItem[][] => {
+      const defaults: MenuItemDefaults = {
         enabled: () => true,
         active: () => false,
         hidden: () => false,
@@ -66,7 +93,7 @@ export const Menu = Extension.create({
       new Plugin({
         view() {
           const menuView = new MenuView(editor, itemGroups)
-          const editorDomParent = editor.view.dom.parentNode
+          const editorDomParent = editor.view.dom.parentNode as HTMLElement
 
           // Insert both the placeholder and menubar
           editorDomParent.insertBefore(menuView.placeholder, editor.view.dom)
@@ -80,10 +107,17 @@ export const Menu = Extension.create({
 })
 
 class MenuView {
-  constructor(editor, itemGroups) {
+  items: MenuItem[]
+  editor: Editor
+  isFloating = false
+  dom: HTMLElement
+  placeholder: HTMLElement
+  menubarHeight?: number
+  handleScroll: () => void
+
+  constructor(editor: Editor, itemGroups: MenuItem[][]) {
     this.items = itemGroups.flat()
     this.editor = editor
-    this.isFloating = false
 
     // Create menubar element
     this.dom = crel("div", { className: "prose-menubar" })
@@ -104,11 +138,11 @@ class MenuView {
     this.update()
 
     // Handle menu item clicks
-    this.dom.addEventListener("mousedown", (e) => {
+    this.dom.addEventListener("mousedown", (e: MouseEvent) => {
       e.preventDefault()
       editor.view.focus()
       for (const { command, dom, enabled } of this.items) {
-        if (dom.contains(e.target)) {
+        if (dom.contains(e.target as Node)) {
           if (enabled(editor)) {
             command(editor)
           }
@@ -124,7 +158,7 @@ class MenuView {
 
     // Initial position check - run immediately and again after a small delay
     // for better reliability
-    const updateMenubarHeight = () => {
+    const updateMenubarHeight = (): void => {
       this.menubarHeight = this.dom.offsetHeight
       this.placeholder.style.setProperty(
         "--menubar-height",
@@ -140,14 +174,16 @@ class MenuView {
     setTimeout(updateMenubarHeight, 100)
   }
 
-  handleScroll() {
+  handleScroll(): void {
     // Skip if we're in fullscreen mode, as that has its own styling
-    if (this.editor.options.element.closest(".prose-editor-fullscreen")) {
+    if (this.editor.options.element?.closest(".prose-editor-fullscreen")) {
       return
     }
 
-    const editorRect = this.editor.options.element.getBoundingClientRect()
+    const editorRect = this.editor.options.element?.getBoundingClientRect()
     const menubarRect = this.dom.getBoundingClientRect()
+
+    if (!editorRect) return
 
     // Check if we should float the menubar
     if (editorRect.top < 0 && editorRect.bottom > menubarRect.height) {
@@ -174,7 +210,7 @@ class MenuView {
     }
   }
 
-  update() {
+  update(): void {
     for (const { dom, enabled, active, hidden, update } of this.items) {
       dom.classList.toggle("disabled", !enabled(this.editor))
       dom.classList.toggle("active", !!active(this.editor))
@@ -183,7 +219,7 @@ class MenuView {
     }
   }
 
-  destroy() {
+  destroy(): void {
     // Clean up event listeners
     window.removeEventListener("scroll", this.handleScroll)
     window.removeEventListener("resize", this.handleScroll)
@@ -195,7 +231,7 @@ class MenuView {
 }
 
 /*
-function textButton(textContent, title = "") {
+function textButton(textContent: string, title = ""): HTMLElement {
   return crel("span", {
     className: "prose-menubar__button",
     textContent,
@@ -204,7 +240,10 @@ function textButton(textContent, title = "") {
 }
 */
 
-export function materialMenuButton(textContent, title) {
+export function materialMenuButton(
+  textContent: string,
+  title: string,
+): HTMLElement {
   return crel("span", {
     className: "prose-menubar__button material-icons",
     textContent,
@@ -212,7 +251,7 @@ export function materialMenuButton(textContent, title) {
   })
 }
 
-export function svgMenuButton(innerHTML, title = "") {
+export function svgMenuButton(innerHTML: string, title = ""): HTMLElement {
   return crel("span", {
     className: "prose-menubar__button",
     innerHTML,
@@ -220,7 +259,14 @@ export function svgMenuButton(innerHTML, title = "") {
   })
 }
 
-const headingButton = (level) => {
+interface HeadingButtonItem {
+  command: (editor: Editor) => void
+  dom: HTMLElement
+  active: (editor: Editor) => boolean
+  enabled: (editor: Editor) => boolean
+}
+
+const headingButton = (level: number): HeadingButtonItem => {
   const dom = crel("span", {
     className: "prose-menubar__button prose-menubar__button--heading",
     title: `heading ${level}`,
@@ -231,64 +277,67 @@ const headingButton = (level) => {
   )
 
   return {
-    command: (editor) => {
+    command: (editor: Editor) => {
       editor.chain().focus().toggleHeading({ level }).run()
     },
     dom,
-    active(editor) {
+    active(editor: Editor) {
       return editor.isActive("heading", { level })
     },
-    enabled(editor) {
+    enabled(editor: Editor) {
       return editor.can().toggleHeading({ level })
     },
   }
 }
 
-function blockTypeMenuItems({ editor }) {
+function blockTypeMenuItems({ editor }: { editor: Editor }) {
   const schema = editor.schema
 
   const extension = findExtension(editor, "heading")
-  const levels = extension ? extension.options.levels : []
-  const items = levels.map((level) => headingButton(level))
+  const levels = extension ? (extension.options as any).levels : []
+  const items = levels.map((level: number) => headingButton(level))
 
   let type
   if ((type = schema.nodes.bulletList)) {
     items.push({
-      command(editor) {
+      command(editor: Editor) {
         editor.chain().focus().toggleBulletList().run()
       },
       dom: materialMenuButton("format_list_bulleted", "unordered list"),
-      active(_editor) {
+      active(_editor: Editor) {
         return false
       },
-      enabled(editor) {
+      enabled(editor: Editor) {
         return editor.can().toggleBulletList()
       },
     })
   }
   if ((type = schema.nodes.orderedList)) {
     items.push({
-      command(editor) {
+      command(editor: Editor) {
         editor.chain().focus().toggleOrderedList().run()
       },
       dom: materialMenuButton("format_list_numbered", "ordered list"),
-      active(editor) {
+      active(editor: Editor) {
         return editor.isActive("orderedList")
       },
-      enabled(editor) {
+      enabled(editor: Editor) {
         return editor.can().toggleOrderedList()
       },
     })
 
     // Add list properties button only if list attributes are enabled
     const orderedListExt = findExtension(editor, "orderedList")
-    if (orderedListExt?.options.enableListAttributes) {
+    if (
+      orderedListExt?.options &&
+      (orderedListExt.options as any).enableListAttributes
+    ) {
       items.push({
-        command(editor) {
+        command(editor: Editor) {
           editor.chain().focus().updateListAttributes().run()
         },
         dom: materialMenuButton("tune", gettext("List properties")),
-        hidden(editor) {
+        hidden(editor: Editor) {
           return !editor.isActive("orderedList")
         },
       })
@@ -300,62 +349,62 @@ function blockTypeMenuItems({ editor }) {
   return [
     ...items,
     {
-      command(editor) {
+      command(editor: Editor) {
         editor.chain().focus().setParagraph().run()
       },
       dom: materialMenuButton("notes", "paragraph"),
-      active(_editor) {
+      active(_editor: Editor) {
         return false
       },
-      enabled(editor) {
+      enabled(editor: Editor) {
         return editor.can().setParagraph()
       },
     },
   ]
 }
 
-function nodesMenuItems({ editor }) {
+function nodesMenuItems({ editor }: { editor: Editor }) {
   const schema = editor.schema
   const items = []
   let type
   if ((type = schema.nodes.blockquote)) {
     items.push({
-      command(editor) {
+      command(editor: Editor) {
         editor.chain().focus().toggleBlockquote().run()
       },
       dom: materialMenuButton("format_quote", "blockquote"),
-      active(editor) {
+      active(editor: Editor) {
         return editor.isActive("blockquote")
       },
-      enabled(editor) {
+      enabled(editor: Editor) {
         return editor.can().toggleBlockquote()
       },
     })
   }
   if ((type = schema.nodes.horizontalRule)) {
     items.push({
-      command(editor) {
+      command(editor: Editor) {
         editor.chain().focus().setHorizontalRule().run()
       },
       dom: materialMenuButton("horizontal_rule", "horizontal rule"),
-      active(_editor) {
+      active(_editor: Editor) {
         return false
       },
-      enabled(editor) {
+      enabled(editor: Editor) {
         return editor.can().setHorizontalRule()
       },
     })
   }
   if ((type = schema.nodes.figure)) {
     items.push({
-      command(editor) {
+      command(editor: Editor) {
         editor.chain().focus().insertFigure().run()
       },
       dom: materialMenuButton("image", "figure"),
-      active(editor) {
+      active(editor: Editor) {
         return editor.isActive("figure")
       },
-      enabled(editor) {
+      enabled(editor: Editor) {
         return editor.can().insertFigure()
       },
     })
@@ -363,16 +412,16 @@ function nodesMenuItems({ editor }) {
   return items
 }
 
-function markMenuItems({ editor }) {
-  const mark = (markType, dom) =>
+function markMenuItems({ editor }: { editor: Editor }) {
+  const mark = (markType: string, dom: HTMLElement) =>
     markType in editor.schema.marks
       ? {
-          command(editor) {
+          command(editor: Editor) {
             editor.chain().focus().toggleMark(markType).run()
           },
           dom,
-          active: (editor) => editor.isActive(markType),
-          enabled: (editor) => editor.can().toggleMark(markType),
+          active: (editor: Editor) => editor.isActive(markType),
+          enabled: (editor: Editor) => editor.can().toggleMark(markType),
         }
       : null
 
@@ -386,14 +435,14 @@ function markMenuItems({ editor }) {
   ].filter(Boolean)
 }
 
-function historyMenuItems({ editor }) {
+function historyMenuItems({ editor }: { editor: Editor }) {
   return findExtension(editor, "history")
     ? [
         {
-          command(editor) {
+          command(editor: Editor) {
             editor.commands.undo()
           },
-          enabled(editor) {
+          enabled(editor: Editor) {
             return editor.can().undo()
           },
           dom: materialMenuButton("undo", "undo"),
@@ -402,10 +451,10 @@ function historyMenuItems({ editor }) {
           },
         },
         {
-          command(editor) {
+          command(editor: Editor) {
             editor.commands.redo()
           },
-          enabled(editor) {
+          enabled(editor: Editor) {
             return editor.can().redo()
           },
           dom: materialMenuButton("redo", "redo"),
@@ -417,9 +466,9 @@ function historyMenuItems({ editor }) {
     : []
 }
 
-function textAlignMenuItems({ editor }) {
-  const alignmentItem = (alignment) => ({
-    command(editor) {
+function textAlignMenuItems({ editor }: { editor: Editor }) {
+  const alignmentItem = (alignment: string) => ({
+    command(editor: Editor) {
       editor.chain().focus().setTextAlign(alignment).run()
     },
     dom: materialMenuButton(`format_align_${alignment}`, alignment),
@@ -438,12 +487,12 @@ function textAlignMenuItems({ editor }) {
     : []
 }
 
-function utilityMenuItems({ editor }) {
+function utilityMenuItems({ editor }: { editor: Editor }) {
   const items = []
 
   if (findExtension(editor, "html")) {
     items.push({
-      command(editor) {
+      command(editor: Editor) {
         editor.commands.editHTML()
       },
       dom: materialMenuButton("code", "edit HTML"),
@@ -455,16 +504,16 @@ function utilityMenuItems({ editor }) {
     const dom = materialMenuButton("", gettext("Toggle fullscreen"))
 
     items.push({
-      command(editor) {
+      command(editor: Editor) {
         editor.commands.toggleFullscreen()
       },
       dom,
-      update: (editor) => {
+      update: (editor: Editor) => {
         dom.textContent = editor.storage.fullscreen?.fullscreen
           ? "fullscreen_exit"
           : "fullscreen"
       },
-      active(editor) {
+      active(editor: Editor) {
         return editor.storage.fullscreen?.fullscreen
       },
     })

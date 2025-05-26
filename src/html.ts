@@ -1,6 +1,11 @@
+import type { Editor } from "@tiptap/core"
 import { Extension } from "@tiptap/core"
 
-import { gettext, updateAttrsDialog } from "./utils.js"
+import { gettext, updateAttrsDialog } from "./utils"
+
+interface HTMLDialogAttrs {
+  html: string
+}
 
 const htmlDialog = updateAttrsDialog(
   {
@@ -15,14 +20,14 @@ const htmlDialog = updateAttrsDialog(
   },
 )
 
-const areArraysEqual = (arr1, arr2) =>
+const areArraysEqual = (arr1: unknown[], arr2: unknown[]): boolean =>
   Array.isArray(arr1) &&
   Array.isArray(arr2) &&
   arr1.length === arr2.length &&
   arr1.every((val, index) => Object.is(val, arr2[index]))
 
 // Simple HTML prettifier that adds newlines and basic indentation
-const prettifyHTML = (html) => {
+const prettifyHTML = (html: string): string => {
   if (!html) return html
 
   // List of block elements that should have newlines
@@ -113,15 +118,17 @@ export const HTML = Extension.create({
     return {
       editHTML:
         () =>
-        ({ editor }) => {
+        ({ editor }: { editor: Editor }) => {
           // Apply prettification to the HTML before showing dialog
           const prettifiedHTML = prettifyHTML(editor.getHTML())
 
-          htmlDialog(editor, { html: prettifiedHTML }).then((attrs) => {
-            if (attrs) {
-              editor.chain().focus().setContent(attrs.html, true).run()
-            }
-          })
+          htmlDialog(editor, { html: prettifiedHTML }).then(
+            (attrs: HTMLDialogAttrs | null) => {
+              if (attrs) {
+                editor.chain().focus().setContent(attrs.html, true).run()
+              }
+            },
+          )
         },
     }
   },

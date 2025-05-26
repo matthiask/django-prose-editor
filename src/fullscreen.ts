@@ -1,13 +1,26 @@
+import type { Editor } from "@tiptap/core"
 import { Extension } from "@tiptap/core"
+
+interface FullscreenOptions {
+  fullscreenClass: string
+}
+
+interface FullscreenStorage {
+  fullscreen: boolean
+  scrollPosition: number
+}
 
 /**
  * Fullscreen extension for the prose editor
  * Adds a button to toggle fullscreen mode, expanding the editor to cover the entire viewport
  */
-export const Fullscreen = Extension.create({
+export const Fullscreen = Extension.create<
+  FullscreenOptions,
+  FullscreenStorage
+>({
   name: "fullscreen",
 
-  addOptions() {
+  addOptions(): FullscreenOptions {
     return {
       // CSS class applied to the editor container when in fullscreen mode
       fullscreenClass: "prose-editor-fullscreen",
@@ -18,15 +31,16 @@ export const Fullscreen = Extension.create({
     return {
       toggleFullscreen:
         () =>
-        ({ editor }) => {
+        ({ editor }: { editor: Editor }) => {
           const isFullscreen = editor.storage.fullscreen.fullscreen
 
           // Toggle fullscreen state
           editor.storage.fullscreen.fullscreen = !isFullscreen
 
           // Apply or remove the fullscreen class to the editor container
-          const editorContainer =
-            editor.options.element.closest(".prose-editor")
+          const editorContainer = editor.options.element?.closest(
+            ".prose-editor",
+          ) as HTMLElement | null
 
           // Force the menu to update after state change
           setTimeout(() => {
@@ -34,7 +48,7 @@ export const Fullscreen = Extension.create({
           }, 0)
 
           if (editor.storage.fullscreen.fullscreen) {
-            editorContainer.classList.add(this.options.fullscreenClass)
+            editorContainer?.classList.add(this.options.fullscreenClass)
             // Store the scroll position
             editor.storage.fullscreen.scrollPosition = window.scrollY
             // Prevent body scrolling
@@ -43,7 +57,9 @@ export const Fullscreen = Extension.create({
             editor.commands.focus()
 
             // Ensure our floating menubar is reset when entering fullscreen
-            const menubar = editorContainer.querySelector(".prose-menubar")
+            const menubar = editorContainer?.querySelector(
+              ".prose-menubar",
+            ) as HTMLElement | null
             if (menubar) {
               menubar.classList.remove("prose-menubar--floating")
               menubar.style.width = ""
@@ -51,14 +67,14 @@ export const Fullscreen = Extension.create({
               menubar.style.top = ""
             }
             // Hide the placeholder
-            const placeholder = editorContainer.querySelector(
+            const placeholder = editorContainer?.querySelector(
               ".prose-menubar-placeholder",
-            )
+            ) as HTMLElement | null
             if (placeholder) {
               placeholder.classList.remove("prose-menubar-placeholder--active")
             }
           } else {
-            editorContainer.classList.remove(this.options.fullscreenClass)
+            editorContainer?.classList.remove(this.options.fullscreenClass)
             // Restore body scrolling
             document.body.style.overflow = ""
             // Restore scroll position
@@ -70,7 +86,7 @@ export const Fullscreen = Extension.create({
     }
   },
 
-  addStorage() {
+  addStorage(): FullscreenStorage {
     return {
       fullscreen: false,
       scrollPosition: 0,

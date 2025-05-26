@@ -1,5 +1,6 @@
 import { Extension } from "@tiptap/core"
 import { Plugin } from "@tiptap/pm/state"
+import type { EditorView } from "@tiptap/pm/view"
 
 export const NoSpellCheck = Extension.create({
   name: "noSpellCheck",
@@ -7,7 +8,7 @@ export const NoSpellCheck = Extension.create({
   addProseMirrorPlugins() {
     return [
       new Plugin({
-        view(editorView) {
+        view(editorView: EditorView) {
           return new NoSpellCheckPlugin(editorView)
         },
       }),
@@ -16,14 +17,16 @@ export const NoSpellCheck = Extension.create({
 })
 
 class NoSpellCheckPlugin {
-  constructor(editorView) {
+  editorView: EditorView
+
+  constructor(editorView: EditorView) {
     this.editorView = editorView
     this.editorView.dom.setAttribute("spellcheck", "false")
   }
 
-  update() {}
+  update(): void {}
 
-  destroy() {
+  destroy(): void {
     this.editorView.dom.removeAttribute("spellcheck")
   }
 }

@@ -1,7 +1,26 @@
+import type { Editor } from "@tiptap/core"
 import { Table as TiptapTable } from "@tiptap/extension-table"
 
-import { materialMenuButton, svgMenuButton } from "./menu.js"
-import { gettext, updateAttrsDialog } from "./utils.js"
+import { materialMenuButton, svgMenuButton } from "./menu"
+import { gettext, updateAttrsDialog } from "./utils"
+
+interface TableDialogAttrs {
+  rows: string
+  cols: string
+  withHeaderRow: string
+}
+
+interface TableConfig {
+  rows: number
+  cols: number
+  withHeaderRow: boolean
+}
+
+interface TableMenuItem {
+  command: (editor: Editor) => void
+  dom: HTMLElement
+  hidden?: (editor: Editor) => boolean
+}
 
 const tableDialog = updateAttrsDialog(
   {
@@ -41,15 +60,15 @@ export const Table = TiptapTable.extend({
       ...this.parent?.(),
       insertTableWithOptions:
         () =>
-        ({ editor }) => {
+        ({ editor }: { editor: Editor }) => {
           // Show table configuration dialog
           tableDialog(editor, {
             rows: "3",
             cols: "3",
             withHeaderRow: "No",
-          }).then((attrs) => {
+          }).then((attrs: TableDialogAttrs | null) => {
             if (attrs) {
-              const config = {
+              const config: TableConfig = {
                 rows: Number.parseInt(attrs.rows, 10) || 3,
                 cols: Number.parseInt(attrs.cols, 10) || 3,
                 withHeaderRow: attrs.withHeaderRow === "Yes",
@@ -64,8 +83,11 @@ export const Table = TiptapTable.extend({
   },
 })
 
-function tableMenuItems({ editor }) {
-  const tableManipulationItem = (command, dom) => ({
+function tableMenuItems({ editor }: { editor: Editor }): TableMenuItem[] {
+  const tableManipulationItem = (
+    command: (editor: Editor) => void,
+    dom: HTMLElement,
+  ): TableMenuItem => ({
     command,
     dom,
     hidden() {
@@ -75,13 +97,13 @@ function tableMenuItems({ editor }) {
 
   return [
     {
-      command(editor) {
+      command(editor: Editor) {
         editor.chain().focus().insertTableWithOptions().run()
       },
       dom: materialMenuButton("grid_on", "Insert table"),
     },
     tableManipulationItem(
-      (editor) => {
+      (editor: Editor) => {
         editor.chain().focus().addColumnAfter().run()
       },
       svgMenuButton(
@@ -96,7 +118,7 @@ function tableMenuItems({ editor }) {
       ),
     ),
     tableManipulationItem(
-      (editor) => {
+      (editor: Editor) => {
         editor.chain().focus().deleteColumn().run()
       },
       svgMenuButton(
@@ -110,7 +132,7 @@ function tableMenuItems({ editor }) {
       ),
     ),
     tableManipulationItem(
-      (editor) => {
+      (editor: Editor) => {
         editor.chain().focus().addRowAfter().run()
       },
       svgMenuButton(
@@ -125,7 +147,7 @@ function tableMenuItems({ editor }) {
       ),
     ),
     tableManipulationItem(
-      (editor) => {
+      (editor: Editor) => {
         editor.chain().focus().deleteRow().run()
       },
       svgMenuButton(
@@ -139,20 +161,20 @@ function tableMenuItems({ editor }) {
       ),
     ),
     tableManipulationItem(
-      (editor) => {
+      (editor: Editor) => {
         editor.chain().focus().mergeCells().run()
       },
       materialMenuButton("call_merge", "Merge cells"),
     ),
     tableManipulationItem(
-      (editor) => {
+      (editor: Editor) => {
         editor.chain().focus().splitCell().run()
       },
       materialMenuButton("call_split", "Split cell"),
     ),
     // Toggle header cell (works on selected cells or current cell)
     tableManipulationItem(
-      (editor) => {
+      (editor: Editor) => {
         editor.chain().focus().toggleHeaderCell().run()
       },
       svgMenuButton(

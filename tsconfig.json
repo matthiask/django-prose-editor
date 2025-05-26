@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "noImplicitAny": false,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"]
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "files": [
+    "src/types.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "django_prose_editor",
+    "tests"
+  ]
+}

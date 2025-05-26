@@ -1,9 +1,28 @@
+import type { Editor } from "@tiptap/core"
 import { OrderedList as TiptapOrderedList } from "@tiptap/extension-list"
 
-import { gettext, updateAttrsDialog } from "./utils.js"
+import { gettext, updateAttrsDialog } from "./utils"
+
+interface ListType {
+  label: string
+  htmlType: string
+  description: string
+}
+
+interface ListPropertiesAttrs {
+  start: string
+  listType: string
+}
+
+interface OrderedListOptions {
+  keepMarks: boolean
+  keepAttributes: boolean
+  HTMLAttributes: Record<string, any>
+  enableListAttributes: boolean
+}
 
 // Define all list types in a single source of truth
-const LIST_TYPES = [
+const LIST_TYPES: ListType[] = [
   {
     label: "1, 2, 3, ...",
     htmlType: "1",
@@ -32,13 +51,13 @@ const LIST_TYPES = [
 ]
 
 // Helper to convert list type label to HTML type attribute
-const listTypeToHTMLType = (typeLabel) => {
+const listTypeToHTMLType = (typeLabel: string): string => {
   const found = LIST_TYPES.find((item) => item.label === typeLabel)
   return found ? found.htmlType : "1" // Default to decimal
 }
 
 // Helper to convert HTML type attribute to list type label
-const htmlTypeToListType = (htmlType) => {
+const htmlTypeToListType = (htmlType: string): string => {
   const found = LIST_TYPES.find((item) => item.htmlType === htmlType)
   return found ? found.label : LIST_TYPES[0].label // Default to first option
 }
@@ -74,13 +93,13 @@ export const OrderedList = TiptapOrderedList.configure({
   keepAttributes: false,
   // Default HTML attributes
   HTMLAttributes: {},
-}).extend({
+}).extend<OrderedListOptions>({
   addInputRules() {
     // Return an empty array to disable the default input rule (1. → ordered list)
     return []
   },
 
-  addOptions() {
+  addOptions(): OrderedListOptions {
     return {
       ...this.parent?.(),
       // Option to enable/disable list attributes dialog and menu
@@ -93,7 +112,7 @@ export const OrderedList = TiptapOrderedList.configure({
       ...this.parent?.(),
       updateListAttributes:
         () =>
-        ({ editor }) => {
+        ({ editor }: { editor: Editor }) => {
           // Check if list attributes dialog is enabled
           if (!this.options.enableListAttributes) {
             return false
@@ -103,7 +122,7 @@ export const OrderedList = TiptapOrderedList.configure({
           const { state } = editor
           const { selection } = state
           // Try different depths to find the list node
-          let listNode
+          let listNode: any
           for (let depth = 1; depth <= 3; depth++) {
             try {
               const node = selection.$anchor.node(-depth)
@@ -128,7 +147,7 @@ export const OrderedList = TiptapOrderedList.configure({
           listPropertiesDialog(editor, {
             start: String(start),
             listType: htmlTypeToListType(type),
-          }).then((attrs) => {
+          }).then((attrs: ListPropertiesAttrs | null) => {
             if (attrs) {
               // Convert settings to attributes
               const listType = listTypeToHTMLType(attrs.listType)

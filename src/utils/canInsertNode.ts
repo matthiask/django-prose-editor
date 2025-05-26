@@ -1,11 +1,14 @@
+import type { NodeType } from "@tiptap/pm/model"
+import type { EditorState } from "@tiptap/pm/state"
+
 /**
  * Utility function to check if a node can be inserted at the current selection
  *
- * @param {Object} state - The current editor state
- * @param {Object} nodeType - The node type to check for insertion
- * @returns {Boolean} - Whether the node can be inserted at the current position
+ * @param state - The current editor state
+ * @param nodeType - The node type to check for insertion
+ * @returns Whether the node can be inserted at the current position
  */
-export function canInsertNode(state, nodeType) {
+export function canInsertNode(state: EditorState, nodeType: NodeType): boolean {
   // Check if the node type exists in schema
   if (!nodeType) {
     return false
