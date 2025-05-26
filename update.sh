@@ -1,6 +1,6 @@
 #!/bin/sh
 yarn upgrade \
-autoprefixer esbuild esbuild-postcss postcss \
+autoprefixer postcss @rslib/core \
 @tiptap/core@next \
 @tiptap/extension-blockquote@next \
 @tiptap/extension-bold@next \

@@ -1,4 +1,4 @@
-exclude: ".yarn/|yarn.lock|\\.min\\.(css|js)$"
+exclude: ".yarn/|yarn.lock|\\.min\\.(css|js)$|django_prose_editor/editor.*|django_prose_editor/overrides.*"
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0

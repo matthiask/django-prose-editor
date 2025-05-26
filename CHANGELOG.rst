@@ -4,6 +4,10 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+- Switched from `esbuild <https://esbuild.github.io/>`__ to
+  `rslib <https://lib.rsbuild.dev/>`__. Bundles are smaller and I'm a heavy
+  user of rspack anyway.
+
 
 0.12 (2025-05-12)
 ~~~~~~~~~~~~~~~~~

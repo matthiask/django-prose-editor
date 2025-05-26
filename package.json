@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@rslib/core": "^0.8.0",
     "@tiptap/core": "^3.0.0-beta.5",
     "@tiptap/extension-blockquote": "^3.0.0-beta.5",
     "@tiptap/extension-bold": "^3.0.0-beta.5",
@@ -31,12 +32,10 @@
     "@tiptap/extensions": "^3.0.0-beta.5",
     "@tiptap/pm": "^3.0.0-beta.5",
     "autoprefixer": "^10.4.21",
-    "esbuild": "^0.25.2",
-    "esbuild-postcss": "^0.0.4",
     "postcss": "^8.5.3"
   },
   "scripts": {
-    "dev": "node esbuild.mjs watch",
-    "prod": "node esbuild.mjs"
+    "dev": "rslib build --watch",
+    "prod": "NODE_ENV=production rslib build"
   }
 }
