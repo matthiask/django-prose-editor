@@ -14,14 +14,14 @@ class IsHelperFunctionTest(TestCase):
     def test_is_function(self):
         """Test the _is helper function for widget type checking."""
         # Test with classes
-        self.assertTrue(_is(ProseEditorWidget, ProseEditorWidget))
-        self.assertTrue(_is(CustomWidget, forms.Textarea))
-        self.assertFalse(_is(CustomWidget, ProseEditorWidget))
+        assert _is(ProseEditorWidget, ProseEditorWidget)
+        assert _is(CustomWidget, forms.Textarea)
+        assert not _is(CustomWidget, ProseEditorWidget)
 
         # Test with instances
-        self.assertTrue(_is(ProseEditorWidget(), ProseEditorWidget))
-        self.assertTrue(_is(CustomWidget(), forms.Textarea))
-        self.assertFalse(_is(ProseEditorWidget(), widgets.AdminTextareaWidget))
+        assert _is(ProseEditorWidget(), ProseEditorWidget)
+        assert _is(CustomWidget(), forms.Textarea)
+        assert not _is(ProseEditorWidget(), widgets.AdminTextareaWidget)
 
 
 class ProseEditorFormFieldTest(TestCase):
@@ -29,38 +29,38 @@ class ProseEditorFormFieldTest(TestCase):
         """Test the widget handling in ProseEditorFormField."""
         # Test when widget is None (default case, line 80 branch)
         field = ProseEditorFormField()
-        self.assertIsInstance(field.widget, ProseEditorWidget)
+        assert isinstance(field.widget, ProseEditorWidget)
 
         # Test when widget is a class that is not a ProseEditorWidget (line 81 branch)
         field = ProseEditorFormField(widget=CustomWidget)
-        self.assertIsInstance(field.widget, ProseEditorWidget)
+        assert isinstance(field.widget, ProseEditorWidget)
 
         # Test when widget is an instance that is not a ProseEditorWidget (line 81 branch)
         field = ProseEditorFormField(widget=CustomWidget())
-        self.assertIsInstance(field.widget, ProseEditorWidget)
+        assert isinstance(field.widget, ProseEditorWidget)
 
         # Test with AdminTextareaWidget class (line 79 branch)
         field = ProseEditorFormField(widget=widgets.AdminTextareaWidget)
-        self.assertIsInstance(field.widget, AdminProseEditorWidget)
+        assert isinstance(field.widget, AdminProseEditorWidget)
 
         # Test with AdminTextareaWidget instance (line 79 branch)
         field = ProseEditorFormField(widget=widgets.AdminTextareaWidget())
-        self.assertIsInstance(field.widget, AdminProseEditorWidget)
+        assert isinstance(field.widget, AdminProseEditorWidget)
 
         # For completeness, also test with a ProseEditorWidget class and instance
         field = ProseEditorFormField(widget=ProseEditorWidget)
-        self.assertIsInstance(field.widget, ProseEditorWidget)
+        assert isinstance(field.widget, ProseEditorWidget)
 
         field = ProseEditorFormField(widget=ProseEditorWidget())
-        self.assertIsInstance(field.widget, ProseEditorWidget)
+        assert isinstance(field.widget, ProseEditorWidget)
 
     def test_cleaning(self):
         class Form(forms.Form):
             content = ProseEditorFormField(sanitize=lambda html: "Hello")
 
         form = Form({"content": "World"})
-        self.assertTrue(form.is_valid())
-        self.assertEqual(form.cleaned_data, {"content": "Hello"})
+        assert form.is_valid()
+        assert form.cleaned_data == {"content": "Hello"}
 
     def test_form_field_extensions(self):
         class Form(forms.Form):
@@ -69,14 +69,14 @@ class ProseEditorFormFieldTest(TestCase):
             )
 
         form = Form({"content": "<strong>Hello</strong> <em>World</em>"})
-        self.assertTrue(form.is_valid())
-        self.assertEqual(form.cleaned_data, {"content": "<strong>Hello</strong> World"})
+        assert form.is_valid()
+        assert form.cleaned_data == {"content": "<strong>Hello</strong> World"}
 
         print(form.fields["content"].config)
         print(form.fields["content"].preset)
 
-        self.assertIn("Bold", form.fields["content"].config["extensions"])
-        self.assertEqual(form.fields["content"].preset, "configurable")
+        assert "Bold" in form.fields["content"].config["extensions"]
+        assert form.fields["content"].preset == "configurable"
 
 
 class FormWithProseEditorField(forms.Form):
@@ -108,7 +108,7 @@ class FormRenderingTest(TestCase):
 
         # Count the number of data-django-prose-editor attributes
         # All fields should use the data attribute with default preset
-        self.assertEqual(html.count("data-django-prose-editor-default"), 5)
+        assert html.count("data-django-prose-editor-default") == 5
 
         # All fields should use ProseEditor widgets (either standard or admin)
         total_prose_editors = len(
@@ -118,6 +118,4 @@ class FormRenderingTest(TestCase):
                 if isinstance(field.widget, ProseEditorWidget | AdminProseEditorWidget)
             ]
         )
-        self.assertEqual(
-            total_prose_editors, 5
-        )  # All 5 fields should use ProseEditor widgets
+        assert total_prose_editors == 5  # All 5 fields should use ProseEditor widgets

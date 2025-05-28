@@ -25,22 +25,22 @@ class ConfigFunctionsTestCase(TestCase):
         allowlist = allowlist_from_extensions(extensions)
 
         # Check that the core tags are included
-        self.assertIn("tags", allowlist)
-        self.assertIn("attributes", allowlist)
+        assert "tags" in allowlist
+        assert "attributes" in allowlist
 
         # Check that the specific tags are included
-        self.assertIn("strong", allowlist["tags"])  # Bold
-        self.assertIn("em", allowlist["tags"])  # Italic
-        self.assertIn("a", allowlist["tags"])  # Link
+        assert "strong" in allowlist["tags"]  # Bold
+        assert "em" in allowlist["tags"]  # Italic
+        assert "a" in allowlist["tags"]  # Link
 
         # Check that link attributes are included
-        self.assertIn("a", allowlist["attributes"])
-        self.assertIn("href", allowlist["attributes"]["a"])
-        self.assertIn("rel", allowlist["attributes"]["a"])
-        self.assertIn("title", allowlist["attributes"]["a"])
+        assert "a" in allowlist["attributes"]
+        assert "href" in allowlist["attributes"]["a"]
+        assert "rel" in allowlist["attributes"]["a"]
+        assert "title" in allowlist["attributes"]["a"]
 
         # Verify that js_modules is not included in the allowlist
-        self.assertNotIn("js_modules", allowlist)
+        assert "js_modules" not in allowlist
 
     def test_allowlist_from_extensions_complex(self):
         """Test allowlist_from_extensions with more complex extension configurations."""
@@ -53,22 +53,22 @@ class ConfigFunctionsTestCase(TestCase):
         allowlist = allowlist_from_extensions(extensions)
 
         # Check heading levels are limited to h1, h2
-        self.assertIn("h1", allowlist["tags"])
-        self.assertIn("h2", allowlist["tags"])
-        self.assertNotIn("h3", allowlist["tags"])
+        assert "h1" in allowlist["tags"]
+        assert "h2" in allowlist["tags"]
+        assert "h3" not in allowlist["tags"]
 
         # Check code block with language classes
-        self.assertIn("pre", allowlist["tags"])
-        self.assertIn("code", allowlist["tags"])
-        self.assertIn("pre", allowlist["attributes"])
-        self.assertIn("class", allowlist["attributes"]["pre"])
+        assert "pre" in allowlist["tags"]
+        assert "code" in allowlist["tags"]
+        assert "pre" in allowlist["attributes"]
+        assert "class" in allowlist["attributes"]["pre"]
 
         # Check link with target and protocols
-        self.assertIn("a", allowlist["tags"])
-        self.assertIn("target", allowlist["attributes"]["a"])
-        self.assertIn("url_schemes", allowlist)
-        self.assertIn("https", allowlist["url_schemes"])
-        self.assertIn("mailto", allowlist["url_schemes"])
+        assert "a" in allowlist["tags"]
+        assert "target" in allowlist["attributes"]["a"]
+        assert "url_schemes" in allowlist
+        assert "https" in allowlist["url_schemes"]
+        assert "mailto" in allowlist["url_schemes"]
 
     @override_settings(
         DJANGO_PROSE_EDITOR_EXTENSIONS=[
@@ -103,12 +103,12 @@ class ConfigFunctionsTestCase(TestCase):
         js_modules = js_from_extensions(extensions)
 
         # Should be a list of JS modules
-        self.assertIsInstance(js_modules, list)
+        assert isinstance(js_modules, list)
 
         # Should contain the custom extensions' JS modules
-        self.assertIn(static_lazy("testapp/blue-bold.js"), js_modules)
-        self.assertIn(static_lazy("testapp/other.js"), js_modules)
-        self.assertIn(static_lazy("testapp/another.js"), js_modules)
+        assert static_lazy("testapp/blue-bold.js") in js_modules
+        assert static_lazy("testapp/other.js") in js_modules
+        assert static_lazy("testapp/another.js") in js_modules
 
         # Test with dependencies
         extensions = {
@@ -118,7 +118,7 @@ class ConfigFunctionsTestCase(TestCase):
         js_modules = js_from_extensions(extensions)
 
         # Dependencies don't have their own JS modules, so this should be an empty list
-        self.assertEqual(js_modules, [])
+        assert js_modules == []
 
     def test_js_from_extensions_with_invalid_extension(self):
         """Test that js_from_extensions handles invalid extensions gracefully."""
@@ -129,8 +129,8 @@ class ConfigFunctionsTestCase(TestCase):
         js_modules = js_from_extensions(extensions)
 
         # Should still return a list, just empty
-        self.assertIsInstance(js_modules, list)
-        self.assertEqual(js_modules, [])
+        assert isinstance(js_modules, list)
+        assert js_modules == []
 
     def test_expand_extensions_with_dependencies(self):
         """Test that expand_extensions correctly adds dependent extensions."""
@@ -143,21 +143,21 @@ class ConfigFunctionsTestCase(TestCase):
         expanded = expand_extensions(extensions)
 
         # Original extensions should be preserved
-        self.assertIn("Bold", expanded)
-        self.assertIn("Table", expanded)
-        self.assertIn("Figure", expanded)
+        assert "Bold" in expanded
+        assert "Table" in expanded
+        assert "Figure" in expanded
 
         # Dependencies should be added
-        self.assertIn("TableRow", expanded)
-        self.assertIn("TableHeader", expanded)
-        self.assertIn("TableCell", expanded)
-        self.assertIn("Caption", expanded)
-        self.assertIn("Image", expanded)
+        assert "TableRow" in expanded
+        assert "TableHeader" in expanded
+        assert "TableCell" in expanded
+        assert "Caption" in expanded
+        assert "Image" in expanded
 
         # Core extensions should always be included
-        self.assertIn("Document", expanded)
-        self.assertIn("Paragraph", expanded)
-        self.assertIn("Text", expanded)
+        assert "Document" in expanded
+        assert "Paragraph" in expanded
+        assert "Text" in expanded
 
     def test_disabled_extensions(self):
         """Test that disabled extensions are properly handled."""
@@ -170,13 +170,13 @@ class ConfigFunctionsTestCase(TestCase):
         expanded = expand_extensions(extensions)
 
         # Enabled extensions should be present
-        self.assertIn("Bold", expanded)
-        self.assertIn("Table", expanded)
+        assert "Bold" in expanded
+        assert "Table" in expanded
 
         # Disabled extensions should be removed
-        self.assertNotIn("Italic", expanded)
+        assert "Italic" not in expanded
 
         # Check that disabled extensions don't affect the allowlist
         allowlist = allowlist_from_extensions(extensions)
-        self.assertIn("strong", allowlist["tags"])  # Bold
-        self.assertNotIn("em", allowlist["tags"])  # Italic should be excluded
+        assert "strong" in allowlist["tags"]  # Bold
+        assert "em" not in allowlist["tags"]  # Italic should be excluded

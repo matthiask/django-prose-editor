@@ -99,6 +99,8 @@ lint.extend-select = [
   "PLC",
   "PLE",
   "PLW",
+  # flake8-pytest-style
+  "PT",
   # unused noqa
   "RUF100",
   # pyupgrade

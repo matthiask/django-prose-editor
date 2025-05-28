@@ -3,7 +3,7 @@ import os
 import pytest
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def browser_context_args(browser_context_args):
     """Modify browser context arguments for tracing."""
     return {
