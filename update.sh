@@ -1,5 +1,5 @@
 #!/bin/sh
-yarn upgrade \
+yarn upgrade --latest \
 autoprefixer postcss @rslib/core \
 @tiptap/core@next \
 @tiptap/extension-blockquote@next \
