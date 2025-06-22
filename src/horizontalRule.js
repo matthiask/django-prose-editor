@@ -1,5 +1,5 @@
+import { canInsertNode } from "@tiptap/core"
 import { HorizontalRule as TiptapHorizontalRule } from "@tiptap/extension-horizontal-rule"
-import { canInsertNode } from "./utils/canInsertNode"
 
 export const HorizontalRule = TiptapHorizontalRule.extend({
   addCommands() {

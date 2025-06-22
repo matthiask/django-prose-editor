@@ -7,6 +7,9 @@ Next version
 - Switched from `esbuild <https://esbuild.github.io/>`__ to
   `rslib <https://lib.rsbuild.dev/>`__. Bundles are smaller and I'm a heavy
   user of rspack anyway.
+- Updated Tiptap to 3.0.0-beta.15, which allows us to remove our custom code to
+  check whether we can insert figures or horizontal rules at the current
+  selection.
 
 
 0.12 (2025-05-12)

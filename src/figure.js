@@ -1,5 +1,4 @@
-import { mergeAttributes, Node } from "@tiptap/core"
-import { canInsertNode } from "./utils/canInsertNode"
+import { canInsertNode, mergeAttributes, Node } from "@tiptap/core"
 import { gettext, updateAttrsDialog } from "./utils.js"
 
 /**

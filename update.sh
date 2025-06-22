@@ -1,29 +1,29 @@
 #!/bin/sh
 yarn upgrade --latest \
 autoprefixer postcss @rslib/core \
-@tiptap/core@next \
-@tiptap/extension-blockquote@next \
-@tiptap/extension-bold@next \
-@tiptap/extension-code-block@next \
-@tiptap/extension-code@next \
-@tiptap/extension-color@next \
-@tiptap/extension-document@next \
-@tiptap/extension-hard-break@next \
-@tiptap/extension-heading@next \
-@tiptap/extension-highlight@next \
-@tiptap/extension-horizontal-rule@next \
-@tiptap/extension-image@next \
-@tiptap/extension-italic@next \
-@tiptap/extension-link@next \
-@tiptap/extension-list@next \
-@tiptap/extension-paragraph@next \
-@tiptap/extension-strike@next \
-@tiptap/extension-subscript@next \
-@tiptap/extension-superscript@next \
-@tiptap/extension-table@next \
-@tiptap/extension-text-align@next \
-@tiptap/extension-text-style@next \
-@tiptap/extension-text@next \
-@tiptap/extension-underline@next \
-@tiptap/extensions@next \
-@tiptap/pm@next
+@tiptap/core@beta \
+@tiptap/extension-blockquote@beta \
+@tiptap/extension-bold@beta \
+@tiptap/extension-code-block@beta \
+@tiptap/extension-code@beta \
+@tiptap/extension-color@beta \
+@tiptap/extension-document@beta \
+@tiptap/extension-hard-break@beta \
+@tiptap/extension-heading@beta \
+@tiptap/extension-highlight@beta \
+@tiptap/extension-horizontal-rule@beta \
+@tiptap/extension-image@beta \
+@tiptap/extension-italic@beta \
+@tiptap/extension-link@beta \
+@tiptap/extension-list@beta \
+@tiptap/extension-paragraph@beta \
+@tiptap/extension-strike@beta \
+@tiptap/extension-subscript@beta \
+@tiptap/extension-superscript@beta \
+@tiptap/extension-table@beta \
+@tiptap/extension-text-align@beta \
+@tiptap/extension-text-style@beta \
+@tiptap/extension-text@beta \
+@tiptap/extension-underline@beta \
+@tiptap/extensions@beta \
+@tiptap/pm@beta
