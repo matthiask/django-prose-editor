@@ -10,6 +10,7 @@ Next version
 - Updated Tiptap to 3.0.0-beta.15, which allows us to remove our custom code to
   check whether we can insert figures or horizontal rules at the current
   selection.
+- Fixed the alignment of small contents in prose menubar buttons.
 
 
 0.12 (2025-05-12)

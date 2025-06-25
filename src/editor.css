@@ -82,9 +82,9 @@
   background: var(--_b);
   color: var(--_f);
   border: 1px solid var(--_r);
-  text-align: center;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   position: relative;
 }
 
