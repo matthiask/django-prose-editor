@@ -81,8 +81,8 @@ export const Menu = Extension.create({
 
 class MenuView {
   constructor(editor, itemGroups) {
-    this.items = itemGroups.flat()
     this.editor = editor
+    this.items = itemGroups.flat()
     this.isFloating = false
 
     // Create menubar element
