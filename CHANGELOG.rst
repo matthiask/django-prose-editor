@@ -4,10 +4,14 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+
+0.13 (2025-06-25)
+~~~~~~~~~~~~~~~~~
+
 - Switched from `esbuild <https://esbuild.github.io/>`__ to
   `rslib <https://lib.rsbuild.dev/>`__. Bundles are smaller and I'm a heavy
   user of rspack anyway.
-- Updated Tiptap to 3.0.0-beta.15, which allows us to remove our custom code to
+- Updated Tiptap to 3.0.0-beta.16, which allows us to remove our custom code to
   check whether we can insert figures or horizontal rules at the current
   selection.
 - Fixed the alignment of small contents in prose menubar buttons.
