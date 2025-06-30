@@ -1,34 +1,34 @@
 import {
-  Document,
-  Dropcursor,
-  Gapcursor,
-  Paragraph,
-  HardBreak,
-  Text,
-  History,
   Blockquote,
   Bold,
   BulletList,
+  createTextareaEditor,
+  Document,
+  Dropcursor,
+  Gapcursor,
+  HardBreak,
   Heading,
+  History,
   HorizontalRule,
+  HTML,
   Italic,
+  initializeEditors,
+  Link,
   ListItem,
+  Menu,
+  NoSpellCheck,
   OrderedList,
+  Paragraph,
   Strike,
   Subscript,
   Superscript,
-  Underline,
-  Link,
-  Menu,
-  HTML,
-  NoSpellCheck,
-  Typographic,
   Table,
-  TableRow,
-  TableHeader,
   TableCell,
-  createTextareaEditor,
-  initializeEditors,
+  TableHeader,
+  TableRow,
+  Text,
+  Typographic,
+  Underline,
 } from "django-prose-editor/editor"
 
 const marker = "data-django-prose-editor-default"
@@ -42,16 +42,27 @@ function createEditor(textarea, config = null) {
 
   // Default extension types (table explicitly excluded)
   const DEFAULT_TYPES = [
-    "Blockquote", "Bold", "BulletList", "Heading", "HorizontalRule",
-    "Italic", "Link", "OrderedList", "Strike", "Subscript",
-    "Superscript", "Underline"
+    "Blockquote",
+    "Bold",
+    "BulletList",
+    "Heading",
+    "HorizontalRule",
+    "Italic",
+    "Link",
+    "OrderedList",
+    "Strike",
+    "Subscript",
+    "Superscript",
+    "Underline",
   ]
 
-  const createIsTypeEnabled = (enabledTypes) => (...types) => {
-    // If no types defined, use the defaults
-    const typesToCheck = enabledTypes?.length ? enabledTypes : DEFAULT_TYPES
-    return !!types.find((t) => typesToCheck.includes(t))
-  }
+  const createIsTypeEnabled =
+    (enabledTypes) =>
+    (...types) => {
+      // If no types defined, use the defaults
+      const typesToCheck = enabledTypes?.length ? enabledTypes : DEFAULT_TYPES
+      return !!types.find((t) => typesToCheck.includes(t))
+    }
   const isTypeEnabled = createIsTypeEnabled(config.types)
 
   const extensions = [
@@ -75,7 +86,8 @@ function createEditor(textarea, config = null) {
     isTypeEnabled("HorizontalRule", "horizontal_rule") && HorizontalRule,
     isTypeEnabled("Italic", "em") && Italic,
     isTypeEnabled("Link", "link") && Link,
-    isTypeEnabled("BulletList", "bullet_list", "OrderedList", "ordered_list") && ListItem,
+    isTypeEnabled("BulletList", "bullet_list", "OrderedList", "ordered_list") &&
+      ListItem,
     isTypeEnabled("OrderedList", "ordered_list") && OrderedList,
     isTypeEnabled("Strike", "strikethrough") && Strike,
     isTypeEnabled("Subscript", "sub") && Subscript,
@@ -93,6 +105,7 @@ function createEditor(textarea, config = null) {
     detail: { editor, textarea },
     bubbles: true,
   })
+  textarea.dispatchEvent(event)
   return editor
 }
 

@@ -1,5 +1,8 @@
 import * as editorModule from "django-prose-editor/editor"
-import { createTextareaEditor, initializeEditors } from "django-prose-editor/editor"
+import {
+  createTextareaEditor,
+  initializeEditors,
+} from "django-prose-editor/editor"
 
 const marker = "data-django-prose-editor-configurable"
 
@@ -10,16 +13,16 @@ const moduleLoadPromises = new Map()
 async function loadExtensionModules(moduleUrls) {
   if (!moduleUrls || !moduleUrls.length) return
 
-  const loadPromises = moduleUrls.map(url => {
+  const loadPromises = moduleUrls.map((url) => {
     if (moduleLoadPromises.has(url)) {
       return moduleLoadPromises.get(url)
     }
 
     const loadPromise = import(url)
-      .then(module => {
+      .then((module) => {
         Object.assign(EXTENSIONS, module)
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(`Error loading extension module from ${url}:`, error)
         // Remove failed modules from cache
         moduleLoadPromises.delete(url)
@@ -33,23 +36,25 @@ async function loadExtensionModules(moduleUrls) {
   await Promise.all(loadPromises)
 }
 
-async function createEditorAsync(textarea, config=null) {
+async function createEditorAsync(textarea, config = null) {
   if (textarea.closest(".prose-editor")) return null
 
   config = config || JSON.parse(textarea.getAttribute(marker) || "{}")
 
-  if (config.js_modules && config.js_modules.length) {
+  if (config.js_modules?.length) {
     await loadExtensionModules(config.js_modules)
   }
 
   const extensions = []
 
   // Process all extensions from the config
-  for (const [extensionName, extensionConfig] of Object.entries(config.extensions)) {
+  for (const [extensionName, extensionConfig] of Object.entries(
+    config.extensions,
+  )) {
     const extension = EXTENSIONS[extensionName]
     if (extension) {
       // If the extension has a configuration object (not empty), pass it to the extension
-      if (typeof extensionConfig === 'object') {
+      if (typeof extensionConfig === "object") {
         extensions.push(extension.configure(extensionConfig))
       } else {
         extensions.push(extension)
@@ -64,7 +69,7 @@ async function createEditorAsync(textarea, config=null) {
 const pendingEditors = new WeakMap()
 
 // Function for the initializeEditors callback
-function createEditor(textarea, config=null) {
+function createEditor(textarea, config = null) {
   // Check if we already have a pending initialization for this textarea
   if (pendingEditors.has(textarea)) {
     return pendingEditors.get(textarea)
@@ -72,12 +77,12 @@ function createEditor(textarea, config=null) {
 
   // Create a promise for the editor initialization
   const editorPromise = createEditorAsync(textarea, config)
-    .then(editor => {
+    .then((editor) => {
       // The editor is initialized and ready to use
       if (editor) {
-        const event = new CustomEvent('prose-editor:ready', {
+        const event = new CustomEvent("prose-editor:ready", {
           detail: { editor, textarea },
-          bubbles: true
+          bubbles: true,
         })
         textarea.dispatchEvent(event)
       }
@@ -85,8 +90,8 @@ function createEditor(textarea, config=null) {
       pendingEditors.delete(textarea)
       return editor
     })
-    .catch(error => {
-      console.error('Error initializing prose editor:', error)
+    .catch((error) => {
+      console.error("Error initializing prose editor:", error)
       // Remove from pending tracking on error
       pendingEditors.delete(textarea)
       return null

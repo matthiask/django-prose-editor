@@ -2,7 +2,7 @@ import { Mark, mergeAttributes } from "django-prose-editor/editor"
 
 // Extend the bold mark to make it blue
 export const BlueBold = Mark.create({
-  name: 'BlueBold',
+  name: "BlueBold",
 
   // Extend the default bold mark
   priority: 101, // Higher than the default bold priority
@@ -10,7 +10,7 @@ export const BlueBold = Mark.create({
   // Add keyboard shortcuts
   addKeyboardShortcuts() {
     return {
-      'Mod-Shift-b': () => this.editor.commands.toggleMark(this.name),
+      "Mod-Shift-b": () => this.editor.commands.toggleMark(this.name),
     }
   },
 
@@ -32,27 +32,35 @@ export const BlueBold = Mark.create({
           tr.insertText(text, range.from)
 
           // Apply the BlueBold mark to the inserted text
-          tr.addMark(range.from, range.from + text.length, this.type.create(attributes))
+          tr.addMark(
+            range.from,
+            range.from + text.length,
+            this.type.create(attributes),
+          )
 
           return tr
-        }
-      }
+        },
+      },
     ]
   },
 
   // Customize how it renders in the DOM
   renderHTML({ HTMLAttributes }) {
-    return ['strong', mergeAttributes(
-      HTMLAttributes,
-      { style: 'color: blue;', class: 'blue-bold-text' }
-    ), 0]
+    return [
+      "strong",
+      mergeAttributes(HTMLAttributes, {
+        style: "color: blue;",
+        class: "blue-bold-text",
+      }),
+      0,
+    ]
   },
 
   addOptions() {
     return {
       HTMLAttributes: {
-        class: 'blue-bold-text',
+        class: "blue-bold-text",
       },
     }
-  }
+  },
 })

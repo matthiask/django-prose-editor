@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.0.0-beta.5/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
   "assist": {
     "actions": {
       "source": {
@@ -9,8 +9,7 @@
   },
   "formatter": {
     "enabled": true,
-    "indentStyle": "space",
-    "indentWidth": 2
+    "useEditorconfig": true
   },
   "linter": {
     "enabled": true,
@@ -19,46 +18,10 @@
       "a11y": {
         "noSvgWithoutTitle": "off"
       },
-      "complexity": {
-        "noForEach": "off",
-        "useNumericLiterals": "error"
-      },
-      "correctness": {
-        "noUndeclaredVariables": "error",
-        "noUnusedImports": "error",
-        "noUnusedVariables": "error",
-        "useHookAtTopLevel": "error"
-      },
-      "security": {
-        "noDangerouslySetInnerHtml": "warn"
-      },
       "style": {
-        "noParameterAssign": "off",
-        "useForOf": "warn",
-        "useLiteralEnumMembers": "error",
-        "noCommaOperator": "error",
-        "useNodejsImportProtocol": "error",
-        "useAsConstAssertion": "error",
-        "useEnumInitializers": "error",
-        "useSelfClosingElements": "error",
-        "useConst": "error",
-        "useSingleVarDeclarator": "error",
-        "noUnusedTemplateLiteral": "error",
-        "useNumberNamespace": "error",
-        "noInferrableTypes": "error",
-        "useExponentiationOperator": "error",
-        "useTemplate": "error",
-        "noNonNullAssertion": "error",
-        "useDefaultParameterLast": "error",
-        "noArguments": "error",
-        "useImportType": "error",
-        "useExportType": "error",
-        "noUselessElse": "error",
-        "useShorthandFunctionType": "error",
-        "useArrayLiterals": "error"
+        "noParameterAssign": "off"
       },
       "suspicious": {
-        "noArrayIndexKey": "warn",
         "noAssignInExpressions": "off"
       }
     }

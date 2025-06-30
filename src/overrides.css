@@ -3,8 +3,9 @@
 .ProseMirror {
   padding: 1rem 1.75rem;
   outline: none !important;
-  font-family: -apple-system, blinkmacsystemfont, "Segoe UI", roboto, oxygen,
-    ubuntu, cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-family:
+    -apple-system, blinkmacsystemfont, "Segoe UI", roboto, oxygen, ubuntu,
+    cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   margin: 0 !important;
 }
 
