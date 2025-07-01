@@ -14,19 +14,19 @@ For the best development experience:
 
 When using ``yarn dev``:
 
-- The generated CSS and JavaScript is not minified, making it easier to debug.
-- Source maps are generated to help identify exactly where in the source code
-  an error occurs.
 - The watcher will rebuild files automatically when you make changes.
+- Development mode provides faster builds for iteration.
 
-Source maps are generated in development mode (``yarn dev``) for easier
-debugging, but not included in production builds to keep the package size
-manageable. The JavaScript in this project is quite extensive, so source maps
-would significantly increase the distribution size.
+Both development and production builds:
 
-The pre-commit configuration includes a hook that prevents committing files
-with source map references, ensuring that development artifacts don't make it
-into the repository.
+- Always generate minified CSS and JavaScript for optimal performance
+- Always include source maps to help identify exactly where in the source code
+  an error occurs
+- Source maps are included in the distributed package to aid in debugging
+
+The build process ensures consistent output whether you're developing or
+building for production, with source maps always available for debugging
+purposes.
 
 Browser Testing with Playwright
 -------------------------------

@@ -28,7 +28,10 @@ django-prose-editor[sanitize]``) the following should get you started:
 
    installation
    configuration
+   sanitization
    custom_extensions
+   presets
+   legacy
    forms
    system_checks
    bundlers

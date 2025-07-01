@@ -119,6 +119,172 @@ Examples
 
 Check the bundled Link and Table extensions for examples.
 
+Configurable Extensions
+-----------------------
+
+The configurable preset allows you to add custom Tiptap extensions without
+having to create a custom preset. You can define extension groups in your
+Django settings, with each group containing related extensions that share the
+same JavaScript assets:
+
+.. code-block:: python
+
+    # In settings.py
+    from js_asset import static_lazy
+    from django_prose_editor.config import html_tags
+
+    # Define your custom extensions with their processors
+    DJANGO_PROSE_EDITOR_EXTENSIONS = [
+        # Blue bold extension group
+        {
+            "js": [
+                static_lazy("myapp/extensions/blue-bold.js")
+            ],
+            "extensions": {
+                "BlueBold": html_tags(
+                    tags=["strong"],
+                    attributes={"strong": ["style", "class"]}
+                )
+            }
+        },
+
+        # Complex extension group with multiple related extensions
+        {
+            "js": [
+                static_lazy("myapp/extensions/table/table.js")
+            ],
+            "extensions": {
+                "Table": "myapp.extensions.process_table",
+                "TableRow": "myapp.extensions.process_table_row",
+                "TableCell": "myapp.extensions.process_table_cell",
+                "TableHeader": "myapp.extensions.process_table_header"
+            }
+        }
+    ]
+
+
+The JavaScript module should export the extension as a named export. Here's a
+minimal example of a custom extension that adds a blue color to bold text:
+
+.. code-block:: javascript
+
+    // myapp/static/myapp/extensions/blue-bold.js
+    import { Mark } from "django-prose-editor/editor"
+
+    // Extend the bold mark to make it blue
+    export const BlueBold = Mark.create({
+      name: 'BlueBold',
+
+      // Extend the default bold mark
+      priority: 101, // Higher than the default bold priority
+
+      // Customize how it renders in the DOM
+      renderHTML({ HTMLAttributes }) {
+        return ['strong', {
+          ...HTMLAttributes,
+          style: 'color: blue;'
+        }, 0]
+      },
+
+      addOptions() {
+        return {
+          HTMLAttributes: {
+            class: 'blue-bold-text',
+          },
+        }
+      }
+    })
+
+Then you can use your extension in your models:
+
+.. code-block:: python
+
+    from django_prose_editor.fields import ProseEditorField
+
+    class Article(models.Model):
+        content = ProseEditorField(
+            extensions={
+                "Bold": True,
+                "Italic": True,
+                # Enable the blue bold extension
+                "BlueBold": True
+            }
+        )
+
+
+Custom Processor Functions
+--------------------------
+
+Extensions have two important parts: Editor extensions mapping to a processor
+function which defines allowed tags and attributes for each editor extension
+and a list of JavaScript modules implementing the editor part of said
+extensions.
+
+The base case of a hardcoded list of tags and attributes is handled by the
+``html_tags`` helper.
+
+.. code-block:: python
+
+    # Example processor function in myapp/extensions.py
+    def process_complex_extension(config, nh3_config):
+        """
+        Process custom extension configuration for sanitization.
+
+        Args:
+            config: The extension configuration (e.g., {"option1": "value"})
+            nh3_config: The shared configuration dictionary to update
+        """
+        # Prepare tags and attributes
+        tags = ["div", "span"]
+        attributes = {
+            "div": ["class", "id"],
+            "span": ["class"],
+        }
+
+        # Example: Modify the configuration based on options
+        if config.get("restrictToDiv", False):
+            # Only allow div elements
+            tags = ["div"]
+            attributes = {"div": ["class", "id"]}
+
+        # Example: Add data attributes if enabled
+        if config.get("allowDataAttributes", False):
+            if "div" not in attributes:
+                attributes["div"] = []
+            attributes["div"].extend(["data-custom", "data-value"])
+
+        # Add tags and attributes to the nh3 config
+        add_tags_and_attributes(nh3_config, tags, attributes)
+
+    # Then in settings.py, register your processor by its dotted path:
+    from js_asset import static_lazy
+    from django_prose_editor.config import html_tags
+
+    DJANGO_PROSE_EDITOR_EXTENSIONS = [
+        # Complex extension group
+        {
+            "js": [
+                static_lazy("myapp/extensions/complex-extension.js")
+            ],
+            "extensions": {
+                "ComplexExtension": "myapp.extensions.process_complex_extension"
+            }
+        },
+
+        # Simple extension group
+        {
+            "js": [
+                static_lazy("myapp/extensions/simple-extension.js")
+            ],
+            "extensions": {
+                "SimpleExtension": html_tags(
+                    tags=["div", "span"],
+                    attributes={"div": ["class"], "span": ["class"]}
+                )
+            }
+        }
+    ]
+
 Best Practices
 -------------
 
