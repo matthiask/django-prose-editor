@@ -4,6 +4,10 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+
+0.14 (2025-07-02)
+~~~~~~~~~~~~~~~~~
+
 - Updated the pre-commit hooks.
 - Updated the Tiptap dependency.
 - Actually started dispatching the documented ``prose-editor:ready`` event when
