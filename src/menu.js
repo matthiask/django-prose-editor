@@ -11,6 +11,7 @@ export const Menu = Extension.create({
   addOptions() {
     return {
       defaultItems: true,
+      sticky: true,
     }
   },
 
@@ -69,11 +70,12 @@ export const Menu = Extension.create({
   addProseMirrorPlugins() {
     const editor = this.editor
     const itemGroups = this.storage.itemGroups({ editor })
+    const options = this.options
 
     return [
       new Plugin({
         view() {
-          const menuView = new MenuView(editor, itemGroups)
+          const menuView = new MenuView(editor, itemGroups, options)
           const editorDomParent = editor.view.dom.parentNode
 
           // Insert both the placeholder and menubar
@@ -88,7 +90,7 @@ export const Menu = Extension.create({
 })
 
 class MenuView {
-  constructor(editor, itemGroups) {
+  constructor(editor, itemGroups, options) {
     this.editor = editor
     this.items = itemGroups.flat()
     this.isFloating = false
@@ -125,27 +127,29 @@ class MenuView {
       }
     })
 
-    // Set up scroll handling for floating menubar
-    this.handleScroll = this.handleScroll.bind(this)
-    window.addEventListener("scroll", this.handleScroll, { passive: true })
-    window.addEventListener("resize", this.handleScroll, { passive: true })
+    if (options.sticky) {
+      // Set up scroll handling for floating menubar
+      this.handleScroll = this.handleScroll.bind(this)
+      window.addEventListener("scroll", this.handleScroll, { passive: true })
+      window.addEventListener("resize", this.handleScroll, { passive: true })
 
-    // Initial position check - run immediately and again after a small delay
-    // for better reliability
-    const updateMenubarHeight = () => {
-      this.menubarHeight = this.dom.offsetHeight
-      this.placeholder.style.setProperty(
-        "--menubar-height",
-        `${this.menubarHeight}px`,
-      )
-      this.handleScroll()
+      // Initial position check - run immediately and again after a small delay
+      // for better reliability
+      const updateMenubarHeight = () => {
+        this.menubarHeight = this.dom.offsetHeight
+        this.placeholder.style.setProperty(
+          "--menubar-height",
+          `${this.menubarHeight}px`,
+        )
+        this.handleScroll()
+      }
+
+      // Run immediately
+      updateMenubarHeight()
+
+      // And again after a small delay to ensure accurate measurements
+      setTimeout(updateMenubarHeight, 100)
     }
-
-    // Run immediately
-    updateMenubarHeight()
-
-    // And again after a small delay to ensure accurate measurements
-    setTimeout(updateMenubarHeight, 100)
   }
 
   handleScroll() {
