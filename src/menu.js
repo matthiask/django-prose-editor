@@ -8,6 +8,12 @@ const findExtension = (editor, extension) =>
 export const Menu = Extension.create({
   name: "menu",
 
+  addOptions() {
+    return {
+      defaultItems: true,
+    }
+  },
+
   addStorage() {
     // Menu items
     const _items = {}
@@ -47,13 +53,15 @@ export const Menu = Extension.create({
       )
     }
 
-    addItems("blockType", blockTypeMenuItems)
-    addItems("nodes", nodesMenuItems)
-    addItems("marks", markMenuItems)
-    addItems("link")
-    addItems("textAlign", textAlignMenuItems)
-    addItems("history", historyMenuItems)
-    addItems("utility", utilityMenuItems)
+    if (this.options.defaultItems) {
+      addItems("blockType", blockTypeMenuItems)
+      addItems("nodes", nodeMenuItems)
+      addItems("marks", markMenuItems)
+      addItems("link")
+      addItems("textAlign", textAlignMenuItems)
+      addItems("history", historyMenuItems)
+      addItems("utility", utilityMenuItems)
+    }
 
     return { _items, _groups, addItems, itemGroups }
   },
@@ -314,7 +322,7 @@ function blockTypeMenuItems({ editor }) {
   ]
 }
 
-function nodesMenuItems({ editor }) {
+function nodeMenuItems({ editor }) {
   const schema = editor.schema
   const items = []
   let type
