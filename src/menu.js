@@ -214,9 +214,10 @@ class MenuView {
 }
 
 const buttonsCreator = (cssClass) => {
-  const text = (textContent, title = "") =>
+  const text = (textContent, title = "", style = "") =>
     crel("span", {
       className: `${cssClass}__button`,
+      style,
       textContent,
       title,
     })
@@ -250,45 +251,22 @@ const buttonsCreator = (cssClass) => {
   return { text, material, svg, heading }
 }
 
-export function materialMenuButton(textContent, title) {
-  return crel("span", {
-    className: "prose-menubar__button material-icons",
-    textContent,
-    title,
-  })
-}
+const _buttons = buttonsCreator("prose-menubar")
+export const materialMenuButton = _buttons.material
+export const svgMenuButton = _buttons.svg
 
-export function svgMenuButton(innerHTML, title = "") {
-  return crel("span", {
-    className: "prose-menubar__button",
-    innerHTML,
-    title,
-  })
-}
-
-const headingButton = (level) => {
-  const dom = crel("span", {
-    className: "prose-menubar__button prose-menubar__button--heading",
-    title: `heading ${level}`,
-  })
-  dom.append(
-    crel("span", { className: "material-icons", textContent: "title" }),
-    crel("span", { className: "level", textContent: `${level}` }),
-  )
-
-  return {
-    command: (editor) => {
-      editor.chain().focus().toggleHeading({ level }).run()
-    },
-    dom,
-    active(editor) {
-      return editor.isActive("heading", { level })
-    },
-    enabled(editor) {
-      return editor.can().toggleHeading({ level })
-    },
-  }
-}
+const headingButton = (level) => ({
+  command: (editor) => {
+    editor.chain().focus().toggleHeading({ level }).run()
+  },
+  dom: _buttons.heading(level),
+  active(editor) {
+    return editor.isActive("heading", { level })
+  },
+  enabled(editor) {
+    return editor.can().toggleHeading({ level })
+  },
+})
 
 function blockTypeMenuItems({ editor, buttons }) {
   const schema = editor.schema
