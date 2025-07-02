@@ -1,6 +1,5 @@
 import { Table as TiptapTable } from "@tiptap/extension-table"
 
-import { materialMenuButton, svgMenuButton } from "./menu.js"
 import { gettext, updateAttrsDialog } from "./utils.js"
 
 const tableDialog = updateAttrsDialog(
@@ -64,7 +63,7 @@ export const Table = TiptapTable.extend({
   },
 })
 
-function tableMenuItems({ editor }) {
+function tableMenuItems({ editor, buttons }) {
   const tableManipulationItem = (command, dom) => ({
     command,
     dom,
@@ -78,13 +77,13 @@ function tableMenuItems({ editor }) {
       command(editor) {
         editor.chain().focus().insertTableWithOptions().run()
       },
-      dom: materialMenuButton("grid_on", "Insert table"),
+      dom: buttons.material("grid_on", "Insert table"),
     },
     tableManipulationItem(
       (editor) => {
         editor.chain().focus().addColumnAfter().run()
       },
-      svgMenuButton(
+      buttons.svg(
         `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="3" y="3" width="18" height="18" rx="2"/>
       <line x1="9" y1="3" x2="9" y2="21"/>
@@ -99,7 +98,7 @@ function tableMenuItems({ editor }) {
       (editor) => {
         editor.chain().focus().deleteColumn().run()
       },
-      svgMenuButton(
+      buttons.svg(
         `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="3" y="3" width="18" height="18" rx="2"/>
       <line x1="9" y1="3" x2="9" y2="21"/>
@@ -113,7 +112,7 @@ function tableMenuItems({ editor }) {
       (editor) => {
         editor.chain().focus().addRowAfter().run()
       },
-      svgMenuButton(
+      buttons.svg(
         `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="3" y="3" width="18" height="18" rx="2"/>
       <line x1="3" y1="9" x2="21" y2="9"/>
@@ -128,7 +127,7 @@ function tableMenuItems({ editor }) {
       (editor) => {
         editor.chain().focus().deleteRow().run()
       },
-      svgMenuButton(
+      buttons.svg(
         `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="3" y="3" width="18" height="18" rx="2"/>
       <line x1="3" y1="9" x2="21" y2="9"/>
@@ -142,20 +141,20 @@ function tableMenuItems({ editor }) {
       (editor) => {
         editor.chain().focus().mergeCells().run()
       },
-      materialMenuButton("call_merge", "Merge cells"),
+      buttons.material("call_merge", "Merge cells"),
     ),
     tableManipulationItem(
       (editor) => {
         editor.chain().focus().splitCell().run()
       },
-      materialMenuButton("call_split", "Split cell"),
+      buttons.material("call_split", "Split cell"),
     ),
     // Toggle header cell (works on selected cells or current cell)
     tableManipulationItem(
       (editor) => {
         editor.chain().focus().toggleHeaderCell().run()
       },
-      svgMenuButton(
+      buttons.svg(
         `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="3" y="3" width="18" height="18" rx="2"/>
       <rect x="3" y="3" width="18" height="6" rx="1" fill="#2196F3" fill-opacity="0.3" stroke="#2196F3"/>

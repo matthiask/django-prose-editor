@@ -8,6 +8,14 @@ const findExtension = (editor, extension) =>
 export const Menu = Extension.create({
   name: "menu",
 
+  addOptions() {
+    return {
+      defaultItems: true,
+      sticky: true,
+      cssClass: "prose-menubar",
+    }
+  },
+
   addStorage() {
     // Menu items
     const _items = {}
@@ -47,25 +55,32 @@ export const Menu = Extension.create({
       )
     }
 
-    addItems("blockType", blockTypeMenuItems)
-    addItems("nodes", nodesMenuItems)
-    addItems("marks", markMenuItems)
-    addItems("link")
-    addItems("textAlign", textAlignMenuItems)
-    addItems("history", historyMenuItems)
-    addItems("utility", utilityMenuItems)
+    const { defaultItems } = this.options
+    if (defaultItems) {
+      addItems("blockType", blockTypeMenuItems)
+      addItems("nodes", nodeMenuItems)
+      addItems("marks", markMenuItems)
+      addItems("link")
+      addItems("textAlign", textAlignMenuItems)
+      addItems("history", historyMenuItems)
+      addItems("utility", utilityMenuItems)
+    }
 
     return { _items, _groups, addItems, itemGroups }
   },
 
   addProseMirrorPlugins() {
     const editor = this.editor
-    const itemGroups = this.storage.itemGroups({ editor })
+    const options = this.options
+    const itemGroups = this.storage.itemGroups({
+      editor,
+      buttons: buttonsCreator(options.cssClass),
+    })
 
     return [
       new Plugin({
         view() {
-          const menuView = new MenuView(editor, itemGroups)
+          const menuView = new MenuView(editor, itemGroups, options)
           const editorDomParent = editor.view.dom.parentNode
 
           // Insert both the placeholder and menubar
@@ -80,22 +95,25 @@ export const Menu = Extension.create({
 })
 
 class MenuView {
-  constructor(editor, itemGroups) {
+  constructor(editor, itemGroups, options) {
     this.editor = editor
     this.items = itemGroups.flat()
     this.isFloating = false
+    this.options = options
+
+    const { cssClass } = options
 
     // Create menubar element
-    this.dom = crel("div", { className: "prose-menubar" })
+    this.dom = crel("div", { className: cssClass })
 
     // Create placeholder element to prevent content jumps
-    this.placeholder = crel("div", { className: "prose-menubar-placeholder" })
+    this.placeholder = crel("div", { className: `${cssClass}-placeholder` })
 
     // Create menu groups
     itemGroups
       .filter((group) => group.length)
       .forEach((group) => {
-        const groupDOM = crel("div", { className: "prose-menubar__group" })
+        const groupDOM = crel("div", { className: `${cssClass}__group` })
         this.dom.append(groupDOM)
         group.forEach(({ dom }) => groupDOM.append(dom))
       })
@@ -117,27 +135,29 @@ class MenuView {
       }
     })
 
-    // Set up scroll handling for floating menubar
-    this.handleScroll = this.handleScroll.bind(this)
-    window.addEventListener("scroll", this.handleScroll, { passive: true })
-    window.addEventListener("resize", this.handleScroll, { passive: true })
+    if (options.sticky) {
+      // Set up scroll handling for floating menubar
+      this.handleScroll = this.handleScroll.bind(this)
+      window.addEventListener("scroll", this.handleScroll, { passive: true })
+      window.addEventListener("resize", this.handleScroll, { passive: true })
 
-    // Initial position check - run immediately and again after a small delay
-    // for better reliability
-    const updateMenubarHeight = () => {
-      this.menubarHeight = this.dom.offsetHeight
-      this.placeholder.style.setProperty(
-        "--menubar-height",
-        `${this.menubarHeight}px`,
-      )
-      this.handleScroll()
+      // Initial position check - run immediately and again after a small delay
+      // for better reliability
+      const updateMenubarHeight = () => {
+        this.menubarHeight = this.dom.offsetHeight
+        this.placeholder.style.setProperty(
+          "--menubar-height",
+          `${this.menubarHeight}px`,
+        )
+        this.handleScroll()
+      }
+
+      // Run immediately
+      updateMenubarHeight()
+
+      // And again after a small delay to ensure accurate measurements
+      setTimeout(updateMenubarHeight, 100)
     }
-
-    // Run immediately
-    updateMenubarHeight()
-
-    // And again after a small delay to ensure accurate measurements
-    setTimeout(updateMenubarHeight, 100)
   }
 
   handleScroll() {
@@ -149,12 +169,14 @@ class MenuView {
     const editorRect = this.editor.options.element.getBoundingClientRect()
     const menubarRect = this.dom.getBoundingClientRect()
 
+    const { cssClass } = this.options
+
     // Check if we should float the menubar
     if (editorRect.top < 0 && editorRect.bottom > menubarRect.height) {
       if (!this.isFloating) {
         // Make the menubar float
-        this.dom.classList.add("prose-menubar--floating")
-        this.placeholder.classList.add("prose-menubar-placeholder--active")
+        this.dom.classList.add(`${cssClass}--floating`)
+        this.placeholder.classList.add(`${cssClass}-placeholder--active`)
 
         // Set the width to match the editor
         this.dom.style.width = `${editorRect.width}px`
@@ -165,8 +187,8 @@ class MenuView {
       }
     } else if (this.isFloating) {
       // Return the menubar to normal positioning
-      this.dom.classList.remove("prose-menubar--floating")
-      this.placeholder.classList.remove("prose-menubar-placeholder--active")
+      this.dom.classList.remove(`${cssClass}--floating`)
+      this.placeholder.classList.remove(`${cssClass}-placeholder--active`)
       this.dom.style.width = ""
       this.dom.style.left = ""
       this.dom.style.top = ""
@@ -194,57 +216,62 @@ class MenuView {
   }
 }
 
-/*
-function textButton(textContent, title = "") {
-  return crel("span", {
-    className: "prose-menubar__button",
-    textContent,
-    title,
-  })
-}
-*/
+const buttonsCreator = (cssClass) => {
+  const text = (textContent, title = "", style = "") =>
+    crel("span", {
+      className: `${cssClass}__button`,
+      style,
+      textContent,
+      title,
+    })
 
-export function materialMenuButton(textContent, title) {
-  return crel("span", {
-    className: "prose-menubar__button material-icons",
-    textContent,
-    title,
-  })
-}
+  const material = (textContent, title = "") =>
+    crel("span", {
+      className: `${cssClass}__button material-icons`,
+      textContent,
+      title,
+    })
 
-export function svgMenuButton(innerHTML, title = "") {
-  return crel("span", {
-    className: "prose-menubar__button",
-    innerHTML,
-    title,
-  })
-}
+  const svg = (innerHTML, title = "") =>
+    crel("span", {
+      className: `${cssClass}__button`,
+      innerHTML,
+      title,
+    })
 
-const headingButton = (level) => {
-  const dom = crel("span", {
-    className: "prose-menubar__button prose-menubar__button--heading",
-    title: `heading ${level}`,
-  })
-  dom.append(
-    crel("span", { className: "material-icons", textContent: "title" }),
-    crel("span", { className: "level", textContent: `${level}` }),
-  )
-
-  return {
-    command: (editor) => {
-      editor.chain().focus().toggleHeading({ level }).run()
-    },
-    dom,
-    active(editor) {
-      return editor.isActive("heading", { level })
-    },
-    enabled(editor) {
-      return editor.can().toggleHeading({ level })
-    },
+  const heading = (level) => {
+    const dom = crel("span", {
+      className: `${cssClass}__button ${cssClass}__button--heading`,
+      title: `heading ${level}`,
+    })
+    dom.append(
+      crel("span", { className: "material-icons", textContent: "title" }),
+      crel("span", { className: "level", textContent: `${level}` }),
+    )
+    return dom
   }
+
+  return { text, material, svg, heading }
 }
 
-function blockTypeMenuItems({ editor }) {
+const _buttons = buttonsCreator("prose-menubar")
+export const materialMenuButton = _buttons.material
+export const svgMenuButton = _buttons.svg
+
+const headingButton = (level) => ({
+  command: (editor) => {
+    editor.chain().focus().toggleHeading({ level }).run()
+  },
+  dom: _buttons.heading(level),
+  active(editor) {
+    return editor.isActive("heading", { level })
+  },
+  enabled(editor) {
+    return editor.can().toggleHeading({ level })
+  },
+})
+
+function blockTypeMenuItems({ editor, buttons }) {
   const schema = editor.schema
 
   const extension = findExtension(editor, "heading")
@@ -257,7 +284,7 @@ function blockTypeMenuItems({ editor }) {
       command(editor) {
         editor.chain().focus().toggleBulletList().run()
       },
-      dom: materialMenuButton("format_list_bulleted", "unordered list"),
+      dom: buttons.material("format_list_bulleted", "unordered list"),
       active(_editor) {
         return false
       },
@@ -271,7 +298,7 @@ function blockTypeMenuItems({ editor }) {
       command(editor) {
         editor.chain().focus().toggleOrderedList().run()
       },
-      dom: materialMenuButton("format_list_numbered", "ordered list"),
+      dom: buttons.material("format_list_numbered", "ordered list"),
       active(editor) {
         return editor.isActive("orderedList")
       },
@@ -287,7 +314,7 @@ function blockTypeMenuItems({ editor }) {
         command(editor) {
           editor.chain().focus().updateListAttributes().run()
         },
-        dom: materialMenuButton("tune", gettext("List properties")),
+        dom: buttons.material("tune", gettext("List properties")),
         hidden(editor) {
           return !editor.isActive("orderedList")
         },
@@ -303,7 +330,7 @@ function blockTypeMenuItems({ editor }) {
       command(editor) {
         editor.chain().focus().setParagraph().run()
       },
-      dom: materialMenuButton("notes", "paragraph"),
+      dom: buttons.material("notes", "paragraph"),
       active(_editor) {
         return false
       },
@@ -314,7 +341,7 @@ function blockTypeMenuItems({ editor }) {
   ]
 }
 
-function nodesMenuItems({ editor }) {
+function nodeMenuItems({ editor, buttons }) {
   const schema = editor.schema
   const items = []
   let type
@@ -323,7 +350,7 @@ function nodesMenuItems({ editor }) {
       command(editor) {
         editor.chain().focus().toggleBlockquote().run()
       },
-      dom: materialMenuButton("format_quote", "blockquote"),
+      dom: buttons.material("format_quote", "blockquote"),
       active(editor) {
         return editor.isActive("blockquote")
       },
@@ -337,7 +364,7 @@ function nodesMenuItems({ editor }) {
       command(editor) {
         editor.chain().focus().setHorizontalRule().run()
       },
-      dom: materialMenuButton("horizontal_rule", "horizontal rule"),
+      dom: buttons.material("horizontal_rule", "horizontal rule"),
       active(_editor) {
         return false
       },
@@ -351,7 +378,7 @@ function nodesMenuItems({ editor }) {
       command(editor) {
         editor.chain().focus().insertFigure().run()
       },
-      dom: materialMenuButton("image", "figure"),
+      dom: buttons.material("image", "figure"),
       active(editor) {
         return editor.isActive("figure")
       },
@@ -363,7 +390,7 @@ function nodesMenuItems({ editor }) {
   return items
 }
 
-function markMenuItems({ editor }) {
+function markMenuItems({ editor, buttons }) {
   const mark = (markType, dom) =>
     markType in editor.schema.marks
       ? {
@@ -377,16 +404,16 @@ function markMenuItems({ editor }) {
       : null
 
   return [
-    mark("bold", materialMenuButton("format_bold", "bold")),
-    mark("italic", materialMenuButton("format_italic", "italic")),
-    mark("underline", materialMenuButton("format_underline", "underline")),
-    mark("strike", materialMenuButton("format_strikethrough", "strike")),
-    mark("subscript", materialMenuButton("subscript", "subscript")),
-    mark("superscript", materialMenuButton("superscript", "superscript")),
+    mark("bold", buttons.material("format_bold", "bold")),
+    mark("italic", buttons.material("format_italic", "italic")),
+    mark("underline", buttons.material("format_underline", "underline")),
+    mark("strike", buttons.material("format_strikethrough", "strike")),
+    mark("subscript", buttons.material("subscript", "subscript")),
+    mark("superscript", buttons.material("superscript", "superscript")),
   ].filter(Boolean)
 }
 
-function historyMenuItems({ editor }) {
+function historyMenuItems({ editor, buttons }) {
   return findExtension(editor, "history")
     ? [
         {
@@ -396,7 +423,7 @@ function historyMenuItems({ editor }) {
           enabled(editor) {
             return editor.can().undo()
           },
-          dom: materialMenuButton("undo", "undo"),
+          dom: buttons.material("undo", "undo"),
           active() {
             return false
           },
@@ -408,7 +435,7 @@ function historyMenuItems({ editor }) {
           enabled(editor) {
             return editor.can().redo()
           },
-          dom: materialMenuButton("redo", "redo"),
+          dom: buttons.material("redo", "redo"),
           active() {
             return false
           },
@@ -417,12 +444,12 @@ function historyMenuItems({ editor }) {
     : []
 }
 
-function textAlignMenuItems({ editor }) {
+function textAlignMenuItems({ editor, buttons }) {
   const alignmentItem = (alignment) => ({
     command(editor) {
       editor.chain().focus().setTextAlign(alignment).run()
     },
-    dom: materialMenuButton(`format_align_${alignment}`, alignment),
+    dom: buttons.material(`format_align_${alignment}`, alignment),
     active() {
       return editor.isActive({ textAlign: alignment })
     },
@@ -438,7 +465,7 @@ function textAlignMenuItems({ editor }) {
     : []
 }
 
-function utilityMenuItems({ editor }) {
+function utilityMenuItems({ editor, buttons }) {
   const items = []
 
   if (findExtension(editor, "html")) {
@@ -446,13 +473,13 @@ function utilityMenuItems({ editor }) {
       command(editor) {
         editor.commands.editHTML()
       },
-      dom: materialMenuButton("code", "edit HTML"),
+      dom: buttons.material("code", "edit HTML"),
     })
   }
 
   if (findExtension(editor, "fullscreen")) {
     // Create button with dynamic content based on fullscreen state
-    const dom = materialMenuButton("", gettext("Toggle fullscreen"))
+    const dom = buttons.material("", gettext("Toggle fullscreen"))
 
     items.push({
       command(editor) {

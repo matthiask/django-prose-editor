@@ -17,7 +17,6 @@ Here's a simplified example of an extension structure:
 .. code-block:: javascript
 
     import { SomeBaseExtension } from "@tiptap/extension-base"
-    import { materialMenuButton } from "./menu.js"
 
     export const MyExtension = SomeBaseExtension.extend({
       addOptions() {
@@ -39,13 +38,13 @@ Here's a simplified example of an extension structure:
     })
 
     // Define menu items as a function that returns an array of menu items
-    const menuItems = () => [
+    const menuItems = ({ buttons }) => [
       {
         command(editor) {
           // Command to execute when menu item is clicked
           editor.chain().myCommand().focus().run()
         },
-        dom: materialMenuButton("icon_name", "tooltip text"),
+        dom: buttons.material("icon_name", "tooltip text"),
         enabled(editor) {
           // Determine if the menu item should be enabled
           return true
@@ -100,19 +99,17 @@ Each menu item should be an object with the following properties:
 - ``update``: (Optional) Function to update dynamic content in the menu item
 
 Creating Menu Buttons
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 The menu module provides helper functions for creating menu buttons:
 
 .. code-block:: javascript
 
-    import { materialMenuButton, svgMenuButton } from "./menu.js"
-
     // Create a button with a Material Icon
-    const button1 = materialMenuButton("icon_name", "tooltip text")
+    const button1 = buttons.material("icon_name", "tooltip text")
 
     // Create a button with SVG content
-    const button2 = svgMenuButton(`<svg>...</svg>`, "tooltip text")
+    const button2 = buttons.svg(`<svg>...</svg>`, "tooltip text")
 
 Examples
 --------

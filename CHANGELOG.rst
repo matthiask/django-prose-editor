@@ -8,6 +8,10 @@ Next version
 - Updated the Tiptap dependency.
 - Actually started dispatching the documented ``prose-editor:ready`` event when
   using the default preset.
+- Made the ``Menu`` extension more reusable, introduced the ``defaultItems``,
+  ``sticky`` and ``cssClass`` options. Started passing a ``buttons`` helper
+  into menu item creation functions which automatically uses the correct
+  ``cssClass`` prefix when creating menu button DOM elements.
 
 
 0.13 (2025-06-25)
