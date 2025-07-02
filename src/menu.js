@@ -99,6 +99,7 @@ class MenuView {
     this.editor = editor
     this.items = itemGroups.flat()
     this.isFloating = false
+    this.options = options
 
     const { cssClass } = options
 
@@ -167,6 +168,8 @@ class MenuView {
 
     const editorRect = this.editor.options.element.getBoundingClientRect()
     const menubarRect = this.dom.getBoundingClientRect()
+
+    const { cssClass } = this.options
 
     // Check if we should float the menubar
     if (editorRect.top < 0 && editorRect.bottom > menubarRect.height) {
