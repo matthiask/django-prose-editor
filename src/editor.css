@@ -35,7 +35,6 @@
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 2px;
   background: var(--_b);
   padding: 4px;
   width: 100%;
@@ -43,30 +42,11 @@
   border-bottom: 1px solid var(--_r);
   box-sizing: border-box;
   z-index: 10;
+  position: sticky;
+  top: 0;
 }
 
-/* Class added when the menubar is floating */
-.prose-menubar--floating {
-  position: fixed;
-  margin: 0;
-  border-radius: 0;
-}
-
-/* Placeholder to prevent content jump when menubar is fixed */
-.prose-menubar-placeholder {
-  display: none;
-  height: 0;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.prose-menubar-placeholder--active {
-  display: block;
-  height: var(--menubar-height, 45px);
-}
-
-.prose-editor.disabled .prose-menubar,
-.prose-editor.disabled .prose-menubar-placeholder {
+.prose-editor.disabled .prose-menubar {
   display: none;
 }
 

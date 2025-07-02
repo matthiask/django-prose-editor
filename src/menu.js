@@ -11,7 +11,6 @@ export const Menu = Extension.create({
   addOptions() {
     return {
       defaultItems: true,
-      sticky: true,
       cssClass: "prose-menubar",
     }
   },
@@ -83,8 +82,7 @@ export const Menu = Extension.create({
           const menuView = new MenuView(editor, itemGroups, options)
           const editorDomParent = editor.view.dom.parentNode
 
-          // Insert both the placeholder and menubar
-          editorDomParent.insertBefore(menuView.placeholder, editor.view.dom)
+          // Insert menubar
           editorDomParent.insertBefore(menuView.dom, editor.view.dom)
 
           return menuView
@@ -98,16 +96,12 @@ class MenuView {
   constructor(editor, itemGroups, options) {
     this.editor = editor
     this.items = itemGroups.flat()
-    this.isFloating = false
     this.options = options
 
     const { cssClass } = options
 
     // Create menubar element
     this.dom = crel("div", { className: cssClass })
-
-    // Create placeholder element to prevent content jumps
-    this.placeholder = crel("div", { className: `${cssClass}-placeholder` })
 
     // Create menu groups
     itemGroups
@@ -134,66 +128,6 @@ class MenuView {
         }
       }
     })
-
-    if (options.sticky) {
-      // Set up scroll handling for floating menubar
-      this.handleScroll = this.handleScroll.bind(this)
-      window.addEventListener("scroll", this.handleScroll, { passive: true })
-      window.addEventListener("resize", this.handleScroll, { passive: true })
-
-      // Initial position check - run immediately and again after a small delay
-      // for better reliability
-      const updateMenubarHeight = () => {
-        this.menubarHeight = this.dom.offsetHeight
-        this.placeholder.style.setProperty(
-          "--menubar-height",
-          `${this.menubarHeight}px`,
-        )
-        this.handleScroll()
-      }
-
-      // Run immediately
-      updateMenubarHeight()
-
-      // And again after a small delay to ensure accurate measurements
-      setTimeout(updateMenubarHeight, 100)
-    }
-  }
-
-  handleScroll() {
-    // Skip if we're in fullscreen mode, as that has its own styling
-    if (this.editor.options.element.closest(".prose-editor-fullscreen")) {
-      return
-    }
-
-    const editorRect = this.editor.options.element.getBoundingClientRect()
-    const menubarRect = this.dom.getBoundingClientRect()
-
-    const { cssClass } = this.options
-
-    // Check if we should float the menubar
-    if (editorRect.top < 0 && editorRect.bottom > menubarRect.height) {
-      if (!this.isFloating) {
-        // Make the menubar float
-        this.dom.classList.add(`${cssClass}--floating`)
-        this.placeholder.classList.add(`${cssClass}-placeholder--active`)
-
-        // Set the width to match the editor
-        this.dom.style.width = `${editorRect.width}px`
-        this.dom.style.left = `${editorRect.left}px`
-        this.dom.style.top = "0px"
-
-        this.isFloating = true
-      }
-    } else if (this.isFloating) {
-      // Return the menubar to normal positioning
-      this.dom.classList.remove(`${cssClass}--floating`)
-      this.placeholder.classList.remove(`${cssClass}-placeholder--active`)
-      this.dom.style.width = ""
-      this.dom.style.left = ""
-      this.dom.style.top = ""
-      this.isFloating = false
-    }
   }
 
   update() {
@@ -206,13 +140,8 @@ class MenuView {
   }
 
   destroy() {
-    // Clean up event listeners
-    window.removeEventListener("scroll", this.handleScroll)
-    window.removeEventListener("resize", this.handleScroll)
-
     // Remove DOM elements
     this.dom.remove()
-    this.placeholder.remove()
   }
 }
 

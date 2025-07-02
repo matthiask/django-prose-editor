@@ -4,6 +4,10 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+- Dropped the JavaScript-based sticky menubar behavior, the menubar uses
+  ``position: sticky``. Also dropped the ``sticky`` option from the ``Menu``
+  again. Override the behavior with CSS instead.
+
 
 0.14 (2025-07-02)
 ~~~~~~~~~~~~~~~~~
