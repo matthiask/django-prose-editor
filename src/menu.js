@@ -1,9 +1,39 @@
-import { Extension } from "@tiptap/core"
-import { Plugin } from "@tiptap/pm/state"
+import { Extension, getExtensionField } from "@tiptap/core"
 import { crel, gettext } from "./utils.js"
 
 const findExtension = (editor, extension) =>
   editor.extensionManager.extensions.find((e) => e.name === extension)
+
+const createItemGroups = (groups, items, args) => {
+  const defaults = {
+    enabled: () => true,
+    active: () => false,
+    hidden: () => false,
+    update: () => {},
+  }
+  return groups.map((group) =>
+    items[group]
+      .flatMap((fn) => fn(args))
+      .flat()
+      .map((item) => ({
+        ...defaults,
+        ...item,
+      })),
+  )
+}
+
+const updateMenuItems = (itemGroups, editor) => {
+  if (itemGroups) {
+    for (const group of itemGroups) {
+      for (const { dom, enabled, active, hidden, update } of group) {
+        dom.classList.toggle("disabled", !enabled(editor))
+        dom.classList.toggle("active", !!active(editor))
+        dom.classList.toggle("hidden", !!hidden(editor))
+        update(editor)
+      }
+    }
+  }
+}
 
 export const Menu = Extension.create({
   name: "menu",
@@ -36,24 +66,6 @@ export const Menu = Extension.create({
       }
     }
 
-    const itemGroups = (args) => {
-      const defaults = {
-        enabled: () => true,
-        active: () => false,
-        hidden: () => false,
-        update: () => {},
-      }
-      return _groups.map((group) =>
-        _items[group]
-          .flatMap((fn) => fn(args))
-          .flat()
-          .map((item) => ({
-            ...defaults,
-            ...item,
-          })),
-      )
-    }
-
     const { defaultItems } = this.options
     if (defaultItems) {
       addItems("blockType", blockTypeMenuItems)
@@ -65,85 +77,75 @@ export const Menu = Extension.create({
       addItems("utility", utilityMenuItems)
     }
 
-    return { _items, _groups, addItems, itemGroups }
+    return { _items, _groups, addItems, dom: null }
   },
 
-  addProseMirrorPlugins() {
-    const editor = this.editor
-    const options = this.options
-    const itemGroups = this.storage.itemGroups({
+  onCreate({ editor }) {
+    let fn
+    for (const extension of editor.extensionManager.extensions) {
+      if ((fn = getExtensionField(extension, "addMenuItems"))) {
+        fn(this.storage)
+      }
+    }
+
+    // Create menu directly
+    const { cssClass } = this.options
+    const { _groups, _items } = this.storage
+
+    const itemGroups = createItemGroups(_groups, _items, {
       editor,
-      buttons: buttonsCreator(options.cssClass),
+      buttons: buttonsCreator(cssClass),
     })
 
-    return [
-      new Plugin({
-        view() {
-          const menuView = new MenuView(editor, itemGroups, options)
-          const editorDomParent = editor.view.dom.parentNode
-
-          // Insert menubar
-          editorDomParent.insertBefore(menuView.dom, editor.view.dom)
-
-          return menuView
-        },
-      }),
-    ]
-  },
-})
-
-class MenuView {
-  constructor(editor, itemGroups, options) {
-    this.editor = editor
-    this.items = itemGroups.flat()
-    this.options = options
-
-    const { cssClass } = options
-
     // Create menubar element
-    this.dom = crel("div", { className: cssClass })
+    const menuDOM = crel("div", { className: cssClass })
 
     // Create menu groups
     itemGroups
       .filter((group) => group.length)
       .forEach((group) => {
         const groupDOM = crel("div", { className: `${cssClass}__group` })
-        this.dom.append(groupDOM)
+        menuDOM.append(groupDOM)
         group.forEach(({ dom }) => groupDOM.append(dom))
       })
 
     // Initial update of button states
-    this.update()
+    updateMenuItems(itemGroups, editor)
 
     // Handle menu item clicks
-    this.dom.addEventListener("mousedown", (e) => {
+    menuDOM.addEventListener("mousedown", (e) => {
       e.preventDefault()
       editor.view.focus()
-      for (const { command, dom, enabled } of this.items) {
-        if (dom.contains(e.target)) {
-          if (enabled(editor)) {
-            command(editor)
+      for (const group of itemGroups) {
+        for (const { command, dom, enabled } of group) {
+          if (dom.contains(e.target)) {
+            if (enabled(editor)) {
+              command(editor)
+            }
+            return
           }
-          break
         }
       }
     })
-  }
 
-  update() {
-    for (const { dom, enabled, active, hidden, update } of this.items) {
-      dom.classList.toggle("disabled", !enabled(this.editor))
-      dom.classList.toggle("active", !!active(this.editor))
-      dom.classList.toggle("hidden", !!hidden(this.editor))
-      update(this.editor)
+    editor.view.dom.before(menuDOM)
+
+    this.storage.itemGroups = itemGroups
+    this.storage.dom = menuDOM
+  },
+
+  onTransaction({ editor }) {
+    updateMenuItems(this.storage.itemGroups, editor)
+  },
+
+  onDestroy() {
+    if (this.storage.dom) {
+      this.storage.dom.remove()
+      this.storage.dom = null
+      this.storage.itemGroups = null
     }
-  }
-
-  destroy() {
-    // Remove DOM elements
-    this.dom.remove()
-  }
-}
+  },
+})
 
 const buttonsCreator = (cssClass) => {
   const text = (textContent, title = "", style = "") =>

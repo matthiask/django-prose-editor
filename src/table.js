@@ -33,9 +33,11 @@ const tableDialog = updateAttrsDialog(
 )
 
 export const Table = TiptapTable.extend({
-  addCommands() {
-    this.editor.storage.menu.addItems("table", tableMenuItems, "history")
+  addMenuItems({ addItems }) {
+    addItems("table", tableMenuItems, "history")
+  },
 
+  addCommands() {
     return {
       ...this.parent?.(),
       insertTableWithOptions:

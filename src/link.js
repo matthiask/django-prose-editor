@@ -64,9 +64,11 @@ export const Link = BaseLink.extend({
     }
   },
 
-  addCommands() {
-    this.editor.storage.menu.addItems("link", menuItems)
+  addMenuItems({ addItems }) {
+    addItems("link", menuItems)
+  },
 
+  addCommands() {
     return {
       ...this.parent?.(),
       addLink:

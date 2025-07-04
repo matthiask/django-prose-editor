@@ -26,10 +26,12 @@ Here's a simplified example of an extension structure:
         }
       },
 
-      addCommands() {
+      addMenuItems({ addItems }) {
         // Register menu items for this extension
-        this.editor.storage.menu.addItems("myExtension", menuItems)
+        addItems("myExtension", menuItems)
+      },
 
+      addCommands() {
         return {
           ...this.parent?.(),
           // Your commands here
@@ -69,22 +71,28 @@ The Menu extension provides a system for organizing menu items into groups. You 
 Adding Items to the Menu
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Use the ``addItems`` method from the menu storage to add your menu items:
+Extensions can integrate with the menu system by implementing the ``addMenuItems`` method. This method is automatically called during editor initialization and provides access to the menu's ``addItems`` function:
 
 .. code-block:: javascript
 
-    // In your extension's addCommands method
-    this.editor.storage.menu.addItems("groupName", menuItems)
+    export const MyExtension = SomeBaseExtension.extend({
+      addMenuItems({ addItems }) {
+        // Register menu items for this extension
+        addItems("myExtension", menuItems)
+      },
+    })
 
-The ``addItems`` method takes the following parameters:
+The ``addMenuItems`` method receives an object with the following properties:
+
+- ``addItems``: Function to register menu items with the menu system
+
+The ``addItems`` function takes the following parameters:
 
 1. ``group``: The name of the menu group to add items to
 2. ``items``: A function that returns an array of menu item objects
 3. ``before``: (Optional) Insert this group before another group
 
-Note that items should be defined outside the extension so that its identity is
-stable, otherwise the menu items will be duplicated, at least that's true for
-now.
+Menu items should be defined as a separate function outside the extension to ensure stable identity and prevent duplication.
 
 Menu Item Structure
 ~~~~~~~~~~~~~~~~~~
@@ -114,7 +122,45 @@ The menu module provides helper functions for creating menu buttons:
 Examples
 --------
 
-Check the bundled Link and Table extensions for examples.
+Here are real examples from the bundled extensions:
+
+Link Extension
+~~~~~~~~~~~~~~
+
+The Link extension demonstrates basic menu integration:
+
+.. code-block:: javascript
+
+    export const Link = BaseLink.extend({
+      addMenuItems({ addItems }) {
+        addItems("link", menuItems)
+      },
+    })
+
+    const menuItems = ({ buttons }) => [
+      {
+        command(editor) {
+          editor.chain().addLink().focus().run()
+        },
+        enabled(editor) {
+          return !editor.state.selection.empty || editor.isActive("link")
+        },
+        dom: buttons.material("insert_link", "insert link"),
+        active(editor) {
+          return editor.isActive("link")
+        },
+      },
+      {
+        command(editor) {
+          editor.chain().focus().unsetLink().run()
+        },
+        dom: buttons.material("link_off", "remove link"),
+        hidden(editor) {
+          return !editor.isActive("link")
+        },
+      },
+    ]
+
 
 Configurable Extensions
 -----------------------
