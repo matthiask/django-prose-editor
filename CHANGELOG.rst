@@ -4,9 +4,14 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+0.15 (2025-07-04)
+~~~~~~~~~~~~~~~~~
+
 - Dropped the JavaScript-based sticky menubar behavior, the menubar uses
   ``position: sticky``. Also dropped the ``sticky`` option from the ``Menu``
   again. Override the behavior with CSS instead.
+- Extensions can now register menu items using the ``addMenuItems`` method,
+  which provides a cleaner API for menu integration.
 
 
 0.14 (2025-07-02)
