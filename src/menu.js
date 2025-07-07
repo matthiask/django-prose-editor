@@ -83,7 +83,16 @@ export const Menu = Extension.create({
   onCreate({ editor }) {
     let fn
     for (const extension of editor.extensionManager.extensions) {
-      if ((fn = getExtensionField(extension, "addMenuItems"))) {
+      /* See @tiptap/core/src/ExtensionManager.ts */
+      const context = {
+        name: extension.name,
+        options: extension.options,
+        storage: this.editor.extensionStorage[extension.name],
+        editor,
+        // The schema isn't ready yet. If you need the type fetch it yourself.
+        // type: getSchemaTypeByName(extension.name, this.schema),
+      }
+      if ((fn = getExtensionField(extension, "addMenuItems", context))) {
         fn(this.storage)
       }
     }

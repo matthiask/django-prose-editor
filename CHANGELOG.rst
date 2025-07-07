@@ -4,6 +4,10 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+- Provide the expected context to ``addMenuItems`` so that accessing ``this``
+  actually does the right thing.
+
+
 0.15 (2025-07-04)
 ~~~~~~~~~~~~~~~~~
 
