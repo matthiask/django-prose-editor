@@ -1,8 +1,29 @@
+import { promises as fs } from "node:fs"
 import { createRequire } from "node:module"
+import { join } from "node:path"
 import { defineConfig } from "@rslib/core"
 
 const require = createRequire(import.meta.url)
 const isProduction = process.env.NODE_ENV === "production"
+
+async function removeZeroSizedFiles(distPath) {
+  try {
+    const files = await fs.readdir(distPath, { withFileTypes: true })
+
+    for (const file of files) {
+      if (file.isFile()) {
+        const filePath = join(distPath, file.name)
+        const stats = await fs.stat(filePath)
+        if (stats.size === 0) {
+          await fs.unlink(filePath)
+          console.log(`Removed zero-sized file: ${filePath}`)
+        }
+      }
+    }
+  } catch (error) {
+    console.error(`Error removing zero-sized files: ${error.message}`)
+  }
+}
 
 const commonConfig = {
   autoExternal: false,
@@ -59,6 +80,20 @@ export default defineConfig({
   tools: {
     postcss: (opts) => {
       opts.postcssOptions.plugins = [require("autoprefixer")()]
+    },
+    rspack: {
+      plugins: [
+        {
+          apply: (compiler) => {
+            compiler.hooks.afterDone.tap(
+              "RemoveZeroSizedFilesPlugin",
+              async () => {
+                await removeZeroSizedFiles(commonConfig.output.distPath.root)
+              },
+            )
+          },
+        },
+      ],
     },
   },
 })
