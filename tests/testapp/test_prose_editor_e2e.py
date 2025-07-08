@@ -21,8 +21,6 @@ os.environ.setdefault("DJANGO_ALLOW_ASYNC_UNSAFE", "true")
 def test_prose_editor_admin_form(page, live_server):
     """Test that the prose editor loads and works in the admin."""
     # Login first
-    from django.contrib.auth.models import User
-
     User.objects.create_superuser("admin", "admin@example.com", "password")
 
     # Visit the login page
@@ -71,8 +69,6 @@ def test_prose_editor_admin_form(page, live_server):
 def test_prose_editor_formatting(page, live_server):
     """Test formatting functionality in the prose editor."""
     # Login first
-    from django.contrib.auth.models import User
-
     User.objects.create_superuser("admin", "admin@example.com", "password")
 
     # Visit the login page
@@ -114,10 +110,6 @@ def test_prose_editor_formatting(page, live_server):
 def test_prose_editor_table_creation(page, live_server):
     """Test table insertion in a TableProseEditorModel."""
     # Login first
-    from django.contrib.auth.models import User
-
-    from testapp.models import TableProseEditorModel
-
     User.objects.create_superuser("admin", "admin@example.com", "password")
 
     # Visit the login page
@@ -337,23 +329,32 @@ def test_configurable_prose_editor_admin(page, live_server):
     editor = page.locator(".ProseMirror")
     editor.click()
 
+    # Wait for editor to be focused and ready
+    editor.wait_for(state="visible", timeout=5000)
+    page.wait_for_timeout(500)  # Brief wait for editor initialization
+
     # Test keyboard shortcut for BlueBold
     editor.type("Keyboard shortcut test")
+    page.wait_for_timeout(100)  # Wait for typing to complete
     editor.press("Control+a")  # Select all text
+    page.wait_for_timeout(100)  # Wait for selection
     editor.press("Control+Shift+b")  # Apply BlueBold with shortcut
 
     # Move cursor to end and add new paragraph
     editor.press("End")
     editor.press("Enter")
     editor.press("Enter")
+    page.wait_for_timeout(100)  # Wait for cursor positioning
 
     # Test input rule for BlueBold with the more specific pattern
     editor.type("**blue:Input rule test**")
+    page.wait_for_timeout(200)  # Wait for input rule processing
 
     # Add another paragraph to check generated HTML
     editor.press("Enter")
     editor.press("Enter")
     editor.type("Regular text after BlueBold tests")
+    page.wait_for_timeout(200)  # Wait for final typing to complete
 
     # Save the form
     page.click("input[name='_save']")
