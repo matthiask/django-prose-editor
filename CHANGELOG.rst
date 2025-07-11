@@ -4,6 +4,9 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+0.16 (2025-07-11)
+~~~~~~~~~~~~~~~~~
+
 - Provide the expected context to ``addMenuItems`` so that accessing ``this``
   actually does the right thing.
 - Updated Tiptap to 3.0.0-beta.29.
