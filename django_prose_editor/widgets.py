@@ -19,6 +19,59 @@ importmap.update(
     }
 )
 
+#: These three module-level variables are somewhat part of the API.
+prose_editor_js = JS("django_prose_editor/editor.js", {"type": "module"})
+prose_editor_base_media = forms.Media(
+    css={
+        "all": [
+            "django_prose_editor/material-icons.css",
+            "django_prose_editor/editor.css",
+        ]
+    },
+    js=[
+        # We don't really need this since editor.js will be loaded
+        # in default.js (or other presets' modules) anyway, but keeping
+        # the tag around helps the browser discover and load this
+        # module a little bit earlier.
+        prose_editor_js,
+    ],
+)
+prose_editor_admin_media = (
+    forms.Media(
+        js=[importmap, prose_editor_js]
+    )  # Sneak the importmap into the admin <head>
+    + prose_editor_base_media
+    + forms.Media(
+        css={
+            "all": [
+                "django_prose_editor/editor.css",  # For the ordering
+                "django_prose_editor/overrides.css",
+            ]
+        }
+    )
+)
+
+
+def prose_editor_presets():
+    return getattr(settings, "DJANGO_PROSE_EDITOR_PRESETS", {}) | {
+        "default": [
+            prose_editor_js,
+            JS("django_prose_editor/default.js", {"type": "module"}),
+        ],
+        "configurable": [
+            prose_editor_js,
+            JS("django_prose_editor/configurable.js", {"type": "module"}),
+        ],
+    }
+
+
+def prose_editor_media(*, base=prose_editor_base_media, preset="default"):
+    """
+    Utility for returning a ``forms.Media`` instance containing everything you
+    need to initialize a prose editor in the frontend (hopefully!)
+    """
+    return base + forms.Media(js=[prose_editor_js, *prose_editor_presets()[preset]])
+
 
 class ProseEditorWidget(forms.Textarea):
     def __init__(self, *args, **kwargs):
@@ -27,45 +80,8 @@ class ProseEditorWidget(forms.Textarea):
         super().__init__(*args, **kwargs)
 
     @property
-    def base_media(self):
-        return forms.Media(
-            css={
-                "all": [
-                    "django_prose_editor/material-icons.css",
-                    "django_prose_editor/editor.css",
-                ]
-            },
-            js=[
-                # We don't really need this since editor.js will be loaded
-                # in default.js (or other presets' modules) anyway, but keeping
-                # the tag around helps the browser discover and load this
-                # module a little bit earlier.
-                JS("django_prose_editor/editor.js", {"type": "module"}),
-            ],
-        )
-
-    @property
     def media(self):
-        return self.base_media + forms.Media(
-            js=[
-                JS("django_prose_editor/editor.js", {"type": "module"}),
-                *self.get_presets()[self.preset],
-            ]
-        )
-
-    def get_presets(self):
-        presets = getattr(settings, "DJANGO_PROSE_EDITOR_PRESETS", {})
-        # The system check in checks.py will catch this error during startup
-        return presets | {
-            "default": [
-                JS("django_prose_editor/editor.js", {"type": "module"}),
-                JS("django_prose_editor/default.js", {"type": "module"}),
-            ],
-            "configurable": [
-                JS("django_prose_editor/editor.js", {"type": "module"}),
-                JS("django_prose_editor/configurable.js", {"type": "module"}),
-            ],
-        }
+        return prose_editor_media(preset=self.preset)
 
     def get_config(self):
         config = self.config or {
@@ -94,16 +110,8 @@ class ProseEditorWidget(forms.Textarea):
 
 class AdminProseEditorWidget(ProseEditorWidget):
     @property
-    def base_media(self):
-        return super().base_media + forms.Media(
-            css={
-                "all": [
-                    "django_prose_editor/editor.css",  # For the ordering
-                    "django_prose_editor/overrides.css",
-                ]
-            },
-            js=[
-                importmap,  # Sneak the importmap into the admin <head>
-                JS("django_prose_editor/editor.js", {"type": "module"}),
-            ],
+    def media(self):
+        return prose_editor_media(
+            base=prose_editor_admin_media,
+            preset=self.preset,
         )

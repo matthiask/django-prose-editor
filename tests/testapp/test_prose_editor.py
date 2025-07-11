@@ -2,6 +2,7 @@ from django import test
 from django.contrib.auth.models import User
 from django.test import Client
 
+from django_prose_editor.widgets import prose_editor_admin_media, prose_editor_media
 from testapp.models import (
     ProseEditorModel,
     SanitizedProseEditorModel,
@@ -51,4 +52,34 @@ class Test(test.TestCase):
         # print(response, response.content.decode("utf-8"))
         self.assertContains(
             response, 'href="/static/django_prose_editor/overrides.css"'
+        )
+
+    def test_utilities(self):
+        assert (
+            str(prose_editor_media())
+            == """\
+<link href="/static/django_prose_editor/material-icons.css" media="all" rel="stylesheet">
+<link href="/static/django_prose_editor/editor.css" media="all" rel="stylesheet">
+<script src="/static/django_prose_editor/editor.js" type="module"></script>
+<script src="/static/django_prose_editor/default.js" type="module"></script>"""
+        )
+
+        assert (
+            str(prose_editor_media(preset="configurable"))
+            == """\
+<link href="/static/django_prose_editor/material-icons.css" media="all" rel="stylesheet">
+<link href="/static/django_prose_editor/editor.css" media="all" rel="stylesheet">
+<script src="/static/django_prose_editor/editor.js" type="module"></script>
+<script src="/static/django_prose_editor/configurable.js" type="module"></script>"""
+        )
+
+        assert (
+            str(prose_editor_media(base=prose_editor_admin_media))
+            == """\
+<link href="/static/django_prose_editor/material-icons.css" media="all" rel="stylesheet">
+<link href="/static/django_prose_editor/editor.css" media="all" rel="stylesheet">
+<link href="/static/django_prose_editor/overrides.css" media="all" rel="stylesheet">
+<script type="importmap">{"imports": {"django-prose-editor/editor": "/static/django_prose_editor/editor.js", "django-prose-editor/configurable": "/static/django_prose_editor/configurable.js"}}</script>
+<script src="/static/django_prose_editor/editor.js" type="module"></script>
+<script src="/static/django_prose_editor/default.js" type="module"></script>"""
         )

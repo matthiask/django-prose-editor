@@ -9,6 +9,8 @@ Next version
 - Updated Tiptap to 3.0.0-beta.29.
 - Changed the contents of ``static`` to all be bundled instead of having a
   mixture of hand-edited and generated assets.
+- Change the widget implementation and add more easily reusable ``forms.Media``
+  objects and helpers.
 
 
 0.15 (2025-07-04)
