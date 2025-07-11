@@ -1,3 +1,1 @@
-django_prose_editor/static/django_prose_editor/*.map binary
-django_prose_editor/static/django_prose_editor/editor.* binary
-django_prose_editor/static/django_prose_editor/overrides.* binary
+django_prose_editor/static/django_prose_editor/ binary

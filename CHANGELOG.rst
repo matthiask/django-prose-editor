@@ -6,8 +6,7 @@ Next version
 
 - Provide the expected context to ``addMenuItems`` so that accessing ``this``
   actually does the right thing.
-- Updated Tiptap to 3.0.0-beta.25, we now also ship the ``enableDevTools``
-  option.
+- Updated Tiptap to 3.0.0-beta.29.
 - Changed the contents of ``static`` to all be bundled instead of having a
   mixture of hand-edited and generated assets.
 
