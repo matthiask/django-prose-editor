@@ -5,6 +5,8 @@ Next version
 ~~~~~~~~~~~~
 
 - Updated Tiptap to 3.0.1. Also updated all ProseMirror packages.
+- Changed the ``.prose-editor-fullscreen`` class to
+  ``.prose-editor.fullscreen`` to match ``.prose-editor.disabled``.
 
 
 0.16 (2025-07-11)

@@ -2,6 +2,8 @@ from django.apps import apps
 from django.conf import settings
 from django.core.checks import Error, Warning, register
 
+from django_prose_editor.fields import ProseEditorField, _actually_empty
+
 
 @register()
 def check_js_preset_configuration(app_configs, **kwargs):
@@ -41,8 +43,6 @@ def check_extensions_parameter(app_configs, **kwargs):
     """
     Check for usage of 'extensions' (because we want that!)
     """
-    from django_prose_editor.fields import ProseEditorField
-
     warnings = []
 
     # Get models to check based on provided app_configs or all models
@@ -190,8 +190,6 @@ def check_sanitization_enabled(app_configs, **kwargs):
     """
     Check that all ProseEditorField instances have sanitization enabled.
     """
-    from django_prose_editor.fields import ProseEditorField, _actually_empty
-
     warnings = []
 
     # Get models to check based on provided app_configs or all models

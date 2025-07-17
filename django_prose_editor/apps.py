@@ -6,4 +6,4 @@ class DjangoProseEditorConfig(AppConfig):
 
     def ready(self):
         # Import system checks
-        from . import checks  # noqa: F401
+        from . import checks  # noqa: F401, PLC0415

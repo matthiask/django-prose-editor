@@ -10,7 +10,7 @@ export const Fullscreen = Extension.create({
   addOptions() {
     return {
       // CSS class applied to the editor container when in fullscreen mode
-      fullscreenClass: "prose-editor-fullscreen",
+      fullscreenClass: "fullscreen",
     }
   },
 

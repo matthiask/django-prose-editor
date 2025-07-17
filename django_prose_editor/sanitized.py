@@ -4,7 +4,7 @@ from django_prose_editor.fields import ProseEditorField, _actually_empty
 
 
 def _nh3_sanitizer():
-    import nh3
+    import nh3  # noqa: PLC0415
 
     attributes = deepcopy(nh3.ALLOWED_ATTRIBUTES)
     attributes["a"].add("target")

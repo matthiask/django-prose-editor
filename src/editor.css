@@ -247,7 +247,7 @@ label:empty:has(+ .prose-editor) {
 }
 
 /* Fullscreen mode styles */
-.prose-editor-fullscreen {
+.prose-editor.fullscreen {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -264,13 +264,13 @@ label:empty:has(+ .prose-editor) {
   flex-direction: column !important;
 }
 
-.prose-editor-fullscreen .prose-menubar {
+.prose-editor.fullscreen .prose-menubar {
   padding: 8px 20px !important;
   border-radius: 0 !important;
   width: 100% !important;
 }
 
-.prose-editor-fullscreen .prose-menubar--floating {
+.prose-editor.fullscreen .prose-menubar--floating {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -278,7 +278,7 @@ label:empty:has(+ .prose-editor) {
   z-index: 10000 !important;
 }
 
-.prose-editor-fullscreen .ProseMirror {
+.prose-editor.fullscreen .ProseMirror {
   flex: 1 !important;
   max-height: none !important;
   overflow-y: auto !important;

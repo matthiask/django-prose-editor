@@ -1,4 +1,5 @@
 from django.core.checks import Error, Warning
+from django.db import models
 from django.test import SimpleTestCase, override_settings
 
 from django_prose_editor.checks import (
@@ -6,6 +7,7 @@ from django_prose_editor.checks import (
     check_js_preset_configuration,
     check_sanitization_enabled,
 )
+from django_prose_editor.fields import ProseEditorField
 
 
 class ChecksTests(SimpleTestCase):
@@ -83,10 +85,6 @@ class ChecksTests(SimpleTestCase):
         ), "Unexpected warning for ConfigurableProseEditorModel which has sanitize=True"
 
         # Test with different field configurations using a synthetic model
-        from django.db import models
-
-        from django_prose_editor.fields import ProseEditorField
-
         class TestModel(models.Model):
             class Meta:
                 app_label = "test_app_never_installed"

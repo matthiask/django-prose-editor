@@ -32,7 +32,7 @@ def _identity(x):
 def create_sanitizer(extensions):
     """Create a sanitizer function based on extension configuration."""
     try:
-        import nh3
+        import nh3  # noqa: PLC0415
     except ImportError:
         raise ImportError(
             "You need to install nh3 to use automatic sanitization. "
