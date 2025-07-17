@@ -40,12 +40,12 @@ dependencies = [
 ]
 
 optional-dependencies.sanitize = [
-  "nh3",
+  "nh3>=0.3",
 ]
 optional-dependencies.tests = [
   "asgiref",
   "coverage",
-  "nh3",
+  "nh3>=0.3",
   "pytest",
   "pytest-asyncio",
   "pytest-cov",

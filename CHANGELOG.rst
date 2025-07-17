@@ -7,6 +7,9 @@ Next version
 - Updated Tiptap to 3.0.1. Also updated all ProseMirror packages.
 - Changed the ``.prose-editor-fullscreen`` class to
   ``.prose-editor.fullscreen`` to match ``.prose-editor.disabled``.
+- Bumped the ``[sanitized]`` extra's nh3 dependency to 0.3 and started taking
+  advantage of the reusable ``Cleaner`` object. This allows us to initialize
+  the cleaner once only.
 
 
 0.16 (2025-07-11)

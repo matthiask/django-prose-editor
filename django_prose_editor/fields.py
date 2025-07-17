@@ -40,7 +40,8 @@ def create_sanitizer(extensions):
         )
 
     nh3_kwargs = allowlist_from_extensions(expand_extensions(extensions))
-    return lambda html: _actually_empty(nh3.clean(html, **nh3_kwargs))
+    cleaner = nh3.Cleaner(**nh3_kwargs)
+    return lambda html: _actually_empty(cleaner.clean(html))
 
 
 def _create_sanitizer(argument, config):
