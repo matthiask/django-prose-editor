@@ -10,7 +10,8 @@ def _nh3_sanitizer():
     attributes["a"].add("target")
     attributes["ol"] |= {"start", "type"}
 
-    return lambda x: _actually_empty(nh3.clean(x, attributes=attributes))
+    cleaner = nh3.Cleaner(attributes=attributes)
+    return lambda x: _actually_empty(cleaner.clean(x))
 
 
 class SanitizedProseEditorField(ProseEditorField):
