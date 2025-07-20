@@ -37,7 +37,8 @@
     "prosemirror-keymap": "^1.2.3",
     "prosemirror-menu": "^1.2.5",
     "prosemirror-model": "^1.25.2",
-    "prosemirror-transform": "^1.10.4"
+    "prosemirror-transform": "^1.10.4",
+    "prosemirror-view": "^1.40.1"
   },
   "resolutions": {
     "prosemirror-changeset": "^2.3.0",
