@@ -48,7 +48,7 @@ def test_prose_editor_admin_form(page, live_server):
     expect(toolbar).to_be_visible()
 
     # Type some content into the editor
-    editor = page.locator(".ProseMirror")
+    editor = page.locator(".prose-editor > .ProseMirror")
     editor.click()
     editor.type("Hello, Playwright!")
 
@@ -85,7 +85,7 @@ def test_prose_editor_formatting(page, live_server):
     page.goto(f"{live_server.url}/admin/testapp/proseeditormodel/add/")
 
     # Click in the editor
-    editor = page.locator(".ProseMirror")
+    editor = page.locator(".prose-editor > .ProseMirror")
     editor.click()
     editor.type("Format this text")
 
@@ -122,7 +122,7 @@ def test_prose_editor_table_creation(page, live_server):
     page.goto(f"{live_server.url}/admin/testapp/tableproseeditormodel/add/")
 
     # Click in the editor to focus it
-    editor = page.locator(".ProseMirror")
+    editor = page.locator(".prose-editor > .ProseMirror")
     editor.click()
     editor.type("Test content before table")
     editor.press("Enter")
@@ -200,7 +200,7 @@ def test_prose_editor_ordered_list_attributes(page, live_server):
     page.goto(f"{live_server.url}/admin/testapp/tableproseeditormodel/add/")
 
     # Click in the editor to focus it
-    editor = page.locator(".ProseMirror")
+    editor = page.locator(".prose-editor > .ProseMirror")
     editor.click()
     editor.type("Test content before list")
     editor.press("Enter")
@@ -326,7 +326,7 @@ def test_configurable_prose_editor_admin(page, live_server):
     assert any("blue-bold.js" in js_path for js_path in config["js_modules"])
 
     # Add content using the editor to test BlueBold extension
-    editor = page.locator(".ProseMirror")
+    editor = page.locator(".prose-editor > .ProseMirror")
     editor.click()
 
     # Wait for editor to be focused and ready
@@ -390,7 +390,7 @@ def test_configurable_prose_editor_admin(page, live_server):
     )
 
     # Verify the editor loads with content
-    editor_with_content = page.locator(".ProseMirror")
+    editor_with_content = page.locator(".prose-editor > .ProseMirror")
     expect(editor_with_content).to_be_visible()
 
     # Print the editor content for debugging
