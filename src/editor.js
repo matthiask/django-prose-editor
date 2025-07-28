@@ -1,4 +1,7 @@
 import "./editor.css"
+import "./dialog.css"
+import "./fullscreen.css"
+import "./menu.css"
 
 import { Editor } from "@tiptap/core"
 
@@ -40,6 +43,7 @@ export { OrderedList } from "./orderedList.js"
 export * as pm from "./pm.js"
 // export { Table } from "@tiptap/extension-table"
 export { Table } from "./table.js"
+export { TextClass } from "./textClass.js"
 export { Typographic } from "./typographic.js"
 export * from "./utils.js"
 

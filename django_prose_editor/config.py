@@ -204,6 +204,7 @@ EXTENSION_MAPPING = {
     "Gapcursor": html_tags([]),
     "Menu": html_tags([]),
     "NoSpellCheck": html_tags([]),
+    "TextClass": html_tags(["span"], {"span": ["class"]}),
 }
 
 # Automatic dependencies (extensions that require other extensions)

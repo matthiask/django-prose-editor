@@ -64,8 +64,33 @@ export const Link = BaseLink.extend({
     }
   },
 
-  addMenuItems({ addItems }) {
-    addItems("link", menuItems)
+  addMenuItems({ menu, buttons }) {
+    menu.defineItem({
+      name: "link",
+      groups: "link",
+      command(editor) {
+        editor.chain().addLink().focus().run()
+      },
+      enabled(editor) {
+        return !editor.state.selection.empty || editor.isActive("link")
+      },
+      button: buttons.material("insert_link", "insert link"),
+      active(editor) {
+        return editor.isActive("link")
+      },
+    })
+
+    menu.defineItem({
+      name: "unlink",
+      groups: "link",
+      command(editor) {
+        editor.chain().focus().unsetLink().run()
+      },
+      dom: buttons.material("link_off", "remove link"),
+      hidden(editor) {
+        return !editor.isActive("link")
+      },
+    })
   },
 
   addCommands() {
@@ -107,27 +132,3 @@ export const Link = BaseLink.extend({
     }
   },
 })
-
-const menuItems = ({ buttons }) => [
-  {
-    command(editor) {
-      editor.chain().addLink().focus().run()
-    },
-    enabled(editor) {
-      return !editor.state.selection.empty || editor.isActive("link")
-    },
-    dom: buttons.material("insert_link", "insert link"),
-    active(editor) {
-      return editor.isActive("link")
-    },
-  },
-  {
-    command(editor) {
-      editor.chain().focus().unsetLink().run()
-    },
-    dom: buttons.material("link_off", "remove link"),
-    hidden(editor) {
-      return !editor.isActive("link")
-    },
-  },
-]

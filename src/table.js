@@ -33,8 +33,8 @@ const tableDialog = updateAttrsDialog(
 )
 
 export const Table = TiptapTable.extend({
-  addMenuItems({ addItems }) {
-    addItems("table", tableMenuItems, "history")
+  addMenuItems({ editor, buttons, menu }) {
+    defineTableMenuItems({ editor, buttons, menu })
   },
 
   addCommands() {
@@ -65,107 +65,125 @@ export const Table = TiptapTable.extend({
   },
 })
 
-function tableMenuItems({ editor, buttons }) {
-  const tableManipulationItem = (command, dom) => ({
-    command,
-    dom,
-    hidden() {
-      return !editor.isActive("table")
+function defineTableMenuItems({ editor, buttons, menu }) {
+  const tableManipulationItem = (name, command, button) => {
+    menu.defineItem({
+      name,
+      groups: "table",
+      command,
+      button,
+      hidden(editor) {
+        return !editor.isActive("table")
+      },
+    })
+  }
+
+  menu.defineItem({
+    name: "table",
+    groups: "table",
+    command(editor) {
+      editor.chain().focus().insertTableWithOptions().run()
     },
+    button: buttons.material("grid_on", "Insert table"),
   })
 
-  return [
-    {
-      command(editor) {
-        editor.chain().focus().insertTableWithOptions().run()
-      },
-      dom: buttons.material("grid_on", "Insert table"),
+  tableManipulationItem(
+    "table:addColumnAfter",
+    (editor) => {
+      editor.chain().focus().addColumnAfter().run()
     },
-    tableManipulationItem(
-      (editor) => {
-        editor.chain().focus().addColumnAfter().run()
-      },
-      buttons.svg(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    buttons.svg(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="3" y="3" width="18" height="18" rx="2"/>
       <line x1="9" y1="3" x2="9" y2="21"/>
       <rect x="15" y="3" width="6" height="18" rx="1" fill="#4CAF50" fill-opacity="0.3" stroke="#4CAF50"/>
       <line x1="18" y1="9" x2="18" y2="15" stroke="#4CAF50" stroke-width="2"/>
       <line x1="15" y1="12" x2="21" y2="12" stroke="#4CAF50" stroke-width="2"/>
     </svg>`,
-        "Add column",
-      ),
+      "Add column",
     ),
-    tableManipulationItem(
-      (editor) => {
-        editor.chain().focus().deleteColumn().run()
-      },
-      buttons.svg(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  )
+
+  tableManipulationItem(
+    "table:deleteColumn",
+    (editor) => {
+      editor.chain().focus().deleteColumn().run()
+    },
+    buttons.svg(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="3" y="3" width="18" height="18" rx="2"/>
       <line x1="9" y1="3" x2="9" y2="21"/>
       <rect x="15" y="3" width="6" height="18" rx="1" fill="#F44336" fill-opacity="0.3" stroke="#F44336"/>
       <line x1="15" y1="12" x2="21" y2="12" stroke="#F44336" stroke-width="2"/>
     </svg>`,
-        "Delete column",
-      ),
+      "Delete column",
     ),
-    tableManipulationItem(
-      (editor) => {
-        editor.chain().focus().addRowAfter().run()
-      },
-      buttons.svg(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  )
+
+  tableManipulationItem(
+    "table:addRowAfter",
+    (editor) => {
+      editor.chain().focus().addRowAfter().run()
+    },
+    buttons.svg(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="3" y="3" width="18" height="18" rx="2"/>
       <line x1="3" y1="9" x2="21" y2="9"/>
       <rect x="3" y="15" width="18" height="6" rx="1" fill="#4CAF50" fill-opacity="0.3" stroke="#4CAF50"/>
       <line x1="12" y1="15" x2="12" y2="21" stroke="#4CAF50" stroke-width="2"/>
       <line x1="9" y1="18" x2="15" y2="18" stroke="#4CAF50" stroke-width="2"/>
     </svg>`,
-        "Add row",
-      ),
+      "Add row",
     ),
-    tableManipulationItem(
-      (editor) => {
-        editor.chain().focus().deleteRow().run()
-      },
-      buttons.svg(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  )
+
+  tableManipulationItem(
+    "table:deleteRow",
+    (editor) => {
+      editor.chain().focus().deleteRow().run()
+    },
+    buttons.svg(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="3" y="3" width="18" height="18" rx="2"/>
       <line x1="3" y1="9" x2="21" y2="9"/>
       <rect x="3" y="15" width="18" height="6" rx="1" fill="#F44336" fill-opacity="0.3" stroke="#F44336"/>
       <line x1="9" y1="18" x2="15" y2="18" stroke="#F44336" stroke-width="2"/>
     </svg>`,
-        "Delete row",
-      ),
+      "Delete row",
     ),
-    tableManipulationItem(
-      (editor) => {
-        editor.chain().focus().mergeCells().run()
-      },
-      buttons.material("call_merge", "Merge cells"),
-    ),
-    tableManipulationItem(
-      (editor) => {
-        editor.chain().focus().splitCell().run()
-      },
-      buttons.material("call_split", "Split cell"),
-    ),
-    // Toggle header cell (works on selected cells or current cell)
-    tableManipulationItem(
-      (editor) => {
-        editor.chain().focus().toggleHeaderCell().run()
-      },
-      buttons.svg(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  )
+
+  tableManipulationItem(
+    "table:mergeCells",
+    (editor) => {
+      editor.chain().focus().mergeCells().run()
+    },
+    buttons.material("call_merge", "Merge cells"),
+  )
+
+  tableManipulationItem(
+    "table:splitCell",
+    (editor) => {
+      editor.chain().focus().splitCell().run()
+    },
+    buttons.material("call_split", "Split cell"),
+  )
+
+  // Toggle header cell (works on selected cells or current cell)
+  tableManipulationItem(
+    "table:toggleHeaderCell",
+    (editor) => {
+      editor.chain().focus().toggleHeaderCell().run()
+    },
+    buttons.svg(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="3" y="3" width="18" height="18" rx="2"/>
       <rect x="3" y="3" width="18" height="6" rx="1" fill="#2196F3" fill-opacity="0.3" stroke="#2196F3"/>
       <line x1="3" y1="9" x2="21" y2="9" stroke-width="2"/>
       <line x1="9" y1="3" x2="9" y2="21"/>
       <line x1="15" y1="3" x2="15" y2="21"/>
     </svg>`,
-        "Toggle header cell",
-      ),
+      "Toggle header cell",
     ),
-  ]
+  )
 }

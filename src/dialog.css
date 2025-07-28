@@ -1,0 +1,95 @@
+.prose-editor-dialog {
+  background: var(--_b);
+  color: var(--_f);
+  border: 1px solid var(--_r);
+  border-radius: 4px;
+  padding: 1em;
+  min-width: 300px;
+}
+
+.prose-editor-dialog-title {
+  font-size: 1.25em;
+  font-weight: bold;
+  margin: 0 !important;
+  padding: 0 0 0.5em 0 !important;
+  border-bottom: 1px solid var(--_r);
+}
+
+.prose-editor-dialog-field {
+  padding: 0;
+  margin: 1em 0;
+}
+
+.prose-editor-dialog-field:has(input[type="checkbox"]),
+.prose-editor-dialog-field:has(input[type="radio"]) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.prose-editor-dialog label {
+  display: block;
+  font-weight: bold;
+  width: auto;
+  min-width: 0;
+}
+
+.prose-editor-dialog input:not([type="checkbox"], [type="radio"]),
+.prose-editor-dialog select,
+.prose-editor-dialog textarea,
+.prose-editor-grow-wrap::after {
+  width: 100%;
+  padding: 0.5em;
+  border: 1px solid var(--_r);
+  border-radius: 4px;
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+  font: inherit;
+}
+
+.prose-editor-dialog input:focus,
+.prose-editor-dialog select:focus,
+.prose-editor-dialog textarea:focus {
+  outline: none;
+  border-color: var(--_a);
+  box-shadow: 0 0 0 2px rgba(121, 174, 200, 0.25);
+}
+
+.prose-editor-dialog input[type="number"] {
+  width: 5em;
+}
+
+.prose-editor-dialog button {
+  all: unset;
+  cursor: pointer;
+  padding: 0.5em 1em;
+  transition: all 0.25s;
+  background: var(--_b);
+  color: var(--_f);
+  border: 1px solid var(--_r);
+  border-radius: 4px;
+  text-align: center;
+  display: inline-flex;
+  position: relative;
+  margin-right: 0.5em;
+  margin-top: 0.5em;
+}
+
+.prose-editor-dialog button:hover {
+  filter: brightness(1.1);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.prose-editor-dialog button:active {
+  filter: brightness(0.95);
+}
+
+.prose-editor-dialog button:focus {
+  outline: 2px solid var(--_a);
+  outline-offset: 2px;
+  position: relative;
+  z-index: 1;
+}

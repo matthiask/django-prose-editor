@@ -4,32 +4,167 @@ import { crel, gettext } from "./utils.js"
 const findExtension = (editor, extension) =>
   editor.extensionManager.extensions.find((e) => e.name === extension)
 
-const createItemGroups = (groups, items, args) => {
-  const defaults = {
-    enabled: () => true,
-    active: () => false,
-    hidden: () => false,
-    update: () => {},
-  }
-  return groups.map((group) =>
-    items[group]
-      .flatMap((fn) => fn(args))
-      .flat()
-      .map((item) => ({
-        ...defaults,
-        ...item,
-      })),
-  )
+const itemDefaults = {
+  enabled: () => true,
+  active: () => false,
+  hidden: () => false,
+  update: () => {},
 }
 
-const updateMenuItems = (itemGroups, editor) => {
+const createMenuObject = (cssClass, _definedItems, buttons) => {
+  // Menu API according to specification
+  const menu = {
+    defineItem(definition) {
+      const { name, groups, priority = 100, ...rest } = definition
+      if (!name || !groups)
+        throw new Error("Menu item must have name and groups")
+
+      _definedItems[name] = {
+        name,
+        groups: typeof groups === "string" ? groups.split(/\s+/) : groups,
+        priority,
+        ...itemDefaults,
+        ...rest,
+      }
+    },
+
+    items(selector) {
+      const parts = selector.split(/\s+/)
+      const include = new Set()
+      const exclude = new Set()
+
+      for (const part of parts) {
+        if (part.startsWith("-")) {
+          exclude.add(part.slice(1))
+        } else {
+          include.add(part)
+        }
+      }
+
+      return Object.values(_definedItems)
+        .filter((item) => {
+          const itemGroups = new Set(item.groups)
+          const hasIncluded = [...include].some((g) => itemGroups.has(g))
+          const hasExcluded = [...exclude].some((g) => itemGroups.has(g))
+          return hasIncluded && !hasExcluded
+        })
+        .toSorted((a, b) => b.priority - a.priority)
+    },
+
+    buttonGroup({ editor }, items) {
+      const dom = crel("div", { className: `${cssClass}__group` })
+      for (const {
+        button,
+        enabled,
+        active,
+        hidden,
+        update,
+        command,
+      } of items) {
+        if (button) {
+          dom.append(button)
+
+          if (button.dataset.initialized) return
+          button.dataset.initialized = true
+
+          button.addEventListener("click", (e) => {
+            editor.view.focus()
+            e.preventDefault()
+            if (enabled(editor) && command) {
+              command(editor)
+            }
+          })
+
+          editor.on("transaction", () => {
+            button.classList.toggle("disabled", !enabled(editor))
+            button.classList.toggle("active", !!active(editor))
+            button.classList.toggle("hidden", !!hidden(editor))
+            update(editor)
+          })
+        }
+      }
+      return dom
+    },
+
+    dropdown({ editor }, items) {
+      const buttonWrapper = crel("div", {
+        className: `${cssClass}__selected`,
+      })
+      /* We put the contents into a .ProseMirror element so that we can easily reuse editor styles */
+      const picker = crel("div", { className: `${cssClass}__picker` }, [
+        crel("div", { className: "ProseMirror" }, [
+          ...items.map((f) => f.option),
+        ]),
+      ])
+      const dom = crel("span", { className: `${cssClass}__dropdown` }, [
+        buttonWrapper,
+        picker,
+      ])
+
+      picker.popover = "auto"
+      buttonWrapper.popoverTargetElement = picker
+      buttonWrapper.popoverTargetAction = "toggle"
+
+      buttonWrapper.addEventListener("click", (e) => {
+        e.preventDefault()
+
+        const rect = buttonWrapper.getBoundingClientRect()
+        picker.style.left = `${window.scrollX + rect.left}px`
+        picker.style.top = `${window.scrollY + rect.bottom}px`
+
+        picker.showPopover()
+      })
+
+      picker.addEventListener("click", (e) => {
+        for (const { option, command, enabled = () => true } of items) {
+          if (option.contains(e.target)) {
+            editor.view.focus()
+            picker.hidePopover()
+            if (enabled(editor)) {
+              command(editor)
+            }
+            return
+          }
+        }
+      })
+
+      let activeName = ""
+      const unknownButton = buttons.material("question_mark")
+
+      editor.on("transaction", () => {
+        for (const { active, button, name } of items) {
+          if (active(editor)) {
+            if (activeName !== name) {
+              activeName = name
+              buttonWrapper.textContent = ""
+              buttonWrapper.append(button.cloneNode(true))
+            }
+            return
+          }
+        }
+
+        activeName = ""
+        buttonWrapper.textContent = ""
+        buttonWrapper.append(unknownButton.cloneNode(true))
+      })
+
+      return dom
+    },
+  }
+  return menu
+}
+
+const _updateMenuItems = (itemGroups, editor) => {
   if (itemGroups) {
     for (const group of itemGroups) {
-      for (const { dom, enabled, active, hidden, update } of group) {
-        dom.classList.toggle("disabled", !enabled(editor))
-        dom.classList.toggle("active", !!active(editor))
-        dom.classList.toggle("hidden", !!hidden(editor))
-        update(editor)
+      for (const item of group) {
+        const { button, enabled, active, hidden, update } = item
+        if (button) {
+          button.classList.toggle("disabled", !enabled(editor))
+          button.classList.toggle("active", !!active(editor))
+          button.classList.toggle("hidden", !!hidden(editor))
+          update(editor)
+        }
       }
     }
   }
@@ -42,45 +177,83 @@ export const Menu = Extension.create({
     return {
       defaultItems: true,
       cssClass: "prose-menubar",
+      groups: [
+        { group: "blockType -lists", type: "dropdown" },
+        { group: "lists" },
+        { group: "nodes -blockType -lists" },
+        { group: "marks" },
+        { group: "textClass", type: "dropdown" },
+        { group: "link" },
+        { group: "textAlign" },
+        { group: "table" },
+        { group: "history" },
+        { group: "utility" },
+      ],
     }
   },
 
   addStorage() {
-    // Menu items
-    const _items = {}
-    // Menu item groups in order
-    const _groups = []
-    const addItems = (group, items = 0, before = 0) => {
-      if (!_groups.includes(group)) {
+    // Menu items registry - maps names to item definitions
+    const _definedItems = {}
+    // Menu item groups in order for layout
+    const _groupOrder = []
+    // Pending legacy items to be processed
+    const _pendingItems = []
+
+    const addItems = (group, itemsFunction = null, before = null) => {
+      if (itemsFunction) {
+        console.warn("addItems is deprecated, use menu.defineItem instead.", {
+          group,
+          itemsFunction,
+        })
+      }
+
+      // Track group order for layout
+      if (!_groupOrder.includes(group)) {
         let pos
-        if (before && (pos = _groups.indexOf(before)) !== -1) {
-          _groups.splice(pos, 0, group)
+        if (before && (pos = _groupOrder.indexOf(before)) !== -1) {
+          _groupOrder.splice(pos, 0, group)
         } else {
-          _groups.push(group)
+          _groupOrder.push(group)
         }
-        _items[group] = []
       }
-      const g = _items[group]
-      if (items && !g.includes(items)) {
-        g.push(items)
+
+      // If itemsFunction provided, convert its items to defineItem calls
+      if (itemsFunction) {
+        // We'll need to execute the function to get items, but we'll do this
+        // later in onCreate when we have editor and buttons available
+        // For now, store the function to be processed later
+        _pendingItems.push({ group, itemsFunction })
       }
     }
 
-    const { defaultItems } = this.options
-    if (defaultItems) {
-      addItems("blockType", blockTypeMenuItems)
-      addItems("nodes", nodeMenuItems)
-      addItems("marks", markMenuItems)
-      addItems("link")
-      addItems("textAlign", textAlignMenuItems)
-      addItems("history", historyMenuItems)
-      addItems("utility", utilityMenuItems)
-    }
+    const buttons = buttonsCreator(this.options.cssClass)
+    const menu = createMenuObject(this.options.cssClass, _definedItems, buttons)
 
-    return { _items, _groups, addItems, dom: null }
+    return {
+      _definedItems,
+      _groupOrder,
+      _pendingItems,
+      addItems,
+      menu,
+      buttons,
+      dom: null,
+    }
   },
 
   onCreate({ editor }) {
+    const { cssClass } = this.options
+    const { _groupOrder, _pendingItems, menu, buttons } = this.storage
+
+    if (this.options.defaultItems) {
+      defineBlockTypeItems({ editor, buttons, menu })
+      defineMarkMenuItems({ editor, buttons, menu })
+      defineTextAlignMenuItems({ editor, buttons, menu })
+      defineHistoryMenuItems({ editor, buttons, menu })
+      defineUtilityMenuItems({ editor, buttons, menu })
+    }
+
+    // Process extensions that add menu items via addMenuItems
     let fn
     for (const extension of editor.extensionManager.extensions) {
       /* See @tiptap/core/src/ExtensionManager.ts */
@@ -97,38 +270,100 @@ export const Menu = Extension.create({
       }
     }
 
-    // Create menu directly
-    const { cssClass } = this.options
-    const { _groups, _items } = this.storage
+    let index = 0
 
-    const itemGroups = createItemGroups(_groups, _items, {
-      editor,
-      buttons: buttonsCreator(cssClass),
-    })
+    // Process pending items from addItems calls
+    if (_pendingItems.length > 0) {
+      for (const { group, itemsFunction } of _pendingItems) {
+        const items = itemsFunction({
+          editor,
+          buttons,
+          menu: this.storage.menu,
+        })
+        for (const item of items) {
+          // Generate a unique name for legacy items
+          const name = `${group}_item_${++index}`
+          this.storage.menu.defineItem({
+            name,
+            groups: group,
+            priority: 100,
+            ...item,
+            button: item.dom || item.button,
+          })
+        }
+      }
+      _pendingItems.length = 0 // Clear the array
+    }
+
+    /*
+    // Group items by their groups for rendering
+    const itemsByGroup = {}
+    for (const item of Object.values(_definedItems)) {
+      for (const group of item.groups) {
+        if (!itemsByGroup[group]) {
+          itemsByGroup[group] = []
+        }
+        itemsByGroup[group].push({
+          ...item,
+        })
+      }
+    }
+
+    // Sort items within each group by priority
+    for (const group in itemsByGroup) {
+      itemsByGroup[group] = itemsByGroup[group].toSorted(
+        (a, b) => b.priority - a.priority,
+      )
+    }
+
+    // Create menu groups in the specified order
+    const itemGroups = _groupOrder
+      .filter((group) => itemsByGroup[group] && itemsByGroup[group].length > 0)
+      .map((group) => itemsByGroup[group])
+    */
 
     // Create menubar element
     const menuDOM = crel("div", { className: cssClass })
 
+    for (const { group, type } of this.options.groups) {
+      const items = menu.items(group)
+      if (items.length) {
+        if (type === "dropdown") {
+          menuDOM.append(menu.dropdown({ editor, buttons }, items))
+        } else {
+          menuDOM.append(menu.buttonGroup({ editor, buttons }, items))
+        }
+      }
+    }
+
+    /*
     // Create menu groups
-    itemGroups
-      .filter((group) => group.length)
-      .forEach((group) => {
-        const groupDOM = crel("div", { className: `${cssClass}__group` })
-        menuDOM.append(groupDOM)
-        group.forEach(({ dom }) => groupDOM.append(dom))
+    itemGroups.forEach((group) => {
+      const groupDOM = crel("div", { className: `${cssClass}__group` })
+      menuDOM.append(groupDOM)
+      group.forEach((item) => {
+        const button = item.button || item.dom
+        if (button) {
+          groupDOM.append(button)
+        }
       })
+    })
 
     // Initial update of button states
     updateMenuItems(itemGroups, editor)
 
     // Handle menu item clicks
     menuDOM.addEventListener("mousedown", (e) => {
-      e.preventDefault()
-      editor.view.focus()
       for (const group of itemGroups) {
-        for (const { command, dom, enabled } of group) {
-          if (dom.contains(e.target)) {
-            if (enabled(editor)) {
+        for (const item of group) {
+          const { command, button, enabled = () => true } = item
+          if (
+            button?.contains(e.target) &&
+            !button.closest(".prose-menubar__dropdown")
+          ) {
+            editor.view.focus()
+            e.preventDefault()
+            if (enabled(editor) && command) {
               command(editor)
             }
             return
@@ -136,22 +371,28 @@ export const Menu = Extension.create({
         }
       }
     })
+    */
 
     editor.view.dom.before(menuDOM)
 
-    this.storage.itemGroups = itemGroups
+    // Empty transaction to invoke all on("transaction") listeners
+    editor.view.dispatch(editor.state.tr)
+
+    // this.storage.itemGroups = itemGroups
     this.storage.dom = menuDOM
   },
 
+  /*
   onTransaction({ editor }) {
     updateMenuItems(this.storage.itemGroups, editor)
   },
+  */
 
   onDestroy() {
     if (this.storage.dom) {
       this.storage.dom.remove()
       this.storage.dom = null
-      this.storage.itemGroups = null
+      // this.storage.itemGroups = null
     }
   },
 })
@@ -179,17 +420,13 @@ const buttonsCreator = (cssClass) => {
       title,
     })
 
-  const heading = (level) => {
-    const dom = crel("span", {
-      className: `${cssClass}__button ${cssClass}__button--heading`,
+  const heading = (level) =>
+    crel("span", {
+      className: `${cssClass}__button ${cssClass}__button--heading material-icons`,
       title: `heading ${level}`,
+      textContent: "title",
+      "data-level": level,
     })
-    dom.append(
-      crel("span", { className: "material-icons", textContent: "title" }),
-      crel("span", { className: "level", textContent: `${level}` }),
-    )
-    return dom
-  }
 
   return { text, material, svg, heading }
 }
@@ -198,33 +435,36 @@ const _buttons = buttonsCreator("prose-menubar")
 export const materialMenuButton = _buttons.material
 export const svgMenuButton = _buttons.svg
 
-const headingButton = (level) => ({
-  command: (editor) => {
-    editor.chain().focus().toggleHeading({ level }).run()
-  },
-  dom: _buttons.heading(level),
-  active(editor) {
-    return editor.isActive("heading", { level })
-  },
-  enabled(editor) {
-    return editor.can().toggleHeading({ level })
-  },
-})
-
-function blockTypeMenuItems({ editor, buttons }) {
+function defineBlockTypeItems({ editor, buttons, menu }) {
   const schema = editor.schema
-
   const extension = findExtension(editor, "heading")
   const levels = extension ? extension.options.levels : []
-  const items = levels.map((level) => headingButton(level))
-
   let type
+
+  for (const level of levels) {
+    menu.defineItem({
+      name: `heading${level}`,
+      groups: "blockType nodes headings",
+      button: buttons.heading(level),
+      option: crel(`h${level}`, { textContent: `Heading ${level}` }),
+      active(editor) {
+        return editor.isActive("heading", { level })
+      },
+      command(editor) {
+        editor.chain().focus().toggleHeading({ level }).run()
+      },
+    })
+  }
+
   if ((type = schema.nodes.bulletList)) {
-    items.push({
+    menu.defineItem({
+      name: "bulletList",
+      groups: "blockType lists nodes",
       command(editor) {
         editor.chain().focus().toggleBulletList().run()
       },
-      dom: buttons.material("format_list_bulleted", "unordered list"),
+      button: buttons.material("format_list_bulleted", "unordered list"),
+      option: crel("p", { textContent: "unordered list" }),
       active(_editor) {
         return false
       },
@@ -234,11 +474,14 @@ function blockTypeMenuItems({ editor, buttons }) {
     })
   }
   if ((type = schema.nodes.orderedList)) {
-    items.push({
+    menu.defineItem({
+      name: "orderedList",
+      groups: "blockType lists nodes",
       command(editor) {
         editor.chain().focus().toggleOrderedList().run()
       },
-      dom: buttons.material("format_list_numbered", "ordered list"),
+      button: buttons.material("format_list_numbered", "ordered list"),
+      option: crel("p", { textContent: "ordered list" }),
       active(editor) {
         return editor.isActive("orderedList")
       },
@@ -250,11 +493,14 @@ function blockTypeMenuItems({ editor, buttons }) {
     // Add list properties button only if list attributes are enabled
     const orderedListExt = findExtension(editor, "orderedList")
     if (orderedListExt?.options.enableListAttributes) {
-      items.push({
+      menu.defineItem({
+        name: "orderedListProperties",
+        groups: "blockType lists",
         command(editor) {
           editor.chain().focus().updateListAttributes().run()
         },
-        dom: buttons.material("tune", gettext("List properties")),
+        button: buttons.material("tune", gettext("List properties")),
+        option: null,
         hidden(editor) {
           return !editor.isActive("orderedList")
         },
@@ -262,35 +508,15 @@ function blockTypeMenuItems({ editor, buttons }) {
     }
   }
 
-  if (!items.length) return []
-
-  return [
-    ...items,
-    {
-      command(editor) {
-        editor.chain().focus().setParagraph().run()
-      },
-      dom: buttons.material("notes", "paragraph"),
-      active(_editor) {
-        return false
-      },
-      enabled(editor) {
-        return editor.can().setParagraph()
-      },
-    },
-  ]
-}
-
-function nodeMenuItems({ editor, buttons }) {
-  const schema = editor.schema
-  const items = []
-  let type
   if ((type = schema.nodes.blockquote)) {
-    items.push({
+    menu.defineItem({
+      name: "blockquote",
+      groups: "nodes",
       command(editor) {
         editor.chain().focus().toggleBlockquote().run()
       },
-      dom: buttons.material("format_quote", "blockquote"),
+      button: buttons.material("format_quote", "blockquote"),
+      option: crel("p", { textContent: "blockquote" }),
       active(editor) {
         return editor.isActive("blockquote")
       },
@@ -300,11 +526,14 @@ function nodeMenuItems({ editor, buttons }) {
     })
   }
   if ((type = schema.nodes.horizontalRule)) {
-    items.push({
+    menu.defineItem({
+      name: "horizontalRule",
+      groups: "nodes",
       command(editor) {
         editor.chain().focus().setHorizontalRule().run()
       },
-      dom: buttons.material("horizontal_rule", "horizontal rule"),
+      button: buttons.material("horizontal_rule", "horizontal rule"),
+      option: crel("p", { textContent: "horizontal rule" }),
       active(_editor) {
         return false
       },
@@ -314,11 +543,14 @@ function nodeMenuItems({ editor, buttons }) {
     })
   }
   if ((type = schema.nodes.figure)) {
-    items.push({
+    menu.defineItem({
+      name: "figure",
+      groups: "nodes",
       command(editor) {
         editor.chain().focus().insertFigure().run()
       },
-      dom: buttons.material("image", "figure"),
+      button: buttons.material("image", "figure"),
+      option: crel("p", { textContent: "figure" }),
       active(editor) {
         return editor.isActive("figure")
       },
@@ -327,107 +559,120 @@ function nodeMenuItems({ editor, buttons }) {
       },
     })
   }
-  return items
-}
 
-function markMenuItems({ editor, buttons }) {
-  const mark = (markType, dom) =>
-    markType in editor.schema.marks
-      ? {
-          command(editor) {
-            editor.chain().focus().toggleMark(markType).run()
-          },
-          dom,
-          active: (editor) => editor.isActive(markType),
-          enabled: (editor) => editor.can().toggleMark(markType),
-        }
-      : null
-
-  return [
-    mark("bold", buttons.material("format_bold", "bold")),
-    mark("italic", buttons.material("format_italic", "italic")),
-    mark("underline", buttons.material("format_underline", "underline")),
-    mark("strike", buttons.material("format_strikethrough", "strike")),
-    mark("subscript", buttons.material("subscript", "subscript")),
-    mark("superscript", buttons.material("superscript", "superscript")),
-  ].filter(Boolean)
-}
-
-function historyMenuItems({ editor, buttons }) {
-  return findExtension(editor, "history")
-    ? [
-        {
-          command(editor) {
-            editor.commands.undo()
-          },
-          enabled(editor) {
-            return editor.can().undo()
-          },
-          dom: buttons.material("undo", "undo"),
-          active() {
-            return false
-          },
-        },
-        {
-          command(editor) {
-            editor.commands.redo()
-          },
-          enabled(editor) {
-            return editor.can().redo()
-          },
-          dom: buttons.material("redo", "redo"),
-          active() {
-            return false
-          },
-        },
-      ]
-    : []
-}
-
-function textAlignMenuItems({ editor, buttons }) {
-  const alignmentItem = (alignment) => ({
-    command(editor) {
-      editor.chain().focus().setTextAlign(alignment).run()
+  menu.defineItem({
+    name: "paragraph",
+    groups: "blockType nodes",
+    button: buttons.material("notes", "paragraph"),
+    option: crel("p", { textContent: "Paragraph" }),
+    active(editor) {
+      return editor.isActive("paragraph")
     },
-    dom: buttons.material(`format_align_${alignment}`, alignment),
-    active() {
-      return editor.isActive({ textAlign: alignment })
+    command(editor) {
+      editor.chain().focus().setParagraph().run()
     },
   })
-
-  return findExtension(editor, "textAlign")
-    ? [
-        alignmentItem("left"),
-        alignmentItem("center"),
-        alignmentItem("right"),
-        alignmentItem("justify"),
-      ]
-    : []
 }
 
-function utilityMenuItems({ editor, buttons }) {
-  const items = []
+function defineMarkMenuItems({ editor, buttons, menu }) {
+  const define = (markType, button) => {
+    if (markType in editor.schema.marks) {
+      menu.defineItem({
+        name: markType,
+        groups: "marks",
+        command(editor) {
+          editor.chain().focus().toggleMark(markType).run()
+        },
+        button,
+        active: (editor) => editor.isActive(markType),
+        enabled: (editor) => editor.can().toggleMark(markType),
+      })
+    }
+  }
 
+  define("bold", buttons.material("format_bold", "bold"))
+  define("italic", buttons.material("format_italic", "italic"))
+  define("underline", buttons.material("format_underline", "underline"))
+  define("strike", buttons.material("format_strikethrough", "strike"))
+  define("subscript", buttons.material("subscript", "subscript"))
+  define("superscript", buttons.material("superscript", "superscript"))
+}
+
+function defineTextAlignMenuItems({ editor, buttons, menu }) {
+  const define = (alignment) => {
+    menu.defineItem({
+      name: `textAlign:${alignment}`,
+      groups: "textAlign",
+      command(editor) {
+        editor.chain().focus().setTextAlign(alignment).run()
+      },
+      button: buttons.material(`format_align_${alignment}`, alignment),
+      active() {
+        return editor.isActive({ textAlign: alignment })
+      },
+    })
+  }
+
+  if (findExtension(editor, "textAlign")) {
+    define("left")
+    define("center")
+    define("right")
+    define("justify")
+  }
+}
+
+function defineHistoryMenuItems({ editor, buttons, menu }) {
+  if (findExtension(editor, "history")) {
+    menu.defineItem({
+      name: "history:undo",
+      groups: "history",
+      command(editor) {
+        editor.commands.undo()
+      },
+      enabled(editor) {
+        return editor.can().undo()
+      },
+      button: buttons.material("undo", "undo"),
+    })
+    menu.defineItem({
+      name: "history:redo",
+      groups: "history",
+      command(editor) {
+        editor.commands.redo()
+      },
+      enabled(editor) {
+        return editor.can().redo()
+      },
+      button: buttons.material("redo", "redo"),
+    })
+  }
+}
+
+function defineUtilityMenuItems({ editor, buttons, menu }) {
   if (findExtension(editor, "html")) {
-    items.push({
+    menu.defineItem({
+      name: "html",
+      groups: "utility",
       command(editor) {
         editor.commands.editHTML()
       },
-      dom: buttons.material("code", "edit HTML"),
+      button: buttons.material("code", "edit HTML"),
     })
   }
 
   if (findExtension(editor, "fullscreen")) {
     // Create button with dynamic content based on fullscreen state
-    const dom = buttons.material("", gettext("Toggle fullscreen"))
+    const button = buttons.material("", gettext("Toggle fullscreen"))
 
-    items.push({
+    menu.defineItem({
+      name: "fullscreen",
+      groups: "utility",
       command(editor) {
         editor.commands.toggleFullscreen()
       },
-      dom,
+      button,
       update: (editor) => {
-        dom.textContent = editor.storage.fullscreen?.fullscreen
+        button.textContent = editor.storage.fullscreen?.fullscreen
           ? "fullscreen_exit"
           : "fullscreen"
       },
@@ -436,6 +681,4 @@ function utilityMenuItems({ editor, buttons }) {
       },
     })
   }
-
-  return items
 }
