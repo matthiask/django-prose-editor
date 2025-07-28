@@ -7,10 +7,14 @@
     -apple-system, blinkmacsystemfont, "Segoe UI", roboto, oxygen, ubuntu,
     cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   margin: 0 !important;
+
+  color: var(--body-fg);
+  background: var(--body-bg);
 }
 
 .ProseMirror * {
-  color: var(--body-fg);
+  color: inherit;
+  background: inherit;
 }
 
 .ProseMirror p {
@@ -78,19 +82,19 @@
   list-style-type: decimal !important;
 }
 
-.ProseMirror ol[type="a"] {
+.ProseMirror ol[type="a" s] {
   list-style-type: lower-alpha !important;
 }
 
-.ProseMirror ol[type="A"] {
+.ProseMirror ol[type="A" s] {
   list-style-type: upper-alpha !important;
 }
 
-.ProseMirror ol[type="i"] {
+.ProseMirror ol[type="i" s] {
   list-style-type: lower-roman !important;
 }
 
-.ProseMirror ol[type="I"] {
+.ProseMirror ol[type="I" s] {
   list-style-type: upper-roman !important;
 }
 
