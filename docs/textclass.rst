@@ -78,7 +78,7 @@ The extension generates clean HTML with CSS classes:
 Sanitization
 ------------
 
-When using server-side sanitization, the TextClass extension automatically configures the sanitizer to allow ``<span>`` tags with ``class`` attributes. Only the CSS classes you explicitly configure are permitted, ensuring security.
+When using server-side sanitization, the TextClass extension automatically configures the sanitizer to allow ``<span>`` tags with ``class`` attributes.
 
 Styling
 -------
@@ -87,23 +87,23 @@ Define CSS rules in your stylesheet to style the configured classes:
 
 .. code-block:: css
 
-    .highlight {
+    .ProseMirror .highlight {
         background-color: yellow;
         padding: 2px 4px;
         border-radius: 3px;
     }
 
-    .important {
+    .ProseMirror .important {
         font-weight: bold;
         color: #d32f2f;
     }
 
-    .subtle {
+    .ProseMirror .subtle {
         opacity: 0.7;
         font-style: italic;
     }
 
-    .warning {
+    .ProseMirror .warning {
         background-color: #fff3cd;
         color: #856404;
         padding: 2px 4px;

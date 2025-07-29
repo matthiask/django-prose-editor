@@ -3,8 +3,6 @@ import "./dialog.css"
 import "./fullscreen.css"
 import "./menu.css"
 
-import { Editor } from "@tiptap/core"
-
 export * from "@tiptap/core"
 export { Blockquote } from "@tiptap/extension-blockquote"
 export { Bold } from "@tiptap/extension-bold"
@@ -16,7 +14,6 @@ export { HardBreak } from "@tiptap/extension-hard-break"
 export { Heading } from "@tiptap/extension-heading"
 export { Highlight } from "@tiptap/extension-highlight"
 export { HorizontalRule } from "@tiptap/extension-horizontal-rule"
-// Import Figure extension
 export { Image } from "@tiptap/extension-image"
 export { Italic } from "@tiptap/extension-italic"
 export { BulletList, ListItem } from "@tiptap/extension-list"
@@ -38,15 +35,14 @@ export { HTML } from "./html.js"
 export { Link } from "./link.js"
 export * from "./menu.js"
 export { NoSpellCheck } from "./nospellcheck.js"
-// Import our custom OrderedList
 export { OrderedList } from "./orderedList.js"
 export * as pm from "./pm.js"
-// export { Table } from "@tiptap/extension-table"
 export { Table } from "./table.js"
 export { TextClass } from "./textClass.js"
 export { Typographic } from "./typographic.js"
 export * from "./utils.js"
 
+import { Editor } from "@tiptap/core"
 import { crel } from "./utils.js"
 
 export function createTextareaEditor(textarea, extensions) {
