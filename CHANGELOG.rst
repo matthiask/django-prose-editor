@@ -4,12 +4,32 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
-- Updated Tiptap to 3.0.1. Also updated all ProseMirror packages.
+- Updated Tiptap to 3.0.7. Also updated all ProseMirror packages and added
+  explicit ProseMirror dependencies to package.json.
 - Changed the ``.prose-editor-fullscreen`` class to
   ``.prose-editor.fullscreen`` to match ``.prose-editor.disabled``.
 - Bumped the ``[sanitized]`` extra's nh3 dependency to 0.3 and started taking
   advantage of the reusable ``Cleaner`` object. This allows us to initialize
   the cleaner once only.
+- **Rewritten menu system**: The Menu extension now uses an ``items`` creator
+  function instead of the deprecated ``addItems`` function. This provides more
+  flexibility for custom menu layouts. Added ``createMenuFromGroups`` helper
+  for converting simple group configurations. Extensions now receive
+  ``{ editor, buttons, menu }`` parameters in ``addMenuItems`` method.
+- Added menu configuration documentation as a new chapter.
+- Updated custom extensions documentation to use the new menu API with
+  ``menu.defineItem()`` instead of the deprecated ``addItems`` approach.
+- Added ``TextClass`` extension for applying CSS classes to text sections.
+  This provides a clean, semantic alternative to inline styles, allowing
+  arbitrary CSS classes on ``<span>`` tags with automatic menu integration
+  and sanitization support.
+- Separated dialog styles into their own CSS file (``dialog.css``).
+- Separated menu styles into their own CSS file (``menu.css``).
+- Updated pre-commit hooks and biome configuration.
+- Fixed import ordering and added missing imports in Python files to address
+  linting issues.
+- Removed custom HorizontalRule extension in favor of Tiptap's default
+  implementation, which now includes proper insertion validation.
 
 
 0.16 (2025-07-11)
