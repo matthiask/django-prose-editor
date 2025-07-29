@@ -46,9 +46,9 @@
   content: attr(data-level);
   position: absolute;
   font-family: sans-serif;
-  right: 3px;
+  right: 4px;
   bottom: 5px;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .prose-menubar__button:not(.hidden) {
