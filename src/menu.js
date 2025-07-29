@@ -170,6 +170,26 @@ const _updateMenuItems = (itemGroups, editor) => {
   }
 }
 
+// Helper function to create menu structure from groups configuration
+export const createMenuFromGroups = (groups) => {
+  return function createMenu({ editor, buttons, menu }) {
+    const menuStructure = []
+
+    for (const { group, type } of groups) {
+      const items = menu.items(group)
+      if (items.length) {
+        if (type === "dropdown") {
+          menuStructure.push(menu.dropdown({ editor, buttons }, items))
+        } else {
+          menuStructure.push(menu.buttonGroup({ editor, buttons }, items))
+        }
+      }
+    }
+
+    return menuStructure
+  }
+}
+
 export const Menu = Extension.create({
   name: "menu",
 
@@ -177,7 +197,7 @@ export const Menu = Extension.create({
     return {
       defaultItems: true,
       cssClass: "prose-menubar",
-      groups: [
+      items: createMenuFromGroups([
         { group: "blockType -lists", type: "dropdown" },
         { group: "lists" },
         { group: "nodes -blockType -lists" },
@@ -188,7 +208,7 @@ export const Menu = Extension.create({
         { group: "table" },
         { group: "history" },
         { group: "utility" },
-      ],
+      ]),
     }
   },
 
@@ -295,104 +315,27 @@ export const Menu = Extension.create({
       _pendingItems.length = 0 // Clear the array
     }
 
-    /*
-    // Group items by their groups for rendering
-    const itemsByGroup = {}
-    for (const item of Object.values(_definedItems)) {
-      for (const group of item.groups) {
-        if (!itemsByGroup[group]) {
-          itemsByGroup[group] = []
-        }
-        itemsByGroup[group].push({
-          ...item,
-        })
-      }
-    }
-
-    // Sort items within each group by priority
-    for (const group in itemsByGroup) {
-      itemsByGroup[group] = itemsByGroup[group].toSorted(
-        (a, b) => b.priority - a.priority,
-      )
-    }
-
-    // Create menu groups in the specified order
-    const itemGroups = _groupOrder
-      .filter((group) => itemsByGroup[group] && itemsByGroup[group].length > 0)
-      .map((group) => itemsByGroup[group])
-    */
-
     // Create menubar element
     const menuDOM = crel("div", { className: cssClass })
 
-    for (const { group, type } of this.options.groups) {
-      const items = menu.items(group)
-      if (items.length) {
-        if (type === "dropdown") {
-          menuDOM.append(menu.dropdown({ editor, buttons }, items))
-        } else {
-          menuDOM.append(menu.buttonGroup({ editor, buttons }, items))
-        }
-      }
+    // Use the items creator function to build the menu
+    const menuItems = this.options.items({ editor, buttons, menu })
+    for (const item of menuItems) {
+      menuDOM.append(item)
     }
-
-    /*
-    // Create menu groups
-    itemGroups.forEach((group) => {
-      const groupDOM = crel("div", { className: `${cssClass}__group` })
-      menuDOM.append(groupDOM)
-      group.forEach((item) => {
-        const button = item.button || item.dom
-        if (button) {
-          groupDOM.append(button)
-        }
-      })
-    })
-
-    // Initial update of button states
-    updateMenuItems(itemGroups, editor)
-
-    // Handle menu item clicks
-    menuDOM.addEventListener("mousedown", (e) => {
-      for (const group of itemGroups) {
-        for (const item of group) {
-          const { command, button, enabled = () => true } = item
-          if (
-            button?.contains(e.target) &&
-            !button.closest(".prose-menubar__dropdown")
-          ) {
-            editor.view.focus()
-            e.preventDefault()
-            if (enabled(editor) && command) {
-              command(editor)
-            }
-            return
-          }
-        }
-      }
-    })
-    */
 
     editor.view.dom.before(menuDOM)
 
     // Empty transaction to invoke all on("transaction") listeners
     editor.view.dispatch(editor.state.tr)
 
-    // this.storage.itemGroups = itemGroups
     this.storage.dom = menuDOM
   },
-
-  /*
-  onTransaction({ editor }) {
-    updateMenuItems(this.storage.itemGroups, editor)
-  },
-  */
 
   onDestroy() {
     if (this.storage.dom) {
       this.storage.dom.remove()
       this.storage.dom = null
-      // this.storage.itemGroups = null
     }
   },
 })

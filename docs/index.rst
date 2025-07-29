@@ -30,6 +30,7 @@ django-prose-editor[sanitize]``) the following should get you started:
    configuration
    sanitization
    custom_extensions
+   menu
    presets
    legacy
    forms

@@ -26,9 +26,16 @@ Here's a simplified example of an extension structure:
         }
       },
 
-      addMenuItems({ addItems }) {
+      addMenuItems({ editor, buttons, menu }) {
         // Register menu items for this extension
-        addItems("myExtension", menuItems)
+        menu.defineItem({
+          name: "myExtension",
+          groups: "myExtension",
+          command: (editor) => editor.chain().myCommand().focus().run(),
+          button: buttons.material("icon_name", "tooltip text"),
+          enabled: (editor) => true,
+          active: (editor) => editor.isActive("myExtension")
+        })
       },
 
       addCommands() {
@@ -39,29 +46,6 @@ Here's a simplified example of an extension structure:
       },
     })
 
-    // Define menu items as a function that returns an array of menu items
-    const menuItems = ({ buttons }) => [
-      {
-        command(editor) {
-          // Command to execute when menu item is clicked
-          editor.chain().myCommand().focus().run()
-        },
-        dom: buttons.material("icon_name", "tooltip text"),
-        enabled(editor) {
-          // Determine if the menu item should be enabled
-          return true
-        },
-        active(editor) {
-          // Determine if the menu item should appear active
-          return editor.isActive("myExtension")
-        },
-        hidden(editor) {
-          // Determine if the menu item should be hidden
-          return false
-        }
-      },
-      // Additional menu items...
-    ]
 
 Menu Integration
 ----------------
@@ -71,36 +55,38 @@ The Menu extension provides a system for organizing menu items into groups. You 
 Adding Items to the Menu
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Extensions can integrate with the menu system by implementing the ``addMenuItems`` method. This method is automatically called during editor initialization and provides access to the menu's ``addItems`` function:
+Extensions can integrate with the menu system by implementing the ``addMenuItems`` method. This method is automatically called during editor initialization and provides access to the editor, buttons helper, and menu object:
 
 .. code-block:: javascript
 
     export const MyExtension = SomeBaseExtension.extend({
-      addMenuItems({ addItems }) {
-        // Register menu items for this extension
-        addItems("myExtension", menuItems)
+      addMenuItems({ editor, buttons, menu }) {
+        // Register menu items for this extension using the new menu API
+        menu.defineItem({
+          name: "myExtension",
+          groups: "myExtension",
+          command: (editor) => editor.chain().myCommand().focus().run(),
+          button: buttons.material("icon_name", "tooltip text"),
+          enabled: (editor) => true,
+          active: (editor) => editor.isActive("myExtension")
+        })
       },
     })
 
-The ``addMenuItems`` method receives an object with the following properties:
-
-- ``addItems``: Function to register menu items with the menu system
-
-The ``addItems`` function takes the following parameters:
-
-1. ``group``: The name of the menu group to add items to
-2. ``items``: A function that returns an array of menu item objects
-3. ``before``: (Optional) Insert this group before another group
-
-Menu items should be defined as a separate function outside the extension to ensure stable identity and prevent duplication.
+.. note::
+   The Menu extension uses an ``items`` creator function instead of the old ``addItems`` function. This provides more flexibility for custom menu layouts. See :doc:`menu` for details on creating custom menu structures.
 
 Menu Item Structure
 ~~~~~~~~~~~~~~~~~~
 
-Each menu item should be an object with the following properties:
+Menu items are defined using the ``defineItem`` method with the following properties:
 
+- ``name``: Unique identifier for the menu item
+- ``groups``: Space-separated list of groups this item belongs to
+- ``priority``: (Optional) Higher priorities are sorted first
 - ``command``: A function that takes the editor instance and performs an action
-- ``dom``: The DOM element representing the menu button
+- ``button``: The DOM element representing the menu button
+- ``option``: (Optional) Element when shown in dropdown (defaults to null)
 - ``enabled``: (Optional) Function that returns a boolean indicating if the item should be enabled
 - ``active``: (Optional) Function that returns a boolean indicating if the item should appear active
 - ``hidden``: (Optional) Function that returns a boolean indicating if the item should be hidden
@@ -132,34 +118,27 @@ The Link extension demonstrates basic menu integration:
 .. code-block:: javascript
 
     export const Link = BaseLink.extend({
-      addMenuItems({ addItems }) {
-        addItems("link", menuItems)
+      addMenuItems({ editor, buttons, menu }) {
+        // Add link button
+        menu.defineItem({
+          name: "addLink",
+          groups: "link",
+          command: (editor) => editor.chain().addLink().focus().run(),
+          button: buttons.material("insert_link", "insert link"),
+          enabled: (editor) => !editor.state.selection.empty || editor.isActive("link"),
+          active: (editor) => editor.isActive("link")
+        })
+
+        // Remove link button
+        menu.defineItem({
+          name: "removeLink",
+          groups: "link",
+          command: (editor) => editor.chain().focus().unsetLink().run(),
+          button: buttons.material("link_off", "remove link"),
+          hidden: (editor) => !editor.isActive("link")
+        })
       },
     })
-
-    const menuItems = ({ buttons }) => [
-      {
-        command(editor) {
-          editor.chain().addLink().focus().run()
-        },
-        enabled(editor) {
-          return !editor.state.selection.empty || editor.isActive("link")
-        },
-        dom: buttons.material("insert_link", "insert link"),
-        active(editor) {
-          return editor.isActive("link")
-        },
-      },
-      {
-        command(editor) {
-          editor.chain().focus().unsetLink().run()
-        },
-        dom: buttons.material("link_off", "remove link"),
-        hidden(editor) {
-          return !editor.isActive("link")
-        },
-      },
-    ]
 
 
 Configurable Extensions
