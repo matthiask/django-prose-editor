@@ -8,7 +8,10 @@ Unlike Tiptap's TextStyle extension which uses inline ``style`` attributes, Text
 Basic Usage
 -----------
 
-To use the TextClass extension, configure it with a list of allowed CSS classes:
+To use the TextClass extension, configure it with a list of allowed CSS classes. Each class can be specified as:
+
+- A string (class name and display title will be the same)
+- An object with ``className`` and ``title`` properties for custom display names
 
 .. code-block:: python
 
@@ -20,7 +23,12 @@ To use the TextClass extension, configure it with a list of allowed CSS classes:
                 "Bold": True,
                 "Italic": True,
                 "TextClass": {
-                    "cssClasses": ["highlight", "important", "subtle", "warning"]
+                    "cssClasses": [
+                        "highlight",  # String format
+                        "important",
+                        {"className": "subtle", "title": "Subtle Text"},  # Object format
+                        {"className": "warning", "title": "Warning"}
+                    ]
                 }
             }
         )
@@ -34,9 +42,19 @@ When creating custom presets, you can configure the TextClass extension in JavaS
 
     import { TextClass } from "django-prose-editor/editor"
 
-    // Configure with allowed CSS classes
+    // Configure with allowed CSS classes (string format)
     TextClass.configure({
         cssClasses: ["highlight", "important", "subtle", "warning"]
+    })
+
+    // Configure with custom display titles (object format)
+    TextClass.configure({
+        cssClasses: [
+            "highlight",
+            { className: "important", title: "Important Text" },
+            { className: "subtle", title: "Subtle Text" },
+            { className: "warning", title: "Warning" }
+        ]
     })
 
 Menu Integration
@@ -46,6 +64,8 @@ When configured with CSS classes, TextClass automatically adds a dropdown menu t
 
 - **default**: Removes any applied text class (returns to normal text)
 - Each configured CSS class as a selectable option
+
+When classes are configured as objects with ``title`` properties, the menu will display the custom title while applying the specified ``className``. For string-configured classes, the class name serves as both the CSS class and display title.
 
 The menu items appear in the ``textClass`` group and are typically displayed as a dropdown in the default menu layout.
 

@@ -1,6 +1,10 @@
 import { Mark, mergeAttributes } from "@tiptap/core"
 import { crel } from "./utils.js"
 
+const cssClass = (c) => (typeof c === "string" ? { className: c, title: c } : c)
+const isValidClass = (cssClasses, className) =>
+  cssClasses.find((c) => cssClass(c).className === className)
+
 export const TextClass = Mark.create({
   name: "textClass",
   priority: 101, // Slightly higher priority so that e.g. strong doesn't split text class marks
@@ -20,7 +24,9 @@ export const TextClass = Mark.create({
           const className = element.className?.trim()
           if (!className) return null
 
-          return this.options.cssClasses.includes(className) ? className : null
+          return isValidClass(this.options.cssClasses, className)
+            ? className
+            : null
         },
         renderHTML: (attributes) => {
           if (!attributes.class) {
@@ -44,7 +50,7 @@ export const TextClass = Mark.create({
           const className = element.className?.trim()
           if (!className) return false
 
-          return this.options.cssClasses.includes(className) ? {} : false
+          return isValidClass(this.options.cssClasses, className) ? {} : false
         },
       },
     ]
@@ -63,7 +69,7 @@ export const TextClass = Mark.create({
       setTextClass:
         (className) =>
         ({ commands }) => {
-          if (!this.options.cssClasses.includes(className)) {
+          if (!isValidClass(this.options.cssClasses, className)) {
             return false
           }
           return commands.setMark(this.name, { class: className })
@@ -81,12 +87,15 @@ export const TextClass = Mark.create({
       return
     }
 
-    for (const className of ["default", ...this.options.cssClasses]) {
+    for (const { className, title } of [
+      "default",
+      ...this.options.cssClasses,
+    ].map(cssClass)) {
       menu.defineItem({
         name: `${this.name}:${className}`,
         groups: this.name,
-        button: buttons.text(className),
-        option: crel("p", { className, textContent: className }),
+        button: buttons.text(title),
+        option: crel("p", { className, textContent: title }),
         active(editor) {
           return className === "default"
             ? !editor.isActive("textClass")
