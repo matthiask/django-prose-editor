@@ -1,7 +1,7 @@
 exclude: ".yarn/|yarn.lock|django_prose_editor/static/"
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: check-added-large-files
       - id: check-builtin-literals
@@ -19,13 +19,13 @@ repos:
       - id: django-upgrade
         args: [--target-version, "4.2"]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.12.4"
+    rev: "v0.12.8"
     hooks:
       - id: ruff-check
         args: [--unsafe-fixes]
       - id: ruff-format
   - repo: https://github.com/biomejs/pre-commit
-    rev: "v2.1.1"
+    rev: "v2.1.4"
     hooks:
       - id: biome-check
         args: [--unsafe]
