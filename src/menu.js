@@ -175,9 +175,9 @@ export const createMenuFromGroups = (groups) => {
   return function createMenu({ editor, buttons, menu }) {
     const menuStructure = []
 
-    for (const { group, type } of groups) {
+    for (const { group, type, minItems = 1 } of groups) {
       const items = menu.items(group)
-      if (items.length) {
+      if (items.length >= minItems) {
         if (type === "dropdown") {
           menuStructure.push(menu.dropdown({ editor, buttons }, items))
         } else {
@@ -198,7 +198,7 @@ export const Menu = Extension.create({
       defaultItems: true,
       cssClass: "prose-menubar",
       items: createMenuFromGroups([
-        { group: "blockType -lists", type: "dropdown" },
+        { group: "blockType -lists", type: "dropdown", minItems: 2 },
         { group: "lists" },
         { group: "nodes -blockType -lists" },
         { group: "marks" },

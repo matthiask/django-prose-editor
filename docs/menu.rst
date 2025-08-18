@@ -97,7 +97,7 @@ For convenience, there's a ``createMenuFromGroups`` helper that converts a simpl
 
     // Define your menu structure using groups
     const menuCreator = createMenuFromGroups([
-        { group: "blockType -lists", type: "dropdown" },
+        { group: "blockType -lists", type: "dropdown", minItems: 2 },
         { group: "lists" },
         { group: "nodes -blockType -lists" },
         { group: "marks" },
@@ -114,4 +114,6 @@ For convenience, there's a ``createMenuFromGroups`` helper that converts a simpl
         items: menuCreator,
     })
 
-This helper creates button groups by default, but you can specify ``type: "dropdown"`` to create dropdowns instead.
+This helper creates button groups by default, but you can specify ``type:
+"dropdown"`` to create dropdowns instead. Also, ``minItems: 2`` in this example
+only adds the block type dropdown if the dropdown would have at least two items.
