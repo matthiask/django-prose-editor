@@ -26,7 +26,12 @@ export { Text } from "@tiptap/extension-text"
 export { TextAlign } from "@tiptap/extension-text-align"
 export { TextStyle } from "@tiptap/extension-text-style"
 export { Underline } from "@tiptap/extension-underline"
-export { Dropcursor, Gapcursor, TrailingNode } from "@tiptap/extensions"
+export {
+  Dropcursor,
+  Gapcursor,
+  Placeholder,
+  TrailingNode,
+} from "@tiptap/extensions"
 export { Plugin } from "@tiptap/pm/state"
 export { Caption, Figure } from "./figure.js"
 export { Fullscreen } from "./fullscreen.js"
