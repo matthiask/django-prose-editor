@@ -205,6 +205,7 @@ EXTENSION_MAPPING = {
     "Menu": html_tags([]),
     "NoSpellCheck": html_tags([]),
     "TextClass": html_tags(["span"], {"span": ["class"]}),
+    "Placeholder": html_tags([]),
 }
 
 # Automatic dependencies (extensions that require other extensions)

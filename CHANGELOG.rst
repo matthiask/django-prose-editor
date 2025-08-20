@@ -30,7 +30,9 @@ Next version
   linting issues.
 - Removed custom HorizontalRule extension in favor of Tiptap's default
   implementation, which now includes proper insertion validation.
-- Exported Tiptap's ``Placeholder`` extension.
+- Exported Tiptap's ``Placeholder`` extension. Note that you need to add the
+  CSS to actually display the placeholder yourself, see the `Placeholder docs
+  <https://tiptap.dev/docs/editor/extensions/functionality/placeholder>`__.
 
 
 0.16 (2025-07-11)
