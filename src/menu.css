@@ -28,7 +28,9 @@
   height: 28px;
   padding: 0 0.25em;
   min-width: 2em;
-  transition: all 0.25s;
+  transition-property:
+    color, background, border-radius, filter, opacity, transform;
+  transition-duration: 0.25s;
   background: var(--_b);
   color: var(--_f);
   border: 1px solid var(--_r);
