@@ -36,6 +36,7 @@ Next version
 - Modified the ``HTML`` extension to preserve whitespace inside ``pre``
   elements during prettification. Also, changed the extension to only run
   prettification on demand.
+- Added a maximum width to prose editor dialog elements.
 
 
 0.16 (2025-07-11)
