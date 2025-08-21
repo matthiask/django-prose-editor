@@ -114,8 +114,40 @@ export const updateAttrsDialog =
         ),
       )
 
-      // Add buttons
-      formElements.push(submit, cancel)
+      // Create action buttons container
+      const buttonContainer = crel("div", {
+        className: "prose-editor-dialog-buttons",
+      })
+
+      // Add custom action buttons if provided
+      if (options.actions) {
+        for (const action of options.actions) {
+          const actionButton = crel("button", {
+            type: "button",
+            textContent: action.text,
+            className: action.className || "",
+          })
+
+          actionButton.addEventListener("click", (e) => {
+            e.preventDefault()
+            // Get current form values for the action
+            const currentValues = Object.fromEntries(
+              Object.entries(properties).map(([name, config]) => [
+                name,
+                valueForFormField(name, config, form),
+              ]),
+            )
+            // Call the action with current form values and form reference
+            action.handler(currentValues, form, editor)
+          })
+
+          buttonContainer.append(actionButton)
+        }
+      }
+
+      // Add primary action buttons
+      buttonContainer.append(submit, cancel)
+      formElements.push(buttonContainer)
 
       const div = crel("div", {}, [
         crel("dialog", { className: "prose-editor-dialog" }, [

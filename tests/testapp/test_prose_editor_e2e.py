@@ -408,8 +408,8 @@ def test_configurable_prose_editor_admin(page, live_server):
 
 @pytest.mark.django_db
 @pytest.mark.e2e
-def test_html_extension_edit_and_prettify(page, live_server):
-    """Test the HTML extension with edit functionality and prettification."""
+def test_html_extension_edit_and_prettify_button(page, live_server):
+    """Test the HTML extension with edit functionality and on-demand prettification button."""
     # Create superuser for admin access
     User.objects.create_superuser("admin", "admin@example.com", "password")
 
@@ -450,9 +450,32 @@ def test_html_extension_edit_and_prettify(page, live_server):
     initial_html = html_textarea.input_value()
     assert "Initial content for HTML test" in initial_html
 
-    # Clear and enter new HTML with nested structure that should be prettified
+    # Clear and enter new HTML with nested structure (not prettified yet)
     html_content = "<div><h1>Test Header</h1><p>Paragraph content</p><pre>    Preformatted text\n    with    whitespace\n        and indentation\n        that should be preserved</pre><div><ul><li>List item 1</li><li>List item 2</li></ul></div></div>"
     html_textarea.fill(html_content)
+
+    # Test the Prettify button - it should be visible in the dialog
+    prettify_button = dialog.locator("button:has-text('Prettify')")
+    expect(prettify_button).to_be_visible()
+
+    # Click the Prettify button to format the HTML
+    prettify_button.click()
+
+    # Verify that the HTML is now prettified in the textarea
+    prettified_content = html_textarea.input_value()
+    print("\n==== PRETTIFIED CONTENT AFTER BUTTON CLICK ====")
+    print(prettified_content)
+    print("==== END PRETTIFIED CONTENT ====\n")
+
+    # Verify prettification worked: should have proper formatting
+    assert "<h1>Test Header</h1>" in prettified_content
+    assert "  <li>" in prettified_content  # List items should be indented
+
+    # Most importantly: verify <pre> content whitespace is preserved
+    assert (
+        "    Preformatted text\n    with    whitespace\n        and indentation\n        that should be preserved"
+        in prettified_content
+    )
 
     # Submit the dialog
     dialog.locator("button[type='submit']").click()
@@ -503,33 +526,53 @@ def test_html_extension_edit_and_prettify(page, live_server):
     editor_loaded = page.locator(".prose-editor > .ProseMirror")
     expect(editor_loaded).to_be_visible()
 
-    # Click the HTML edit button again
+    # Click the HTML edit button again to test that HTML is not automatically prettified
     html_button_edit = page.locator(".prose-menubar__button[title='edit HTML']")
     html_button_edit.click()
 
-    # Check that the dialog shows the prettified HTML
+    # Check that the dialog shows the current HTML (not automatically prettified)
     dialog_edit = page.locator(".prose-editor-dialog")
     expect(dialog_edit).to_be_visible()
 
     html_textarea_edit = dialog_edit.locator("textarea[name='html']")
-    prettified_html = html_textarea_edit.input_value()
+    current_html = html_textarea_edit.input_value()
 
-    print("\n==== PRETTIFIED HTML IN DIALOG ====")
-    print(prettified_html)
+    print("\n==== CURRENT HTML IN DIALOG (SHOULD NOT BE AUTO-PRETTIFIED) ====")
+    print(current_html)
+    print("==== END CURRENT HTML ====\n")
+
+    # Verify the HTML is NOT automatically prettified when dialog opens
+    # The saved HTML should be compact/unprettified initially
+    assert "<h1>Test Header</h1>" in current_html
+    assert "<pre>" in current_html
+
+    # Check that Prettify button is available
+    prettify_button_edit = dialog_edit.locator("button:has-text('Prettify')")
+    expect(prettify_button_edit).to_be_visible()
+
+    # Click Prettify button to format the HTML on demand
+    prettify_button_edit.click()
+
+    # Now verify the HTML becomes prettified
+    prettified_html_edit = html_textarea_edit.input_value()
+
+    print("\n==== HTML AFTER CLICKING PRETTIFY BUTTON ====")
+    print(prettified_html_edit)
     print("==== END PRETTIFIED HTML ====\n")
 
-    # Verify the HTML is prettified (properly indented and formatted)
-    assert "<h1>Test Header</h1>" in prettified_html  # Top level elements
-    assert "<pre>" in prettified_html
-    assert "  <li>" in prettified_html  # List items should be indented
+    # Verify the HTML is now prettified (properly indented and formatted)
+    assert "<h1>Test Header</h1>" in prettified_html_edit  # Top level elements
+    assert "<pre>" in prettified_html_edit
+    assert "  <li>" in prettified_html_edit  # List items should be indented
 
     # Most importantly: verify that <pre><code> content is NOT modified by prettification
     # The key test: the original complex whitespace should be preserved
-    assert "    Preformatted text" in prettified_html
-    assert "with    whitespace" in prettified_html
-    assert "and indentation" in prettified_html
-    assert "that should be preserved" in prettified_html
+    assert "    Preformatted text" in prettified_html_edit
+    assert "with    whitespace" in prettified_html_edit
+    assert "and indentation" in prettified_html_edit
+    assert "that should be preserved" in prettified_html_edit
 
-    # Close dialog without changes
-    dialog_edit.locator("button[type='button']").click()
+    # Close dialog without changes - click Cancel button specifically
+    cancel_button = dialog_edit.locator("button:has-text('Cancel')")
+    cancel_button.click()
     expect(dialog_edit).not_to_be_visible()

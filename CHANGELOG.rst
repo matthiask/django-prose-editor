@@ -34,7 +34,8 @@ Next version
   CSS to actually display the placeholder yourself, see the `Placeholder docs
   <https://tiptap.dev/docs/editor/extensions/functionality/placeholder>`__.
 - Modified the ``HTML`` extension to preserve whitespace inside ``pre``
-  elements during prettification.
+  elements during prettification. Also, changed the extension to only run
+  prettification on demand.
 
 
 0.16 (2025-07-11)

@@ -12,6 +12,19 @@ const htmlDialog = updateAttrsDialog(
   },
   {
     title: gettext("Edit HTML"),
+    actions: [
+      {
+        text: gettext("Prettify"),
+        handler: (_currentValues, form) => {
+          const htmlTextarea = form.querySelector("textarea")
+          if (htmlTextarea) {
+            const prettifiedHTML = prettifyHTML(htmlTextarea.value)
+            htmlTextarea.value = prettifiedHTML
+            htmlTextarea.dispatchEvent(new Event("input"))
+          }
+        },
+      },
+    ],
   },
 )
 
@@ -132,10 +145,10 @@ export const HTML = Extension.create({
       editHTML:
         () =>
         ({ editor }) => {
-          // Apply prettification to the HTML before showing dialog
-          const prettifiedHTML = prettifyHTML(editor.getHTML())
+          // Show current HTML without automatic prettification
+          const currentHTML = editor.getHTML()
 
-          htmlDialog(editor, { html: prettifiedHTML }).then((attrs) => {
+          htmlDialog(editor, { html: currentHTML }).then((attrs) => {
             if (attrs) {
               editor.chain().focus().setContent(attrs.html, true).run()
             }
