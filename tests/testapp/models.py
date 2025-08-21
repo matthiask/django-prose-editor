@@ -55,6 +55,11 @@ class ConfigurableProseEditorModel(models.Model):
                 "Table": True,  # This should automatically include TableRow, TableHeader, TableCell
                 "Heading": {"levels": [1, 2, 3]},  # Limit to h1, h2, h3
                 "BlueBold": True,
+                "HTML": True,
+                "CodeBlock": True,
+                "BulletList": True,
+                "OrderedList": True,
+                "ListItem": True,
             }
         },
         sanitize=True,

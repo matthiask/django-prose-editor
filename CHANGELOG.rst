@@ -33,6 +33,8 @@ Next version
 - Exported Tiptap's ``Placeholder`` extension. Note that you need to add the
   CSS to actually display the placeholder yourself, see the `Placeholder docs
   <https://tiptap.dev/docs/editor/extensions/functionality/placeholder>`__.
+- Modified the ``HTML`` extension to preserve whitespace inside ``pre``
+  elements during prettification.
 
 
 0.16 (2025-07-11)

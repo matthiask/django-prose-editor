@@ -404,3 +404,132 @@ def test_configurable_prose_editor_admin(page, live_server):
     # Checking strong elements exist rather than specific class
     assert "Keyboard shortcut test" in editor_html
     assert "Input rule test" in editor_html
+
+
+@pytest.mark.django_db
+@pytest.mark.e2e
+def test_html_extension_edit_and_prettify(page, live_server):
+    """Test the HTML extension with edit functionality and prettification."""
+    # Create superuser for admin access
+    User.objects.create_superuser("admin", "admin@example.com", "password")
+
+    # Log in to the admin
+    page.goto(f"{live_server.url}/admin/login/")
+    page.fill("#id_username", "admin")
+    page.fill("#id_password", "password")
+    page.click("input[type=submit]")
+
+    # Go to the add page for ConfigurableProseEditorModel (which has HTML and CodeBlock extensions enabled)
+    page.goto(f"{live_server.url}/admin/testapp/configurableproseeditormodel/add/")
+
+    # Check that the prose editor is loaded
+    editor_container = page.locator(".prose-editor")
+    expect(editor_container).to_be_visible()
+
+    # Add some initial content to the editor
+    editor = page.locator(".prose-editor > .ProseMirror")
+    editor.click()
+    editor.type("Initial content for HTML test")
+
+    # Look for the HTML edit button in the toolbar (material icon "code" with title "edit HTML")
+    html_button = page.locator(".prose-menubar__button[title='edit HTML']")
+    expect(html_button).to_be_visible()
+
+    # Click the HTML edit button to open the dialog
+    html_button.click()
+
+    # Check that the HTML dialog appears
+    dialog = page.locator(".prose-editor-dialog")
+    expect(dialog).to_be_visible()
+
+    # Check that the textarea contains the current content
+    html_textarea = dialog.locator("textarea[name='html']")
+    expect(html_textarea).to_be_visible()
+
+    # Get the initial HTML content
+    initial_html = html_textarea.input_value()
+    assert "Initial content for HTML test" in initial_html
+
+    # Clear and enter new HTML with nested structure that should be prettified
+    html_content = "<div><h1>Test Header</h1><p>Paragraph content</p><pre>    Preformatted text\n    with    whitespace\n        and indentation\n        that should be preserved</pre><div><ul><li>List item 1</li><li>List item 2</li></ul></div></div>"
+    html_textarea.fill(html_content)
+
+    # Submit the dialog
+    dialog.locator("button[type='submit']").click()
+
+    # Wait for dialog to close
+    expect(dialog).not_to_be_visible()
+
+    # Save the form
+    page.click("input[name='_save']")
+
+    # Check that the model was created
+    model = ConfigurableProseEditorModel.objects.first()
+    assert model is not None
+
+    saved_html = model.description
+    print("\n==== SAVED HTML FROM HTML EXTENSION ====")
+    print(saved_html)
+    print("==== END SAVED HTML ====\n")
+
+    # Verify that the HTML contains all the expected elements
+    assert "<h1>Test Header</h1>" in saved_html
+    assert "<p>Paragraph content</p>" in saved_html
+    assert "<pre>" in saved_html
+    assert "Preformatted text" in saved_html
+    assert "<ul>" in saved_html
+    assert "<li><p>List item 1</p></li>" in saved_html
+    assert "<li><p>List item 2</p></li>" in saved_html
+
+    # Verify that the <pre><code> content preserves whitespace (CodeBlock extension uses <pre><code>)
+    # The whitespace and indentation inside should be preserved exactly
+    assert (
+        "    Preformatted text\n    with    whitespace\n        and indentation\n        that should be preserved"
+        in saved_html
+    )
+
+    # Verify that other elements are prettified (have proper formatting)
+    # The HTML should be nicely formatted for other elements but not inside <pre>
+    lines = saved_html.split("\n")
+    # Should have multiple lines due to prettification
+    assert len(lines) > 1
+
+    # Go to the edit page to test that HTML can be edited again
+    page.goto(
+        f"{live_server.url}/admin/testapp/configurableproseeditormodel/{model.id}/change/"
+    )
+
+    # Verify the editor loads with the saved content
+    editor_loaded = page.locator(".prose-editor > .ProseMirror")
+    expect(editor_loaded).to_be_visible()
+
+    # Click the HTML edit button again
+    html_button_edit = page.locator(".prose-menubar__button[title='edit HTML']")
+    html_button_edit.click()
+
+    # Check that the dialog shows the prettified HTML
+    dialog_edit = page.locator(".prose-editor-dialog")
+    expect(dialog_edit).to_be_visible()
+
+    html_textarea_edit = dialog_edit.locator("textarea[name='html']")
+    prettified_html = html_textarea_edit.input_value()
+
+    print("\n==== PRETTIFIED HTML IN DIALOG ====")
+    print(prettified_html)
+    print("==== END PRETTIFIED HTML ====\n")
+
+    # Verify the HTML is prettified (properly indented and formatted)
+    assert "<h1>Test Header</h1>" in prettified_html  # Top level elements
+    assert "<pre>" in prettified_html
+    assert "  <li>" in prettified_html  # List items should be indented
+
+    # Most importantly: verify that <pre><code> content is NOT modified by prettification
+    # The key test: the original complex whitespace should be preserved
+    assert "    Preformatted text" in prettified_html
+    assert "with    whitespace" in prettified_html
+    assert "and indentation" in prettified_html
+    assert "that should be preserved" in prettified_html
+
+    # Close dialog without changes
+    dialog_edit.locator("button[type='button']").click()
+    expect(dialog_edit).not_to_be_visible()

@@ -25,6 +25,15 @@ const areArraysEqual = (arr1, arr2) =>
 const prettifyHTML = (html) => {
   if (!html) return html
 
+  // Extract <pre> tags and their content to preserve whitespace
+  const preBlocks = []
+  const preRegex = /<pre(?:\s[^>]*)?>[\s\S]*?<\/pre>/gi
+  let formatted = html.replace(preRegex, (match) => {
+    const placeholder = `__PRE_BLOCK_${preBlocks.length}__`
+    preBlocks.push(match)
+    return placeholder
+  })
+
   // List of block elements that should have newlines
   const blockElements = [
     "div",
@@ -58,8 +67,6 @@ const prettifyHTML = (html) => {
     "fieldset",
   ]
 
-  let formatted = html
-
   // Create regex patterns for opening and closing tags (only need to compile once)
   const closingRE = new RegExp(`</(${blockElements.join("|")})>`, "gi")
   const openingRE = new RegExp(
@@ -78,6 +85,11 @@ const prettifyHTML = (html) => {
   // Process each line for indentation
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim()
+
+    // Skip indentation for lines containing pre block placeholders
+    if (line.includes("__PRE_BLOCK_")) {
+      continue
+    }
 
     const closing = [...line.matchAll(closingRE)]
     const opening = [...line.matchAll(openingRE)]
@@ -103,7 +115,13 @@ const prettifyHTML = (html) => {
     }
   }
 
-  return lines.join("\n")
+  // Restore <pre> blocks with their original whitespace
+  let result = lines.join("\n")
+  preBlocks.forEach((preBlock, index) => {
+    result = result.replace(`__PRE_BLOCK_${index}__`, preBlock)
+  })
+
+  return result
 }
 
 export const HTML = Extension.create({
