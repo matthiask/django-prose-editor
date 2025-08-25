@@ -4,6 +4,10 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+
+0.17 (2025-08-25)
+~~~~~~~~~~~~~~~~~
+
 - Updated Tiptap to 3.0.7. Also updated all ProseMirror packages and added
   explicit ProseMirror dependencies to package.json.
 - Changed the ``.prose-editor-fullscreen`` class to
