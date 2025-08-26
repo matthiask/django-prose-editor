@@ -100,17 +100,19 @@ const createMenuObject = (cssClass, _definedItems, buttons) => {
         picker,
       ])
 
-      // Function to update picker content based on visibility
-      const updatePickerContent = () => {
-        pickerContent.innerHTML = ""
-        const visibleItems = items.filter(
-          (item) => !item.hidden || !item.hidden(editor),
-        )
-        pickerContent.append(...visibleItems.map((f) => f.option))
+      // Add all items to the picker content initially
+      pickerContent.append(...items.map((item) => item.option))
+
+      // Function to update item visibility based on hidden state
+      const updateItemVisibility = () => {
+        items.forEach((item) => {
+          const isHidden = item.hidden?.(editor)
+          item.option.classList.toggle("hidden", isHidden)
+        })
       }
 
-      // Initial population
-      updatePickerContent()
+      // Initial visibility update
+      updateItemVisibility()
 
       picker.popover = "auto"
       buttonWrapper.popoverTargetElement = picker
@@ -127,11 +129,13 @@ const createMenuObject = (cssClass, _definedItems, buttons) => {
       })
 
       picker.addEventListener("click", (e) => {
-        const visibleItems = items.filter(
-          (item) => !item.hidden || !item.hidden(editor),
-        )
-        for (const { option, command, enabled = () => true } of visibleItems) {
+        for (const { option, command, enabled = () => true, hidden } of items) {
           if (option.contains(e.target)) {
+            // Skip hidden items
+            if (hidden?.(editor)) {
+              return
+            }
+
             editor.view.focus()
             picker.hidePopover()
             if (enabled(editor)) {
@@ -146,13 +150,15 @@ const createMenuObject = (cssClass, _definedItems, buttons) => {
       const unknownButton = buttons.material("question_mark")
 
       editor.on("transaction", () => {
-        // Update picker content to show/hide items
-        updatePickerContent()
+        // Update item visibility
+        updateItemVisibility()
 
-        const visibleItems = items.filter(
-          (item) => !item.hidden || !item.hidden(editor),
-        )
-        for (const { active, button, name } of visibleItems) {
+        for (const { active, button, name, hidden } of items) {
+          // Skip hidden items when determining active state
+          if (hidden?.(editor)) {
+            continue
+          }
+
           if (active(editor)) {
             if (activeName !== name) {
               activeName = name

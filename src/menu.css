@@ -161,4 +161,8 @@
   &:hover {
     background: var(--_a) !important;
   }
+
+  &.hidden {
+    display: none !important;
+  }
 }
