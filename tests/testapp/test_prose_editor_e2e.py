@@ -1,5 +1,6 @@
 import json
 import os
+import re
 
 import pytest
 from django.contrib.auth.models import User
@@ -576,3 +577,55 @@ def test_html_extension_edit_and_prettify_button(page, live_server):
     cancel_button = dialog_edit.locator("button:has-text('Cancel')")
     cancel_button.click()
     expect(dialog_edit).not_to_be_visible()
+
+
+@pytest.mark.django_db
+@pytest.mark.e2e
+def test_nodeclass(live_server, page):
+    User.objects.create_superuser("admin", "admin@example.com", "password")
+
+    page.goto(f"{live_server.url}/admin/login/")
+
+    # Fill in the login form
+    page.fill("#id_username", "admin")
+    page.fill("#id_password", "password")
+
+    # Submit the form
+    page.click("input[type=submit]")
+
+    page.goto(f"{live_server.url}/admin/testapp/configurableproseeditormodel/add/")
+
+    # Check that the prose editor is loaded
+    editor_container = page.locator(".prose-editor")
+    expect(editor_container).to_be_visible()
+
+    page.get_by_role("paragraph").click()
+    page.get_by_role("textbox").fill("Blubbering Hello World")
+    page.locator("div").filter(has_text=re.compile(r"^default$")).click()
+    page.locator("div").filter(has_text=re.compile(r"^Block style$")).click()
+    page.get_by_text("paragraph: highlight").click()
+
+    page.click("input[name='_save']")
+
+    # Check that we've been redirected to the changelist page
+    expect(page).to_have_url(
+        f"{live_server.url}/admin/testapp/configurableproseeditormodel/"
+    )
+
+    # Check that the model was created
+    model = ConfigurableProseEditorModel.objects.first()
+    assert model is not None
+    assert model.description == '<p class="highlight">Blubbering Hello World</p>'
+
+
+"""
+def test_codegen_helper(live_server):
+    print(f"Live server URL: {live_server.url}")
+
+    User.objects.create_superuser("admin", "admin@example.com", "password")
+
+    import subprocess
+    subprocess.Popen(["playwright", "codegen", f"{live_server.url}/admin/"])
+
+    input("Press Enter when done with codegen...")
+"""

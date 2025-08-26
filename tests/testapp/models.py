@@ -60,6 +60,8 @@ class ConfigurableProseEditorModel(models.Model):
                 "BulletList": True,
                 "OrderedList": True,
                 "ListItem": True,
+                "TextClass": {"cssClasses": ["highlight"]},
+                "NodeClass": {"cssClasses": {"paragraph": ["highlight"]}},
             }
         },
         sanitize=True,
