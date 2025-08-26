@@ -199,39 +199,7 @@ export const createMenuFromGroups = (groups) => {
       const items = menu.items(group)
       if (items.length >= minItems) {
         if (type === "dropdown") {
-          const dropdown = menu.dropdown({ editor, buttons }, items)
-
-          // Special handling for nodeClass dropdowns
-          if (group.startsWith("nodeClass:")) {
-            const nodeType = group.split(":")[1]
-
-            // Add visibility control
-            const checkVisibility = () => {
-              const { selection } = editor.state
-              const { $from } = selection
-
-              let depth = $from.depth
-              let isApplicable = false
-              while (depth > 0) {
-                const node = $from.node(depth)
-                if (node.type.name === nodeType) {
-                  isApplicable = true
-                  break
-                }
-                depth--
-              }
-
-              dropdown.style.display = isApplicable ? "" : "none"
-            }
-
-            // Initial check
-            checkVisibility()
-
-            // Update on editor changes
-            editor.on("transaction", checkVisibility)
-          }
-
-          menuStructure.push(dropdown)
+          menuStructure.push(menu.dropdown({ editor, buttons }, items))
         } else {
           menuStructure.push(menu.buttonGroup({ editor, buttons }, items))
         }
@@ -254,13 +222,7 @@ export const Menu = Extension.create({
         { group: "lists" },
         { group: "nodes -blockType -lists" },
         { group: "marks" },
-        { group: "nodeClass:paragraph", type: "dropdown" },
-        { group: "nodeClass:table", type: "dropdown" },
-        { group: "nodeClass:tableCell", type: "dropdown" },
-        { group: "nodeClass:heading", type: "dropdown" },
-        { group: "nodeClass:listItem", type: "dropdown" },
-        { group: "nodeClass:blockquote", type: "dropdown" },
-        { group: "nodeClass:codeBlock", type: "dropdown" },
+        { group: "nodeClass", type: "dropdown" },
         { group: "textClass", type: "dropdown" },
         { group: "link" },
         { group: "textAlign" },

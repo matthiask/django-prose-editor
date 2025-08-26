@@ -124,48 +124,41 @@ export const NodeClass = Extension.create({
       return applicableNodes
     }
 
+    // Add a global "Reset classes" option that clears all node classes
+    menu.defineItem({
+      name: `${this.name}:global:reset`,
+      groups: this.name,
+      button: buttons.text("Block style"),
+      option: crel("p", {
+        textContent: "Reset classes",
+      }),
+      active(_editor) {
+        // Always active so this is always shown as the dropdown button
+        return true
+      },
+      hidden(_editor) {
+        // Never hidden so always available
+        return false
+      },
+      command(editor) {
+        // Remove classes from all applicable ancestor nodes
+        const applicableNodes = getApplicableNodeTypes(editor)
+        editor
+          .chain()
+          .focus()
+          .command(({ tr }) => {
+            for (const { pos } of applicableNodes) {
+              tr.setNodeAttribute(pos, "class", null)
+            }
+            return true
+          })
+          .run()
+      },
+    })
+
     // Create separate menu items for each node type and its classes
     for (const [nodeType, classes] of Object.entries(this.options.cssClasses)) {
       if (!classes || classes.length === 0) continue
-
-      // Add "Default" option for this node type
-      menu.defineItem({
-        name: `${this.name}:${nodeType}:default`,
-        groups: `${this.name}:${nodeType}`,
-        button: buttons.text(`${nodeType}: default`),
-        option: crel("p", {
-          textContent: `${nodeType}: default`,
-        }),
-        active(editor) {
-          const applicableNodes = getApplicableNodeTypes(editor)
-          const targetNode = applicableNodes.find(
-            (n) => n.nodeType === nodeType,
-          )
-          return targetNode && !targetNode.node.attrs.class
-        },
-        command(editor) {
-          const { selection } = editor.state
-          const { $from } = selection
-
-          let depth = $from.depth
-          while (depth > 0) {
-            const node = $from.node(depth)
-            if (node.type.name === nodeType) {
-              const pos = $from.before(depth)
-              editor
-                .chain()
-                .focus()
-                .command(({ tr }) => {
-                  tr.setNodeAttribute(pos, "class", null)
-                  return true
-                })
-                .run()
-              return
-            }
-            depth--
-          }
-        },
-      })
 
       // Add class options for this node type
       for (const cls of classes) {
@@ -173,18 +166,23 @@ export const NodeClass = Extension.create({
 
         menu.defineItem({
           name: `${this.name}:${nodeType}:${className}`,
-          groups: `${this.name}:${nodeType}`,
+          groups: this.name,
           button: buttons.text(`${nodeType}: ${title}`),
           option: crel("p", {
             className: className,
             textContent: `${nodeType}: ${title}`,
           }),
           active(editor) {
+            // Active when this specific node type has this class
             const applicableNodes = getApplicableNodeTypes(editor)
             const targetNode = applicableNodes.find(
               (n) => n.nodeType === nodeType,
             )
             return targetNode && targetNode.node.attrs.class === className
+          },
+          hidden(editor) {
+            const applicableNodes = getApplicableNodeTypes(editor)
+            return !applicableNodes.some((n) => n.nodeType === nodeType)
           },
           command(editor) {
             const { selection } = editor.state
