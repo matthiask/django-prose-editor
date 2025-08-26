@@ -152,6 +152,41 @@ def process_color_highlight(config, shared_config):
     add_tags_and_attributes(shared_config, tags, attributes)
 
 
+def process_node_class(config, shared_config):
+    """Process NodeClass extension configuration."""
+    if not isinstance(config, dict) or "cssClasses" not in config:
+        return
+
+    css_classes = config["cssClasses"]
+    if not isinstance(css_classes, dict):
+        return
+
+    # Map of node types to their HTML tags that need class attributes
+    node_type_tags = {
+        "paragraph": ["p"],
+        "heading": ["h1", "h2", "h3", "h4", "h5", "h6"],
+        "table": ["table"],
+        "tableRow": ["tr"],
+        "tableCell": ["td", "th"],
+        "tableHeader": ["th"],
+        "listItem": ["li"],
+        "blockquote": ["blockquote"],
+        "codeBlock": ["pre"],
+    }
+
+    # Collect all tags that need class attributes
+    tags_needing_class = set()
+
+    for node_type, classes in css_classes.items():
+        if node_type in node_type_tags and classes:
+            tags_needing_class.update(node_type_tags[node_type])
+
+    # Add class attribute to all relevant tags
+    if tags_needing_class:
+        attributes = {tag: ["class"] for tag in tags_needing_class}
+        add_tags_and_attributes(shared_config, [], attributes)
+
+
 # Default extension mapping with processors as the single source of truth
 EXTENSION_MAPPING = {
     # Core formatting
@@ -204,6 +239,7 @@ EXTENSION_MAPPING = {
     "Gapcursor": html_tags([]),
     "Menu": html_tags([]),
     "NoSpellCheck": html_tags([]),
+    "NodeClass": process_node_class,
     "TextClass": html_tags(["span"], {"span": ["class"]}),
     "Placeholder": html_tags([]),
 }
