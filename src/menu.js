@@ -108,7 +108,7 @@ const createMenuObject = (cssClass, _definedItems, buttons) => {
       // Function to update item visibility based on hidden state
       const updateItemVisibility = () => {
         items.forEach((item) => {
-          const isHidden = item.hidden?.(editor)
+          const isHidden = item.hidden(editor)
           item.option.classList.toggle("hidden", isHidden)
         })
       }
@@ -131,10 +131,10 @@ const createMenuObject = (cssClass, _definedItems, buttons) => {
       })
 
       picker.addEventListener("click", (e) => {
-        for (const { option, command, enabled = () => true, hidden } of items) {
+        for (const { option, command, enabled, hidden } of items) {
           if (option.contains(e.target)) {
             // Skip hidden items
-            if (hidden?.(editor)) {
+            if (hidden(editor)) {
               return
             }
 
@@ -157,7 +157,7 @@ const createMenuObject = (cssClass, _definedItems, buttons) => {
 
         for (const { active, button, name, hidden } of items) {
           // Skip hidden items when determining active state
-          if (hidden?.(editor)) {
+          if (hidden(editor)) {
             continue
           }
 
