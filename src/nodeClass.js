@@ -2,11 +2,6 @@ import { Extension } from "@tiptap/core"
 import { crel } from "./utils.js"
 
 const cssClass = (c) => (typeof c === "string" ? { className: c, title: c } : c)
-const isValidClass = (cssClasses, nodeType, className) => {
-  const nodeClasses = cssClasses[nodeType]
-  if (!nodeClasses) return false
-  return nodeClasses.find((c) => cssClass(c).className === className)
-}
 
 export const NodeClass = Extension.create({
   name: "nodeClass",
@@ -45,59 +40,6 @@ export const NodeClass = Extension.create({
         },
       },
     ]
-  },
-
-  addCommands() {
-    return {
-      setNodeClass:
-        (className) =>
-        ({ state, tr }) => {
-          const { selection } = state
-          const { $from } = selection
-
-          // Find the nearest block node
-          let depth = $from.depth
-          while (depth > 0) {
-            const node = $from.node(depth)
-            const nodeType = node.type.name
-
-            if (this.options.cssClasses[nodeType]) {
-              if (!isValidClass(this.options.cssClasses, nodeType, className)) {
-                return false
-              }
-
-              const pos = $from.before(depth)
-              tr.setNodeAttribute(pos, "class", className)
-              return true
-            }
-            depth--
-          }
-
-          return false
-        },
-      unsetNodeClass:
-        () =>
-        ({ state, tr }) => {
-          const { selection } = state
-          const { $from } = selection
-
-          // Find the nearest block node with a class
-          let depth = $from.depth
-          while (depth > 0) {
-            const node = $from.node(depth)
-            const nodeType = node.type.name
-
-            if (this.options.cssClasses[nodeType] && node.attrs.class) {
-              const pos = $from.before(depth)
-              tr.setNodeAttribute(pos, "class", null)
-              return true
-            }
-            depth--
-          }
-
-          return false
-        },
-    }
   },
 
   addMenuItems({ buttons, menu }) {
