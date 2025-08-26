@@ -91,6 +91,8 @@ const createMenuObject = (cssClass, _definedItems, buttons) => {
         className: `${cssClass}__selected`,
       })
 
+      // We put the contents into a .ProseMirror element so that we can easily
+      // reuse editor styles
       const pickerContent = crel("div", { className: "ProseMirror" })
       const picker = crel("div", { className: `${cssClass}__picker` }, [
         pickerContent,
