@@ -55,6 +55,22 @@ To use the NodeClass extension, configure it with CSS classes organized by node 
                                 "section-title",
                                 {"className": "accent", "title": "Accent Heading"}
                             ]
+                        },
+                        "bulletList": {
+                            "title": "List",
+                            "cssClasses": [
+                                "checklist",
+                                "no-bullets",
+                                {"className": "spaced", "title": "Spaced List"}
+                            ]
+                        },
+                        "orderedList": {
+                            "title": "Numbered List",
+                            "cssClasses": [
+                                "alpha",
+                                "roman",
+                                {"className": "outline", "title": "Outline Style"}
+                            ]
                         }
                     }
                 }
@@ -75,7 +91,9 @@ For simpler use cases, you can still use the array format without custom titles:
                     "cssClasses": {
                         "paragraph": ["highlight", "callout", "centered"],
                         "table": ["bordered", "striped", "compact"],
-                        "tableCell": ["centered", "right-aligned", "numeric"]
+                        "tableCell": ["centered", "right-aligned", "numeric"],
+                        "bulletList": ["checklist", "no-bullets", "spaced"],
+                        "orderedList": ["alpha", "roman", "outline"]
                     }
                 }
             }
@@ -125,6 +143,8 @@ The following node types are supported for CSS class application:
 - **tableRow**: Table rows (``<tr>``)
 - **heading**: Heading elements (``<h1>``-``<h6>``)
 - **listItem**: List items (``<li>``)
+- **bulletList**: Unordered lists (``<ul>``)
+- **orderedList**: Ordered lists (``<ol>``)
 - **blockquote**: Blockquote elements (``<blockquote>``)
 - **codeBlock**: Code block elements (``<pre>``)
 
@@ -266,6 +286,35 @@ Define CSS rules in your stylesheet to style the configured classes:
         color: #6f42c1;
         border-left: 4px solid #6f42c1;
         padding-left: 1rem;
+    }
+
+    /* List classes */
+    .ProseMirror ul.checklist {
+        list-style: none;
+        padding-left: 1.5rem;
+    }
+
+    .ProseMirror ul.checklist li:before {
+        content: "☐ ";
+        margin-right: 0.5rem;
+    }
+
+    .ProseMirror ul.no-bullets {
+        list-style: none;
+        padding-left: 1rem;
+    }
+
+    .ProseMirror ol.alpha {
+        list-style-type: lower-alpha;
+    }
+
+    .ProseMirror ol.roman {
+        list-style-type: lower-roman;
+    }
+
+    .ProseMirror .spaced li,
+    .ProseMirror .outline li {
+        margin-bottom: 0.5rem;
     }
 
 Example Use Cases

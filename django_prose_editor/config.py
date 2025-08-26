@@ -170,6 +170,8 @@ def process_node_class(config, shared_config):
         "tableCell": ["td", "th"],
         "tableHeader": ["th"],
         "listItem": ["li"],
+        "bulletList": ["ul"],
+        "orderedList": ["ol"],
         "blockquote": ["blockquote"],
         "codeBlock": ["pre"],
     }
