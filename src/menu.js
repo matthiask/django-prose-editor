@@ -90,16 +90,27 @@ const createMenuObject = (cssClass, _definedItems, buttons) => {
       const buttonWrapper = crel("div", {
         className: `${cssClass}__selected`,
       })
-      /* We put the contents into a .ProseMirror element so that we can easily reuse editor styles */
+
+      const pickerContent = crel("div", { className: "ProseMirror" })
       const picker = crel("div", { className: `${cssClass}__picker` }, [
-        crel("div", { className: "ProseMirror" }, [
-          ...items.map((f) => f.option),
-        ]),
+        pickerContent,
       ])
       const dom = crel("span", { className: `${cssClass}__dropdown` }, [
         buttonWrapper,
         picker,
       ])
+
+      // Function to update picker content based on visibility
+      const updatePickerContent = () => {
+        pickerContent.innerHTML = ""
+        const visibleItems = items.filter(
+          (item) => !item.hidden || !item.hidden(editor),
+        )
+        pickerContent.append(...visibleItems.map((f) => f.option))
+      }
+
+      // Initial population
+      updatePickerContent()
 
       picker.popover = "auto"
       buttonWrapper.popoverTargetElement = picker
@@ -116,7 +127,10 @@ const createMenuObject = (cssClass, _definedItems, buttons) => {
       })
 
       picker.addEventListener("click", (e) => {
-        for (const { option, command, enabled = () => true } of items) {
+        const visibleItems = items.filter(
+          (item) => !item.hidden || !item.hidden(editor),
+        )
+        for (const { option, command, enabled = () => true } of visibleItems) {
           if (option.contains(e.target)) {
             editor.view.focus()
             picker.hidePopover()
@@ -132,7 +146,13 @@ const createMenuObject = (cssClass, _definedItems, buttons) => {
       const unknownButton = buttons.material("question_mark")
 
       editor.on("transaction", () => {
-        for (const { active, button, name } of items) {
+        // Update picker content to show/hide items
+        updatePickerContent()
+
+        const visibleItems = items.filter(
+          (item) => !item.hidden || !item.hidden(editor),
+        )
+        for (const { active, button, name } of visibleItems) {
           if (active(editor)) {
             if (activeName !== name) {
               activeName = name
@@ -202,6 +222,7 @@ export const Menu = Extension.create({
         { group: "lists" },
         { group: "nodes -blockType -lists" },
         { group: "marks" },
+        { group: "nodeClass", type: "dropdown" },
         { group: "textClass", type: "dropdown" },
         { group: "link" },
         { group: "textAlign" },

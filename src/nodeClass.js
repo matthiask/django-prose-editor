@@ -51,7 +51,7 @@ export const NodeClass = Extension.create({
     return {
       setNodeClass:
         (className) =>
-        ({ commands, state, tr }) => {
+        ({ state, tr }) => {
           const { selection } = state
           const { $from } = selection
 
@@ -77,7 +77,7 @@ export const NodeClass = Extension.create({
         },
       unsetNodeClass:
         () =>
-        ({ commands, state, tr }) => {
+        ({ state, tr }) => {
           const { selection } = state
           const { $from } = selection
 
@@ -100,66 +100,120 @@ export const NodeClass = Extension.create({
     }
   },
 
-  addMenuItems({ buttons, menu, editor }) {
+  addMenuItems({ buttons, menu }) {
+    // Helper function to get all applicable node types in the current selection
+    const getApplicableNodeTypes = (editor) => {
+      const { selection } = editor.state
+      const { $from } = selection
+      const applicableNodes = []
+
+      let depth = $from.depth
+      while (depth > 0) {
+        const node = $from.node(depth)
+        if (this.options.cssClasses[node.type.name]) {
+          applicableNodes.push({
+            nodeType: node.type.name,
+            node: node,
+            depth: depth,
+            pos: $from.before(depth),
+          })
+        }
+        depth--
+      }
+
+      return applicableNodes
+    }
+
     // Create menu items for each node type and its classes
     for (const [nodeType, classes] of Object.entries(this.options.cssClasses)) {
       if (!classes || classes.length === 0) continue
 
-      const menuItems = [
-        { className: "default", title: "Default" },
-        ...classes.map(cssClass),
-      ]
+      // Add "Default" option for this node type
+      menu.defineItem({
+        name: `${this.name}:${nodeType}:default`,
+        groups: this.name,
+        button: buttons.text(`${nodeType}: Default`),
+        option: crel("p", {
+          textContent: `${nodeType}: Default`,
+        }),
+        active(editor) {
+          const applicableNodes = getApplicableNodeTypes(editor)
+          const targetNode = applicableNodes.find(
+            (n) => n.nodeType === nodeType,
+          )
+          return targetNode && !targetNode.node.attrs.class
+        },
+        hidden(editor) {
+          const applicableNodes = getApplicableNodeTypes(editor)
+          return !applicableNodes.some((n) => n.nodeType === nodeType)
+        },
+        command(editor) {
+          const { selection } = editor.state
+          const { $from } = selection
 
-      for (const { className, title } of menuItems) {
+          let depth = $from.depth
+          while (depth > 0) {
+            const node = $from.node(depth)
+            if (node.type.name === nodeType) {
+              const pos = $from.before(depth)
+              editor
+                .chain()
+                .focus()
+                .command(({ tr }) => {
+                  tr.setNodeAttribute(pos, "class", null)
+                  return true
+                })
+                .run()
+              return
+            }
+            depth--
+          }
+        },
+      })
+
+      // Add class options for this node type
+      for (const cls of classes) {
+        const { className, title } = cssClass(cls)
+
         menu.defineItem({
           name: `${this.name}:${nodeType}:${className}`,
           groups: this.name,
-          button: buttons.text(title),
+          button: buttons.text(`${nodeType}: ${title}`),
           option: crel("p", {
-            className: className === "default" ? "" : className,
-            textContent: title,
+            className: className,
+            textContent: `${nodeType}: ${title}`,
           }),
           active(editor) {
-            const { selection } = editor.state
-            const { $from } = selection
-
-            // Find the nearest block node of the target type
-            let depth = $from.depth
-            while (depth > 0) {
-              const node = $from.node(depth)
-              if (node.type.name === nodeType) {
-                if (className === "default") {
-                  return !node.attrs.class
-                } else {
-                  return node.attrs.class === className
-                }
-              }
-              depth--
-            }
-
-            return false
+            const applicableNodes = getApplicableNodeTypes(editor)
+            const targetNode = applicableNodes.find(
+              (n) => n.nodeType === nodeType,
+            )
+            return targetNode && targetNode.node.attrs.class === className
           },
-          visible(editor) {
-            const { selection } = editor.state
-            const { $from } = selection
-
-            // Only show menu items relevant to the current context
-            let depth = $from.depth
-            while (depth > 0) {
-              const node = $from.node(depth)
-              if (node.type.name === nodeType) {
-                return true
-              }
-              depth--
-            }
-
-            return false
+          hidden(editor) {
+            const applicableNodes = getApplicableNodeTypes(editor)
+            return !applicableNodes.some((n) => n.nodeType === nodeType)
           },
           command(editor) {
-            if (className === "default") {
-              editor.chain().focus().unsetNodeClass().run()
-            } else {
-              editor.chain().focus().setNodeClass(className).run()
+            const { selection } = editor.state
+            const { $from } = selection
+
+            let depth = $from.depth
+            while (depth > 0) {
+              const node = $from.node(depth)
+              if (node.type.name === nodeType) {
+                const pos = $from.before(depth)
+                editor
+                  .chain()
+                  .focus()
+                  .command(({ tr }) => {
+                    tr.setNodeAttribute(pos, "class", className)
+                    return true
+                  })
+                  .run()
+                return
+              }
+              depth--
             }
           },
         })
