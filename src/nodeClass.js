@@ -124,17 +124,17 @@ export const NodeClass = Extension.create({
       return applicableNodes
     }
 
-    // Create menu items for each node type and its classes
+    // Create separate menu items for each node type and its classes
     for (const [nodeType, classes] of Object.entries(this.options.cssClasses)) {
       if (!classes || classes.length === 0) continue
 
       // Add "Default" option for this node type
       menu.defineItem({
         name: `${this.name}:${nodeType}:default`,
-        groups: this.name,
-        button: buttons.text(`${nodeType}: Default`),
+        groups: `${this.name}:${nodeType}`,
+        button: buttons.text(`${nodeType}: default`),
         option: crel("p", {
-          textContent: `${nodeType}: Default`,
+          textContent: `${nodeType}: default`,
         }),
         active(editor) {
           const applicableNodes = getApplicableNodeTypes(editor)
@@ -142,10 +142,6 @@ export const NodeClass = Extension.create({
             (n) => n.nodeType === nodeType,
           )
           return targetNode && !targetNode.node.attrs.class
-        },
-        hidden(editor) {
-          const applicableNodes = getApplicableNodeTypes(editor)
-          return !applicableNodes.some((n) => n.nodeType === nodeType)
         },
         command(editor) {
           const { selection } = editor.state
@@ -177,7 +173,7 @@ export const NodeClass = Extension.create({
 
         menu.defineItem({
           name: `${this.name}:${nodeType}:${className}`,
-          groups: this.name,
+          groups: `${this.name}:${nodeType}`,
           button: buttons.text(`${nodeType}: ${title}`),
           option: crel("p", {
             className: className,
@@ -189,10 +185,6 @@ export const NodeClass = Extension.create({
               (n) => n.nodeType === nodeType,
             )
             return targetNode && targetNode.node.attrs.class === className
-          },
-          hidden(editor) {
-            const applicableNodes = getApplicableNodeTypes(editor)
-            return !applicableNodes.some((n) => n.nodeType === nodeType)
           },
           command(editor) {
             const { selection } = editor.state
