@@ -124,6 +124,32 @@ export const NodeClass = Extension.create({
       return applicableNodes
     }
 
+    // Helper function to get the display title for a node type
+    const getNodeTypeTitle = (nodeType) => {
+      const nodeConfig = this.options.cssClasses[nodeType]
+      if (
+        typeof nodeConfig === "object" &&
+        nodeConfig.title &&
+        !Array.isArray(nodeConfig)
+      ) {
+        return nodeConfig.title
+      }
+      return nodeType
+    }
+
+    // Helper function to get the classes for a node type
+    const getNodeTypeClasses = (nodeType) => {
+      const nodeConfig = this.options.cssClasses[nodeType]
+      if (
+        typeof nodeConfig === "object" &&
+        nodeConfig.cssClasses &&
+        !Array.isArray(nodeConfig)
+      ) {
+        return nodeConfig.cssClasses
+      }
+      return Array.isArray(nodeConfig) ? nodeConfig : []
+    }
+
     // Add a global "Reset classes" option that clears all node classes
     menu.defineItem({
       name: `${this.name}:global:reset`,
@@ -157,20 +183,22 @@ export const NodeClass = Extension.create({
     })
 
     // Create separate menu items for each node type and its classes
-    for (const [nodeType, classes] of Object.entries(this.options.cssClasses)) {
+    for (const nodeType of Object.keys(this.options.cssClasses)) {
+      const classes = getNodeTypeClasses(nodeType)
       if (!classes || classes.length === 0) continue
 
       // Add class options for this node type
       for (const cls of classes) {
         const { className, title } = cssClass(cls)
+        const nodeTypeTitle = getNodeTypeTitle(nodeType)
 
         menu.defineItem({
           name: `${this.name}:${nodeType}:${className}`,
           groups: this.name,
-          button: buttons.text(`${nodeType}: ${title}`),
+          button: buttons.text(`${nodeTypeTitle}: ${title}`),
           option: crel("p", {
             className: className,
-            textContent: `${nodeType}: ${title}`,
+            textContent: `${nodeTypeTitle}: ${title}`,
           }),
           active(editor) {
             // Active when this specific node type has this class

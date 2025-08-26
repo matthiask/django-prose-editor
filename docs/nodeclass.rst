@@ -25,25 +25,57 @@ To use the NodeClass extension, configure it with CSS classes organized by node 
                 "Table": True,
                 "NodeClass": {
                     "cssClasses": {
-                        "paragraph": [
-                            "highlight",
-                            "callout",
-                            {"className": "centered", "title": "Centered Text"}
-                        ],
-                        "table": [
-                            "bordered",
-                            "striped",
-                            {"className": "compact", "title": "Compact Table"}
-                        ],
-                        "tableCell": [
-                            "centered",
-                            "right-aligned",
-                            {"className": "numeric", "title": "Numeric Cell"}
-                        ],
-                        "heading": [
-                            "section-title",
-                            {"className": "accent", "title": "Accent Heading"}
-                        ]
+                        "paragraph": {
+                            "title": "Paragraph",
+                            "cssClasses": [
+                                "highlight",
+                                "callout",
+                                {"className": "centered", "title": "Centered Text"}
+                            ]
+                        },
+                        "table": {
+                            "title": "Table",
+                            "cssClasses": [
+                                "bordered",
+                                "striped",
+                                {"className": "compact", "title": "Compact Table"}
+                            ]
+                        },
+                        "tableCell": {
+                            "title": "Cell",
+                            "cssClasses": [
+                                "centered",
+                                "right-aligned",
+                                {"className": "numeric", "title": "Numeric Cell"}
+                            ]
+                        },
+                        "heading": {
+                            "title": "Heading",
+                            "cssClasses": [
+                                "section-title",
+                                {"className": "accent", "title": "Accent Heading"}
+                            ]
+                        }
+                    }
+                }
+            }
+        )
+
+Alternative Simple Configuration
+--------------------------------
+
+For simpler use cases, you can still use the array format without custom titles:
+
+.. code-block:: python
+
+    class Article(models.Model):
+        content = ProseEditorField(
+            extensions={
+                "NodeClass": {
+                    "cssClasses": {
+                        "paragraph": ["highlight", "callout", "centered"],
+                        "table": ["bordered", "striped", "compact"],
+                        "tableCell": ["centered", "right-aligned", "numeric"]
                     }
                 }
             }
