@@ -11,8 +11,8 @@ from testapp.models import ConfigurableProseEditorModel
 class ConfigurableFormTestCase(TestCase):
     """Tests for the configurable field form rendering."""
 
-    def test_dependencies_expanded(self):
-        """Test that all dependencies are properly expanded in raw_extensions."""
+    def test_extensions_explicit_configuration(self):
+        """Test that extensions are configured as explicitly specified."""
 
         class TestForm(ModelForm):
             class Meta:
@@ -27,7 +27,7 @@ class ConfigurableFormTestCase(TestCase):
             context["widget"]["attrs"]["data-django-prose-editor-configurable"]
         )
 
-        # The original extensions only had Bold, Italic, and Table
+        # The original extensions should be there
         assert "Bold" in config["extensions"]
         assert "Italic" in config["extensions"]
         assert "Table" in config["extensions"]
@@ -35,7 +35,10 @@ class ConfigurableFormTestCase(TestCase):
         # The custom BlueBold extension should also be included
         assert "BlueBold" in config["extensions"]
 
-        # The following should be included as dependencies
+        # ListItem should be there because it's explicitly configured
+        assert "ListItem" in config["extensions"]
+
+        # Table dependencies are now explicitly configured in the model
         assert "TableRow" in config["extensions"]
         assert "TableHeader" in config["extensions"]
         assert "TableCell" in config["extensions"]
@@ -77,9 +80,7 @@ class ConfigurableFormTestCase(TestCase):
             "NoSpellCheck": True,
             # Enable history by default unless explicitly disabled
             "History": True,
-            "TableRow": True,
-            "TableCell": True,
-            "TableHeader": True,
+            # No automatic dependencies are added
         }
 
     def test_sanitization_works(self):

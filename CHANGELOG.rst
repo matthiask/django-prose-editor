@@ -4,6 +4,14 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+- **Backwards incompatible**: Removed the automatic dependency management of
+  some extensions. For example, adding ``BulletList`` would automatically add
+  the ``ListItem`` extension. This didn't work nicely when replacing the
+  ``ListItem`` extension with a hypothetical ``ExtendedListItem`` extension
+  because then the configuration would contain several list item nodes. The
+  config resolver tries detecting invalid configurations and warns if it
+  suspects missing extensions, but that's not completely watertight. The
+  warnings will be removed after a few releases.
 - Added a ``NodeClass`` extension for applying CSS classes to nodes.
 
 

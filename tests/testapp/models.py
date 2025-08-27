@@ -29,12 +29,16 @@ class TableProseEditorModel(models.Model):
                 "HorizontalRule",
                 "Italic",
                 "Link",
+                "ListItem",
                 "OrderedList",
                 "Strike",
                 "Subscript",
                 "Superscript",
                 "Underline",
                 "Table",
+                "TableRow",
+                "TableHeader",
+                "TableCell",
             ],
             "history": True,
             "html": True,
@@ -52,7 +56,10 @@ class ConfigurableProseEditorModel(models.Model):
             "extensions": {
                 "Bold": True,
                 "Italic": True,
-                "Table": True,  # This should automatically include TableRow, TableHeader, TableCell
+                "Table": True,
+                "TableRow": True,
+                "TableHeader": True,
+                "TableCell": True,
                 "Heading": {"levels": [1, 2, 3]},  # Limit to h1, h2, h3
                 "BlueBold": True,
                 "HTML": True,

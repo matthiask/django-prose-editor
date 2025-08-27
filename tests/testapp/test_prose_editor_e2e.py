@@ -599,7 +599,6 @@ def test_nodeclass_textclass(live_server, page):
     editor_container = page.locator(".prose-editor")
     expect(editor_container).to_be_visible()
 
-    page.get_by_role("paragraph").click()
     page.get_by_role("textbox").fill("Blubbering Hello World")
     page.locator("div").filter(has_text=re.compile(r"^default$")).click()
     page.locator("div").filter(has_text=re.compile(r"^Block style$")).click()

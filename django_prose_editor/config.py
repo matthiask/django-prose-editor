@@ -5,6 +5,7 @@ This module provides a way to define editor extensions and generate
 corresponding sanitization rules for server-side HTML cleaning.
 """
 
+import warnings
 from typing import Any
 
 from django.conf import settings
@@ -246,8 +247,9 @@ EXTENSION_MAPPING = {
     "Placeholder": html_tags([]),
 }
 
-# Automatic dependencies (extensions that require other extensions)
-EXTENSION_DEPENDENCIES = {
+# DEPRECATED: This dictionary is no longer used for automatic dependency management
+# but kept for backwards compatibility checking
+LEGACY_EXTENSION_DEPENDENCIES = {
     "BulletList": ["ListItem"],
     "OrderedList": ["ListItem"],
     "Table": ["TableRow", "TableHeader", "TableCell"],
@@ -260,7 +262,7 @@ EXTENSION_DEPENDENCIES = {
 
 def expand_extensions(extensions: dict[str, Any]) -> dict[str, Any]:
     """
-    Expand extension configuration by applying defaults and resolving dependencies.
+    Expand extension configuration by applying defaults.
 
     Args:
         extensions: Dictionary of extension configurations
@@ -292,14 +294,50 @@ def expand_extensions(extensions: dict[str, Any]) -> dict[str, Any]:
         if config is not False
     }
 
-    # Resolve dependencies
-    for extension, deps in EXTENSION_DEPENDENCIES.items():
-        if extension in expanded:
-            for dep in deps:
-                if dep not in expanded:
-                    expanded[dep] = True
+    # Check for legacy dependency issues and warn
+    dependency_warnings = check_legacy_dependencies(extensions)
+    for warning_msg in dependency_warnings:
+        warnings.warn(
+            warning_msg,
+            UserWarning,
+            stacklevel=3,  # Point to the calling code, not this function
+        )
 
     return expanded
+
+
+def check_legacy_dependencies(extensions: dict[str, Any]) -> list[str]:
+    """
+    Check if the extension configuration relies on legacy automatic dependency management.
+
+    This function identifies configurations that would have worked with automatic
+    dependency resolution but may now be incomplete.
+
+    Args:
+        extensions: Dictionary of extension configurations (raw, not expanded)
+
+    Returns:
+        List of warning messages about missing dependencies
+    """
+    warnings = []
+
+    # Filter enabled extensions (don't call expand_extensions to avoid recursion)
+    enabled_extensions = {
+        extension: config
+        for extension, config in extensions.items()
+        if config is not False
+    }
+
+    for extension, deps in LEGACY_EXTENSION_DEPENDENCIES.items():
+        if extension in enabled_extensions:
+            for dep in deps:
+                if dep not in enabled_extensions:
+                    warnings.append(
+                        f"Extension '{extension}' typically requires '{dep}' to function properly. "
+                        f"Consider adding '{dep}': True to your configuration."
+                    )
+
+    return warnings
 
 
 def js_from_extensions(

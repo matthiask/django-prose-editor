@@ -5,6 +5,7 @@ from js_asset import static_lazy
 
 from django_prose_editor.config import (
     allowlist_from_extensions,
+    check_legacy_dependencies,
     expand_extensions,
     html_tags,
     js_from_extensions,
@@ -132,8 +133,8 @@ class ConfigFunctionsTestCase(TestCase):
         assert isinstance(js_modules, list)
         assert js_modules == []
 
-    def test_expand_extensions_with_dependencies(self):
-        """Test that expand_extensions correctly adds dependent extensions."""
+    def test_expand_extensions_without_auto_dependencies(self):
+        """Test that expand_extensions no longer automatically adds dependent extensions."""
         extensions = {
             "Bold": True,
             "Table": True,
@@ -147,17 +148,59 @@ class ConfigFunctionsTestCase(TestCase):
         assert "Table" in expanded
         assert "Figure" in expanded
 
-        # Dependencies should be added
-        assert "TableRow" in expanded
-        assert "TableHeader" in expanded
-        assert "TableCell" in expanded
-        assert "Caption" in expanded
-        assert "Image" in expanded
+        # Dependencies should NOT be automatically added anymore
+        assert "TableRow" not in expanded
+        assert "TableHeader" not in expanded
+        assert "TableCell" not in expanded
+        assert "Caption" not in expanded
+        assert "Image" not in expanded
 
         # Core extensions should always be included
         assert "Document" in expanded
         assert "Paragraph" in expanded
-        assert "Text" in expanded
+
+    def test_check_legacy_dependencies(self):
+        """Test that check_legacy_dependencies correctly identifies missing dependencies."""
+        extensions = {
+            "Bold": True,
+            "BulletList": True,
+            "Table": True,
+        }
+
+        warnings = check_legacy_dependencies(extensions)
+
+        # Should warn about missing ListItem for BulletList
+        assert any(
+            "BulletList" in warning and "ListItem" in warning for warning in warnings
+        )
+
+        # Should warn about missing Table dependencies
+        assert any("Table" in warning and "TableRow" in warning for warning in warnings)
+        assert any(
+            "Table" in warning and "TableHeader" in warning for warning in warnings
+        )
+        assert any(
+            "Table" in warning and "TableCell" in warning for warning in warnings
+        )
+
+        # Should not warn about Bold (no dependencies)
+        assert not any("Bold" in warning for warning in warnings)
+
+    def test_check_legacy_dependencies_with_explicit_deps(self):
+        """Test that no warnings are generated when dependencies are explicitly included."""
+        extensions = {
+            "BulletList": True,
+            "ListItem": True,
+            "Table": True,
+            "TableRow": True,
+            "TableHeader": True,
+            "TableCell": True,
+        }
+
+        warnings = check_legacy_dependencies(extensions)
+
+        # Should have no warnings since all dependencies are explicitly included
+        assert len(warnings) == 0
 
     def test_disabled_extensions(self):
         """Test that disabled extensions are properly handled."""
