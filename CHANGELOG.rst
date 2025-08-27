@@ -4,6 +4,9 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+0.18 (2025-08-27)
+~~~~~~~~~~~~~~~~~
+
 - **Backwards incompatible**: Removed the automatic dependency management of
   some extensions. For example, adding ``BulletList`` would automatically add
   the ``ListItem`` extension. This didn't work nicely when replacing the
