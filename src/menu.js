@@ -60,12 +60,13 @@ const createMenuObject = (cssClass, _definedItems, buttons) => {
         hidden,
         update,
         command,
+        name,
       } of items) {
         if (button) {
           dom.append(button)
 
-          if (button.dataset.initialized) return
-          button.dataset.initialized = true
+          if (button.dataset.name) return
+          button.dataset.name = name
 
           button.addEventListener("click", (e) => {
             editor.view.focus()
@@ -90,16 +91,34 @@ const createMenuObject = (cssClass, _definedItems, buttons) => {
       const buttonWrapper = crel("div", {
         className: `${cssClass}__selected`,
       })
-      /* We put the contents into a .ProseMirror element so that we can easily reuse editor styles */
+
+      // We put the contents into a .ProseMirror element so that we can easily
+      // reuse editor styles
+      const pickerContent = crel("div", { className: "ProseMirror" })
       const picker = crel("div", { className: `${cssClass}__picker` }, [
-        crel("div", { className: "ProseMirror" }, [
-          ...items.map((f) => f.option),
-        ]),
+        pickerContent,
       ])
       const dom = crel("span", { className: `${cssClass}__dropdown` }, [
         buttonWrapper,
         picker,
       ])
+
+      // Add all items to the picker content initially
+      for (const { option, name } of items) {
+        option.dataset.name = name
+        pickerContent.append(option)
+      }
+
+      // Function to update item visibility based on hidden state
+      const updateItemVisibility = () => {
+        items.forEach((item) => {
+          const isHidden = item.hidden(editor)
+          item.option.classList.toggle("hidden", isHidden)
+        })
+      }
+
+      // Initial visibility update
+      updateItemVisibility()
 
       picker.popover = "auto"
       buttonWrapper.popoverTargetElement = picker
@@ -116,8 +135,13 @@ const createMenuObject = (cssClass, _definedItems, buttons) => {
       })
 
       picker.addEventListener("click", (e) => {
-        for (const { option, command, enabled = () => true } of items) {
+        for (const { option, command, enabled, hidden } of items) {
           if (option.contains(e.target)) {
+            // Skip hidden items
+            if (hidden(editor)) {
+              return
+            }
+
             editor.view.focus()
             picker.hidePopover()
             if (enabled(editor)) {
@@ -132,7 +156,15 @@ const createMenuObject = (cssClass, _definedItems, buttons) => {
       const unknownButton = buttons.material("question_mark")
 
       editor.on("transaction", () => {
-        for (const { active, button, name } of items) {
+        // Update item visibility
+        updateItemVisibility()
+
+        for (const { active, button, name, hidden } of items) {
+          // Skip hidden items when determining active state
+          if (hidden(editor)) {
+            continue
+          }
+
           if (active(editor)) {
             if (activeName !== name) {
               activeName = name
@@ -202,6 +234,7 @@ export const Menu = Extension.create({
         { group: "lists" },
         { group: "nodes -blockType -lists" },
         { group: "marks" },
+        { group: "nodeClass", type: "dropdown" },
         { group: "textClass", type: "dropdown" },
         { group: "link" },
         { group: "textAlign" },

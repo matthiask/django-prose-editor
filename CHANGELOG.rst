@@ -4,6 +4,8 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+- Added a ``NodeClass`` extension for applying CSS classes to nodes.
+
 
 0.17 (2025-08-25)
 ~~~~~~~~~~~~~~~~~

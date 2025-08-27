@@ -1,10 +1,10 @@
 Custom Extensions and Menu Integration
-===============================
+======================================
 
 Creating custom extensions for django-prose-editor allows you to extend the editor with new functionality and integrate it with the menu system. This guide explains how to create custom extensions and add menu items for them.
 
 Basic Extension Structure
-------------------------
+-------------------------
 
 Extensions in django-prose-editor are based on Tiptap extensions. To create a custom extension:
 
@@ -77,7 +77,7 @@ Extensions can integrate with the menu system by implementing the ``addMenuItems
    The Menu extension uses an ``items`` creator function instead of the old ``addItems`` function. This provides more flexibility for custom menu layouts. See :doc:`menu` for details on creating custom menu structures.
 
 Menu Item Structure
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 Menu items are defined using the ``defineItem`` method with the following properties:
 
@@ -308,7 +308,7 @@ The base case of a hardcoded list of tags and attributes is handled by the
     ]
 
 Best Practices
--------------
+--------------
 
 1. **Group Related Items**: Use the menu group system to organize related items together
 2. **Conditional Display**: Use the ``hidden``, ``enabled``, and ``active`` methods to control when and how menu items appear

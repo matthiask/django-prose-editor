@@ -1,5 +1,5 @@
 TextClass Extension
-==================
+===================
 
 The TextClass extension allows you to apply arbitrary CSS classes to text sections using ``<span class="...">`` tags. This provides a clean, semantic way to style content without relying on inline styles.
 

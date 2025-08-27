@@ -31,6 +31,7 @@ django-prose-editor[sanitize]``) the following should get you started:
    sanitization
    custom_extensions
    menu
+   nodeclass
    textclass
    presets
    legacy
