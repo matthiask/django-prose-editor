@@ -84,7 +84,7 @@
   dependencies:
     tslib "^2.4.0"
 
-"@jridgewell/sourcemap-codec@^1.5.0":
+"@jridgewell/sourcemap-codec@^1.5.5":
   version "1.5.5"
   resolved "https://registry.yarnpkg.com/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.5.5.tgz#6912b00d2c631c0d15ce1a7ab57cd657f2a8f8ba"
   integrity sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==
@@ -146,101 +146,101 @@
   resolved "https://registry.yarnpkg.com/@remirror/core-constants/-/core-constants-3.0.0.tgz#96fdb89d25c62e7b6a5d08caf0ce5114370e3b8f"
   integrity sha512-42aWfPrimMfDKDi4YegyS7x+/0tlzaqwPQCULLanv3DMIlu96KTJR0fM5isWX2UViOqlGnX6YFgqWepcX+XMNg==
 
-"@rsbuild/core@1.5.0-beta.4":
-  version "1.5.0-beta.4"
-  resolved "https://registry.yarnpkg.com/@rsbuild/core/-/core-1.5.0-beta.4.tgz#4e9aed87e2c059792d0994cf5bde36e79f819ce0"
-  integrity sha512-h1jqpjZunalsdxTcJCbY8DovLu6F4MQgsYdZyxDjUp0xuggQayi1tpcE6MhLs3WWa077g+LZ2Am4gKt/pl/W9Q==
+"@rsbuild/core@~1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@rsbuild/core/-/core-1.5.0.tgz#5bc54077ccbe13890fe8e89786823cda241dcaa8"
+  integrity sha512-C4TNndcgIQTDbBvdlSLbfuMGH9i66SJlsWkA6AVElwF7RI39lwZ5gIbP+v+l3W8HwcZ78a6iIu88ZEm1FuTSvA==
   dependencies:
-    "@rspack/core" "1.5.0-beta.1"
+    "@rspack/core" "1.5.0"
     "@rspack/lite-tapable" "~1.0.1"
     "@swc/helpers" "^0.5.17"
-    core-js "~3.45.0"
+    core-js "~3.45.1"
     jiti "^2.5.1"
 
-"@rslib/core@^0.12.2":
-  version "0.12.2"
-  resolved "https://registry.yarnpkg.com/@rslib/core/-/core-0.12.2.tgz#6da6e54aa5e55bdcb637a6950910a2291c39baa7"
-  integrity sha512-5DPVxmzzyoQlLqSt8Y/8kbYNtbJ0AEVUXd1hDFQ0Iq5Eb5XA4363PDeLdfeKJ1h93YqT7M9WZ3Cyhvosx1EimQ==
+"@rslib/core@^0.12.3":
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/@rslib/core/-/core-0.12.3.tgz#2c60b80654a33eac0ef7e5530c207b89c01b8adb"
+  integrity sha512-36TFj8sm10liVBVgkwufDFqfQtxrzIjugA8TSg5FZzpl0ZyzrIptpeVowcXVlZ3SbgHJTqRqztgdbl4i8YsPoA==
   dependencies:
-    "@rsbuild/core" "1.5.0-beta.4"
-    rsbuild-plugin-dts "0.12.2"
+    "@rsbuild/core" "~1.5.0"
+    rsbuild-plugin-dts "0.12.3"
     tinyglobby "^0.2.14"
 
-"@rspack/binding-darwin-arm64@1.5.0-beta.1":
-  version "1.5.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@rspack/binding-darwin-arm64/-/binding-darwin-arm64-1.5.0-beta.1.tgz#61a6a1982988c4e7068aa9d5979753ba50bd537c"
-  integrity sha512-aXSbz9Bo480xNDK6v64SZ19I/bmMuxaOuex6V9q0S+v3qx/ZsUWL+5aUd71scq7EfAb3KkvQFsYACpt5PMZ9DQ==
+"@rspack/binding-darwin-arm64@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@rspack/binding-darwin-arm64/-/binding-darwin-arm64-1.5.0.tgz#cbc7ddc442c50d3e81b63914d8546f2e19ffabff"
+  integrity sha512-7909YLNnKf0BYxiCpCWOk13WyWS4493Kxk1NQwy9KPLY9ydQExk84KVsix2NuNBaI8Pnk3aVLBPJiSNXtHLjnA==
 
-"@rspack/binding-darwin-x64@1.5.0-beta.1":
-  version "1.5.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@rspack/binding-darwin-x64/-/binding-darwin-x64-1.5.0-beta.1.tgz#2dcadde08cbffb3516711c7bacda6ca5c9da5e5b"
-  integrity sha512-addeCT0bXtfOfvJZdVuHWBl20Cd8RmweOX03OiEH4AmQc9EgUEP/oCGpOmakBXxUCl3x/RnlrXx2nD1uDyuyLA==
+"@rspack/binding-darwin-x64@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@rspack/binding-darwin-x64/-/binding-darwin-x64-1.5.0.tgz#8988c5d263f5b65eff8c31535a0c680639b7194a"
+  integrity sha512-poGuQsGKCMQqSswgrz8X+frqMVTdmtzUDyvi/p9BLwW+2DwWgmywU8jwE+BYtjfWp1tErBSTlLxmEPQTdcIQgQ==
 
-"@rspack/binding-linux-arm64-gnu@1.5.0-beta.1":
-  version "1.5.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@rspack/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.5.0-beta.1.tgz#26ba89b7d13451954a8c5f2f604eb66273dd5af1"
-  integrity sha512-fYgOfSsA0J0rUA40ZEexrMRKyIVAUo4m0KShTm6yVaAzQHWVZ0xjjcoLFNxCVE7EvAPI7wl9fDOyr7Y8EylVfQ==
+"@rspack/binding-linux-arm64-gnu@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@rspack/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.5.0.tgz#d197052588fba1a988681725cf228668009216c4"
+  integrity sha512-Bvmk8h3tRhN9UgOtH+vK0SgFM3qEO36eJz7oddOl4lJQxBf2GNA87bGtkMtX+AVPz/PUn7r82uWxrlVNQHAbFg==
 
-"@rspack/binding-linux-arm64-musl@1.5.0-beta.1":
-  version "1.5.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@rspack/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.5.0-beta.1.tgz#4dfc42db965f87d1c96ee93ca7449a7564ca49af"
-  integrity sha512-wWlOzsoJU2HJyPxoCDScW4zt3+5WO6NI8B7jSmhVA9dfmvCYUKktt/YZpskcgMsvCgtzXTE62wDc+VTQ5ucp9A==
+"@rspack/binding-linux-arm64-musl@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@rspack/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.5.0.tgz#c9578eb1d448905bc1cce1458ec01296a8b823a7"
+  integrity sha512-bH7UwkbACDYT37YnN9kkhaF9niFFK9ndcdNvYFFr1oUT4W9Ie3V9b41EXijqp3pyh0mDSeeLPFY0aEx1t3e7Pw==
 
-"@rspack/binding-linux-x64-gnu@1.5.0-beta.1":
-  version "1.5.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@rspack/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.5.0-beta.1.tgz#755ca075ae80126fd31e13a1c0f731d72a66808c"
-  integrity sha512-OlgQIQLDLDDXvbUYBEfZmofO3uTDi0rGfIr58PXz/wTF87KdwqlU0HyjIeaeDUaQlV+lNXNysuCwvI0hl/o2tw==
+"@rspack/binding-linux-x64-gnu@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@rspack/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.5.0.tgz#47184c1edbc5f5a89e9a7e0e107b64ec562aaa62"
+  integrity sha512-xZ5dwNrE5KtpQyMd9israpJTcTQ3UYUUq23fTcNc79xE5aspkGixDFAYoql4YkhO0O+JWRmdSaFAn6jD+IQWQA==
 
-"@rspack/binding-linux-x64-musl@1.5.0-beta.1":
-  version "1.5.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@rspack/binding-linux-x64-musl/-/binding-linux-x64-musl-1.5.0-beta.1.tgz#3a33a6211ad768bc32e0eac9626501e125a67080"
-  integrity sha512-LkQSyfyf5Jy0UGD0tvm2Gz+0VjboawtRrYd+qYHE0Pm4h7tTJWyqnh02LRTROxOl3GrssC1VGn6J8XYTxOAWug==
+"@rspack/binding-linux-x64-musl@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@rspack/binding-linux-x64-musl/-/binding-linux-x64-musl-1.5.0.tgz#fafbbc92d7ab95b95f38b6e36f06d45f3d9bcbe1"
+  integrity sha512-mv65jYvcyYPkPZJ9kjSvTAcH0o7C5jfICWCQcMmN1tCGD3b8gmf9GqSZ8e+W/JkuvrJ05qTo/PvEq9nhu+pNIg==
 
-"@rspack/binding-wasm32-wasi@1.5.0-beta.1":
-  version "1.5.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@rspack/binding-wasm32-wasi/-/binding-wasm32-wasi-1.5.0-beta.1.tgz#1b3e276c89e80240e081671fc128361914704907"
-  integrity sha512-ysnuVnqC9byoYfoAi/TsV0U5ZUxU0snnVPa/SvQEO6ew3J2GaNDq1vS1zWo0SOA4eLmwkop0/UcH8n3VXOy7NA==
+"@rspack/binding-wasm32-wasi@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@rspack/binding-wasm32-wasi/-/binding-wasm32-wasi-1.5.0.tgz#8912dbf3293c51e2e1e93e8dd910c3d5d04ed8ab"
+  integrity sha512-8rVpl6xfaAFJgo1wCd+emksfl+/8nlehrtkmjY9bj79Ou+kp07L9e1B+UU0jfs8e7aLPntQuF68kzLHwYLzWIQ==
   dependencies:
     "@napi-rs/wasm-runtime" "^1.0.1"
 
-"@rspack/binding-win32-arm64-msvc@1.5.0-beta.1":
-  version "1.5.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@rspack/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.5.0-beta.1.tgz#f7f552ef203585f1f0feb8ece75e46f18940075f"
-  integrity sha512-vcMXybMchQomBODyi6aIMCur8/oQktw+iVv0dH3hiiWy0v2g8xS9VLMjWXfGZAhonhRe7YWTP12dxCPbWmQyZw==
+"@rspack/binding-win32-arm64-msvc@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@rspack/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.5.0.tgz#859f1512eed995a5ba46dd0bc9c9a5bf7e6a54e0"
+  integrity sha512-dWSmNm+GR6WSkOwbhlUcot4Oqwyon+1PRZ9E0vIMFHKGvESf9CQjgHAX0QE9G0kJmRM5x3I16J4x44Kw3W/98Q==
 
-"@rspack/binding-win32-ia32-msvc@1.5.0-beta.1":
-  version "1.5.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@rspack/binding-win32-ia32-msvc/-/binding-win32-ia32-msvc-1.5.0-beta.1.tgz#d94552fa546f5bf4c311177ae976bd3295a64ac9"
-  integrity sha512-fCj904xjc5iKOdUS0VLUE/LbAQZWlub/TF0ZKhzq2UK8WWwrfhA5U8ZHximU0A0LVDoMVZCM5M12rO12P0uHKw==
+"@rspack/binding-win32-ia32-msvc@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@rspack/binding-win32-ia32-msvc/-/binding-win32-ia32-msvc-1.5.0.tgz#2c157250865c2744b8f53d585989dcbeb6dd9fb6"
+  integrity sha512-YtOrFEkwhO3Y3sY6Jq0OOYPY7NBTNYuwJ6epTgzPEDGs2cBnwZfzhq0jmD/koWtv1L9+twX95vKosBdauF0tNA==
 
-"@rspack/binding-win32-x64-msvc@1.5.0-beta.1":
-  version "1.5.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@rspack/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.5.0-beta.1.tgz#082067d23050045ee55c56992ae825800716c95c"
-  integrity sha512-iWCoFMwP2aUea1mIp2+mTE7IKj6wp9hxMuZgOcEGWQidE7pUss5/Zp3wrOSWnnyovIeQLmK9wsQEA/W3i3MiAQ==
+"@rspack/binding-win32-x64-msvc@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@rspack/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.5.0.tgz#ac49d57acda1f4a54ab77d2988e9ff3275381c4a"
+  integrity sha512-V4fcPVYWJgDkIkSsFwmUdwC9lkL8+1dzDOwyTWe6KW2MYHF2D148WPHNyVVE6gum12TShpbIsh0j4NiiMhkMtw==
 
-"@rspack/binding@1.5.0-beta.1":
-  version "1.5.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@rspack/binding/-/binding-1.5.0-beta.1.tgz#1cd7ed069c937efdd51035576b31cd7ccfda58ab"
-  integrity sha512-qZ+cxvsNvXBOPX0NEP+KfxQlJI7TDZR2XLS8Jl+zHl2kgulEOBWsBa7Q1Dcw73YQgz2owxP3OWl3f8LWXnnC1Q==
+"@rspack/binding@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@rspack/binding/-/binding-1.5.0.tgz#86c4f8ca01aa68a8881d4f28c5df46d2730732fe"
+  integrity sha512-UGXQmwEu2gdO+tnGv2q4rOWJdWioy6dlLXeZOLYAZVh3mrfKJhZWtDEygX9hCdE5thWNRTlEvx30QQchJAszIQ==
   optionalDependencies:
-    "@rspack/binding-darwin-arm64" "1.5.0-beta.1"
-    "@rspack/binding-darwin-x64" "1.5.0-beta.1"
-    "@rspack/binding-linux-arm64-gnu" "1.5.0-beta.1"
-    "@rspack/binding-linux-arm64-musl" "1.5.0-beta.1"
-    "@rspack/binding-linux-x64-gnu" "1.5.0-beta.1"
-    "@rspack/binding-linux-x64-musl" "1.5.0-beta.1"
-    "@rspack/binding-wasm32-wasi" "1.5.0-beta.1"
-    "@rspack/binding-win32-arm64-msvc" "1.5.0-beta.1"
-    "@rspack/binding-win32-ia32-msvc" "1.5.0-beta.1"
-    "@rspack/binding-win32-x64-msvc" "1.5.0-beta.1"
+    "@rspack/binding-darwin-arm64" "1.5.0"
+    "@rspack/binding-darwin-x64" "1.5.0"
+    "@rspack/binding-linux-arm64-gnu" "1.5.0"
+    "@rspack/binding-linux-arm64-musl" "1.5.0"
+    "@rspack/binding-linux-x64-gnu" "1.5.0"
+    "@rspack/binding-linux-x64-musl" "1.5.0"
+    "@rspack/binding-wasm32-wasi" "1.5.0"
+    "@rspack/binding-win32-arm64-msvc" "1.5.0"
+    "@rspack/binding-win32-ia32-msvc" "1.5.0"
+    "@rspack/binding-win32-x64-msvc" "1.5.0"
 
-"@rspack/core@1.5.0-beta.1":
-  version "1.5.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@rspack/core/-/core-1.5.0-beta.1.tgz#e8670b17887d171eedde8e1bf5857a4909ef43c6"
-  integrity sha512-o3yQreNKldm0k96wPMpXBI9p0B03LpeK3XyV4vhk24RfLIa2p6C2LPF4xn6U2M28CFQkSbeu1vwlMHnfW4xHNg==
+"@rspack/core@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@rspack/core/-/core-1.5.0.tgz#e4022831797de5ebb6a6490273be80d6556a712d"
+  integrity sha512-eEtiKV+CUcAtnt1K+eiHDzmBXQcNM8CfCXOzr0+gHGp4w4Zks2B8RF36sYD03MM2bg8VRXXsf0MicQ8FvRMCOg==
   dependencies:
     "@module-federation/runtime-tools" "0.18.0"
-    "@rspack/binding" "1.5.0-beta.1"
+    "@rspack/binding" "1.5.0"
     "@rspack/lite-tapable" "1.0.1"
 
 "@rspack/lite-tapable@1.0.1", "@rspack/lite-tapable@~1.0.1":
@@ -255,137 +255,137 @@
   dependencies:
     tslib "^2.8.0"
 
-"@tiptap/core@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/core/-/core-3.2.1.tgz#f67253b0217d6fa02d9afa9de4c41d7d8e3b7aad"
-  integrity sha512-ZLQbzGLxf3Jw7K+cqWb1fFvKcKQkYvaBuOwASnPG98DrGPyKSnI2jby8/PTXHdjeBq4LbENrSIuQDHQAminrQg==
+"@tiptap/core@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/core/-/core-3.3.0.tgz#134ce60536b9e3e5ed7253c9a644bdcd0cde96d4"
+  integrity sha512-YAmFITHzgp/hafA7Ety1qMo4Tl5e5b2+06LaiB9k3rAI7gfO6AXCwhXUqm3fCScmBfMMvMycq9IOIiHk946IzA==
 
-"@tiptap/extension-blockquote@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-blockquote/-/extension-blockquote-3.2.1.tgz#a7bc86a0d117b8cf3eb1a523b6263f9198e7acf8"
-  integrity sha512-xUJZT2DBqx9ZJczxEs6FBnCGsLpbtPwBSEH3FomDwY7cJS+hRlGK7K/4F/zw75VQ+i3gYahEQMvo9dFC9E7EOw==
+"@tiptap/extension-blockquote@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-blockquote/-/extension-blockquote-3.3.0.tgz#ccf145d72a338c414e705fc2aedb00dfbde645c1"
+  integrity sha512-CdntInLJl2L+suvX+YVNDQ0XZ0+NruGco50Gu4XOWkxyAK18FitW8aa+MnbaulPvinrVDyo4H1PQYdZsy3PIbw==
 
-"@tiptap/extension-bold@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-bold/-/extension-bold-3.2.1.tgz#9677702c2fbd2925fac13ee33e975f9978bcf9b4"
-  integrity sha512-HxtzPIe4i71BqL+pCSU69NMfw3FTSHiJGyM6Ro+P8+I8qjGljYSQkZ6h4XK103QbArxpCz+UAhOVuyVd0Nw3iA==
+"@tiptap/extension-bold@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-bold/-/extension-bold-3.3.0.tgz#a7c90310111386b11e2b4f6afecab6d46aca2207"
+  integrity sha512-L/+NI+3OCpKWrcFTPOff8a1QuyTYp6PrANBmlShnnpXnv8mqE5wvQhxjn7sVF8nIDeMqgMFc9jP7pDCdfNykyw==
 
-"@tiptap/extension-code-block@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-code-block/-/extension-code-block-3.2.1.tgz#c5a76ac1a93bc36fa3d40e8593603aff3914a599"
-  integrity sha512-a/e9Qp3VHp8Y9N1xFObKvY7QYjGvwLFUZcDsJitlrQGuU8IPP0TsrvX895mTf7xGNk7X5MKsTNFXTBAwOnTOww==
+"@tiptap/extension-code-block@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-code-block/-/extension-code-block-3.3.0.tgz#8063104502955c0004446df6bedc814fbc7ae62a"
+  integrity sha512-CljkYxkv1XdUEOheQQrae7uqI0gAESfLg7kTxZtIeKLUmsJ7izRn+Ynpt7s83v772rzNw7cm47g2NW+pmNLH+Q==
 
-"@tiptap/extension-code@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-code/-/extension-code-3.2.1.tgz#df366f5eac04f2ccb90628e7df0664577b70e8f3"
-  integrity sha512-k7LObSAny1MF8N6X80Xei/guMtVKRqhsrVFdWY1gsGd1qV3v8JzKKR/IcokhosCINhZCns7mVX1n45QZST2Ojw==
+"@tiptap/extension-code@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-code/-/extension-code-3.3.0.tgz#aaebcbdbea7735d77f338d6ad378c5a78745cf36"
+  integrity sha512-YBIEAjjPsp5acb16VqTS7osKd7lwzIHAt72WLBrQL52UkThfjLHBBC88ARY3E3Cg54W/Rx4lqEs7civ+1AIVbg==
 
-"@tiptap/extension-color@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-color/-/extension-color-3.2.1.tgz#17e7954433a937ca3436d3a0d0dfbae6e3c14065"
-  integrity sha512-QTJKY5vcExyfI9YWc7N5w639f320wDxa1YkwmImy+ZU/CSBWuwHTkBqhsxZI/OAj1PEJWJMS+sm4X74iil+8wg==
+"@tiptap/extension-color@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-color/-/extension-color-3.3.0.tgz#db19ab99ddcfc58c02beb65ffadb060594a76134"
+  integrity sha512-Je5OHJ+Z37snIfK2HY7Ot6kkYfKJ7HRCyFUEhZBLwT+Gpc7bRmkVdc96uvyk/rVIQdwpCwUa9BAT+0rM/a7oeA==
 
-"@tiptap/extension-document@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-document/-/extension-document-3.2.1.tgz#7d59e8ab152f33da8609ec2ed5529e491245ea00"
-  integrity sha512-VtNFGZS3hYvZt0TWLKe3vc3eHF4EZMAwO3DfWVkhLdww6egeI1VX5so+lor4h2wuXaiaczon3R2eh+b1ySjL/A==
+"@tiptap/extension-document@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-document/-/extension-document-3.3.0.tgz#9702c3a0eb1ccece83e2c5a73255e0ea5ef3802d"
+  integrity sha512-J7w2pva06OSBoEUxIyL/faXx+P97H3L0Q8tCsH5umXgUVew2xLYq6nEDqtHOFIXRp/bvrQd677UlQorBaRrWeQ==
 
-"@tiptap/extension-hard-break@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-hard-break/-/extension-hard-break-3.2.1.tgz#ec22a748961ebb3b839eb6001a84efa181764a10"
-  integrity sha512-xAjUBZiqdYYs1UDd1CYDRELl8njqxUYXBgrFtWqD8CZGL9pJDmNt0HOPPmGsMp/tMtDCwMWxeH3bo8Aw2wiIrw==
+"@tiptap/extension-hard-break@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-hard-break/-/extension-hard-break-3.3.0.tgz#2c604eacfbea225d8a997b3f9f83bc2765bd7a59"
+  integrity sha512-kfmxS7o/m6F8LO58POrn4RVc943liLAKqXSwxSPOeCdbHr7v5bvBk+jRJcYv84EZ+sZ2axr7ePq2R2WpEBFxjw==
 
-"@tiptap/extension-heading@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-heading/-/extension-heading-3.2.1.tgz#e72d6413c455360a50984262bc14afc596f2499f"
-  integrity sha512-7L7J65n0bRHIa5Gt89t9in2kBiCDb+iVagUiFcedQiLeIW4+J/4hF34lu9kk+MLvVa/To1J5CIH1zRDmH/II/Q==
+"@tiptap/extension-heading@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-heading/-/extension-heading-3.3.0.tgz#2f4e05fc8d114075a29b759593cb843cef22650b"
+  integrity sha512-oUs0NKAZlXTJ+tNz1fz8SMM28FIIlrX4NYi9ItWSyfWLz3NnOlnCU2aTg9fac9LeG0WdxiRyI7yq19GARWujSw==
 
-"@tiptap/extension-highlight@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-highlight/-/extension-highlight-3.2.1.tgz#87f34d74b8ab66094714e4e6cf0e987723b5474f"
-  integrity sha512-q1vmhKFoDQ8CyquxHiJjDEDxvw1Q5rLCvBKwk8/0XTG4UBkmotA0l8OAorsKwTpJrS6MuWXEsO45dzExqPFFmQ==
+"@tiptap/extension-highlight@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-highlight/-/extension-highlight-3.3.0.tgz#adfa6130378bd32e44577ec2ca3f7efa960d08d3"
+  integrity sha512-G+mHVXkoQ4uG97JRFN56qL42iJVKbSeWgDGssmnjNZN/W4Nsc40LuNryNbQUOM9CJbEMIT5NGAwvc/RG0OpGGQ==
 
-"@tiptap/extension-horizontal-rule@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-horizontal-rule/-/extension-horizontal-rule-3.2.1.tgz#3c60dcb6d8ec14f75bce569f3d3cb6d2c1eace62"
-  integrity sha512-5oJupDqbBYXx99Cf4GEyxJCwLFS4KJTO8DEwjEpKaOG5Xxznb+Gt7yLbug5U9CCEWnDp4o4mR+SkRV38zTAPkg==
+"@tiptap/extension-horizontal-rule@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-horizontal-rule/-/extension-horizontal-rule-3.3.0.tgz#a74a6bc33b0803d0c5b646a8683cb65c114b0b2e"
+  integrity sha512-7mt2+ETWd3XecQMRKVwG6UBbiU55Pe/RJkyyVx7AEKzzMCC2g9F+77Y4uZitIrcmqXqWsBmQEIYkIVme6h12/A==
 
-"@tiptap/extension-image@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-image/-/extension-image-3.2.1.tgz#991535027176e32c2bae9794ec6ffbb47d71b333"
-  integrity sha512-VC9SRr29XnrsqyvwWsLyv3bqxbgZ+oAe7d5fXwU6IVpFpMYd4r507YfAe37XaRIVYAslSXuCLHQzqDLpTdh8YA==
+"@tiptap/extension-image@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-image/-/extension-image-3.3.0.tgz#77d26b7ea7d6b554462f7cb7925a02dfd96ec36e"
+  integrity sha512-iaBpCBYl/JHQk/sPMNFTUDrX/aRN9hV4myJOS8yGftZ6BSs9fD0kgyD4f8Rqks/u9KagORxKDC0foe2bPPq+2Q==
 
-"@tiptap/extension-italic@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-italic/-/extension-italic-3.2.1.tgz#a17abb20dbdd3695ad18c9f6aff48eb27b5c9040"
-  integrity sha512-wXinXf4tiaMlesReJdkZxCvC5fwvkI7siBOnj6Qtqmb+4a1/flp8CJg97NpapArlmTxmWkZuO/BoMcVo0YPKfw==
+"@tiptap/extension-italic@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-italic/-/extension-italic-3.3.0.tgz#14c79ac044570edccd39469e728909fa46850f6f"
+  integrity sha512-O43OReewZd1n//yy7M2qw/Rrz8RW/QK7dD3H4tr0+TNC+0KYYXZMhsB5P7dAkygEfWakQwftUfUlUiZ/UZKtpw==
 
-"@tiptap/extension-link@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-link/-/extension-link-3.2.1.tgz#0acd3acd5e1001fac85458ff11facf88a8cc808b"
-  integrity sha512-wj+2U+TFXNy3PGRaUo4Gd089S3OMzHpsWW7EjdBvNPZyZ3PYlDzPRO511Vdigjua4DNdmaftyzcTaQJXOWYigw==
+"@tiptap/extension-link@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-link/-/extension-link-3.3.0.tgz#c08ba82be086f85fe799f338a28444df32f57b1d"
+  integrity sha512-bQa8KHj5TFnZn8bCdpqDQUzsdsSt/VahZ9ZxvGgv3szyKrbprvugmXbSmU1m0CwLegt/66OcO/r+BdUU+yciAw==
   dependencies:
     linkifyjs "^4.3.2"
 
-"@tiptap/extension-list@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-list/-/extension-list-3.2.1.tgz#c0c7c9cff696d8b3109b164b35526340454b8845"
-  integrity sha512-05xRZQxGPDcXzY7whXAynf/3OJUQAFZ8fgNpB/DCmG1sbM9EMs4UQPBX2s8zyfkU9urxqWs3exMNFAJUNLl5aA==
+"@tiptap/extension-list@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-list/-/extension-list-3.3.0.tgz#53ef6adcca9511ce25c0ea6a32b87c1fb2d4f858"
+  integrity sha512-nxmmkmGm2Zz+ar3+vke7/UVsea64z6tNdhC0c0aucII0JzZF1ZhTCBTYhINdkXxFrGegqatAI1fcO1T1LXRVAw==
 
-"@tiptap/extension-paragraph@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-paragraph/-/extension-paragraph-3.2.1.tgz#65057a1b4fe864da9f464df647c4296570d48202"
-  integrity sha512-U113dq81hkR0naDFNYpHIqStTzYtF+k001hqrmW3VXqVn78LIRccucEOUzjfGF6qW7fQc43KPIp887kT7ARMWg==
+"@tiptap/extension-paragraph@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-paragraph/-/extension-paragraph-3.3.0.tgz#9898e880e06df5e7a4bf1a47c27579c17a977717"
+  integrity sha512-5Ju3RlvlJwiIiOjA/D2Dzq/pCmx9vA/2vTB8KDyj+mkvOlq2Cp9QT7bYdw3i99IHfVF7fCYzoPoKclDfOyM7Mg==
 
-"@tiptap/extension-strike@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-strike/-/extension-strike-3.2.1.tgz#eb9097551f05a2b0b807274e947c95cc826e5a07"
-  integrity sha512-nfgN5Ug4hOyFGOpBWmXzrhDiRofzwecCv9/S/Pjx1UxThO+khNU4ugn03HavdEF4inywG6YcrtqyBTMydhBo8Q==
+"@tiptap/extension-strike@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-strike/-/extension-strike-3.3.0.tgz#d6f6c43e188349c5a44c601a5ee1c3badad34317"
+  integrity sha512-qTSywaQYtlVo3B2NaLSKgmh5/O5m4XspSME8mekinGH6cTv3d+H3p1SUhQoc1Ue+65CI01+GsLU4v/Gi4B2xNw==
 
-"@tiptap/extension-subscript@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-subscript/-/extension-subscript-3.2.1.tgz#fbfe7324481ca974d85c2137841c1a8de47e021e"
-  integrity sha512-+nfw7ShV8WAmMFTj/TgXDJJeBFmFi9bfQwStQ6RuUUSSfL06BTK+ro/2i0XzT/efkT2Bq1yEzE86gPIONgUZSQ==
+"@tiptap/extension-subscript@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-subscript/-/extension-subscript-3.3.0.tgz#3f6969651b2c9a40d117f3053a12907d94c5d833"
+  integrity sha512-0xG28Do1j1am8XOrwN6QpQcU0oxq2Q3mIxGz9L5gDyyHpDw87AVWAXXr7e26mwZnQc7W/VSN5IVVdaxqpuhZxQ==
 
-"@tiptap/extension-superscript@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-superscript/-/extension-superscript-3.2.1.tgz#88e19ae944992f0bca9e3bd3e72b1d4b4b83543b"
-  integrity sha512-+1o2u7PojjdMVOmrqGz1nyMltvdY/PoP65mtaoSNQmUmyeYCJr46wUQzpdC2pPVfYr4b4Z1Z5Csh8BB4zJKnCg==
+"@tiptap/extension-superscript@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-superscript/-/extension-superscript-3.3.0.tgz#70442aeeac49f17f9bf2a575f44d837d32f23b33"
+  integrity sha512-MJnTo5ksmehpHgavU7x15DdKIbLvmHxjcIPBTa1AiXaqBEp+NzsNtiIebl5n6qzdeDvI3mAiW5upZ5jvN2V/vw==
 
-"@tiptap/extension-table@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-table/-/extension-table-3.2.1.tgz#3043bf1c1e02584a70c3aba38d42bb1a5e611aee"
-  integrity sha512-eOD0RLLbgJGE9ThGAXzJ3Cqy9Zm34taXZu/c1h4ZJEsUgKxzsTegqapmF8O7wjN1ip1FHiXgP/eYMZ7PHSCQQA==
+"@tiptap/extension-table@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-table/-/extension-table-3.3.0.tgz#ff4e163ffa8001a9b368ca5c0f76c32025b3c253"
+  integrity sha512-8Etfm5voWGUM4sHv/OXj4yu8DFosGvATbC2Qf/TvksEdo6RLddyK/ZTnCz/EoL1+1pLcktW5xOqdQnmaqWZMzA==
 
-"@tiptap/extension-text-align@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-text-align/-/extension-text-align-3.2.1.tgz#94ad2b1e0759200f6650fcdffbdadfbfeee75ae3"
-  integrity sha512-Nt3KVc2KoGh00q+T+8nv1fH4q5ChPUt+2CyG/Y7IO/RW92EGbDF6qZ72X38vqU0j0VUkCHLrW65IYQ7tJiTZJQ==
+"@tiptap/extension-text-align@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-text-align/-/extension-text-align-3.3.0.tgz#16d7125d2a16481e0d58a56e0ede369629d42ea1"
+  integrity sha512-y/ulBpzrukEgXLvMGT0mI+tbnf64zq06vC3jmSvS7MwunOjgVk5K8CFRQeh/OwuAqGHSqQKcmIH5kOkx2FMI1Q==
 
-"@tiptap/extension-text-style@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-text-style/-/extension-text-style-3.2.1.tgz#2490b4c82c6a9b1e44aec869f3c89ed7b03bbab7"
-  integrity sha512-ziSIbUyPIk6dryiwJ8EhtRzPvmXllGoc8jozzbrYcZhk8dIZslj++YWY0ZufvfsUlwDKDftjukNY6m2FcSMcdQ==
+"@tiptap/extension-text-style@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-text-style/-/extension-text-style-3.3.0.tgz#ab5ba9e4144a23e0c40e1948c6895d60f7fc8eb3"
+  integrity sha512-aYl2JF7zcIGuuFQNWRxukSxPGFsBUn+yCogTqVDzYJwxuZR+VceiWIEI979WvzEeBq1GjYNrENEjwz4U/zxaiw==
 
-"@tiptap/extension-text@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-text/-/extension-text-3.2.1.tgz#b094dbbb0d4695c273e2c5aed513d11851073e2c"
-  integrity sha512-LDLk5jRlZZrXV+0Qy5wUGXpT+QOBA6ac/JPqPMMJyXd7cwqT3YNlGRDHAoGtX7KztxHtGz0ZkHak1myF1eoKNQ==
+"@tiptap/extension-text@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-text/-/extension-text-3.3.0.tgz#8a497be57a1e3ba8cd5e320c4bcce352c04af8d0"
+  integrity sha512-yhNpKfRlZsZFtjBQyiWyjg9WPUTzjgxR/ZID1UEY3SGo9aPUuvAvEnn2v2tSopHyf+qBMyN5IfSjrauauGkWMA==
 
-"@tiptap/extension-underline@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-underline/-/extension-underline-3.2.1.tgz#07171a59a0c146645d2bfa112a654084e71f2b88"
-  integrity sha512-qI3FrkbHvKLaW01w4EN6EdpHChwufBwMLr2oVY3heN05gFJH4XmgPQc0aq4JIjyT4nHlUwKUrcmKV+TWESu/YA==
+"@tiptap/extension-underline@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-underline/-/extension-underline-3.3.0.tgz#33b97efbeed214fba948918c0baa26bad0bd36de"
+  integrity sha512-ipiXsXBxmIQGqcMOaXsnP7iQ6/VO/UIxP3X3rS4ToHgVVF5RIFSs732fv5p3R88TdlVz4hqM9S39W+JesFB2Fw==
 
-"@tiptap/extensions@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/extensions/-/extensions-3.2.1.tgz#7cc092d287d07105c19c541783cd720cbd4d38ee"
-  integrity sha512-0fqVW+3edV3zrYDfqfMQv7ozIONSTYmht4e/CE/BNB5cbt+X/wM3NPX967CsACYQc9SnJ6xp9/2rpSq3LHMK1Q==
+"@tiptap/extensions@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extensions/-/extensions-3.3.0.tgz#a93099e90b68601491c18079871c720d21bb24a3"
+  integrity sha512-Oey5aBg02FQHjldfjn6ebnzpH3x1Q9mPSgSuXNCjDQ51hak7LCGsVFhH+X9PrZtUALlEpEQWNcREgPBwqGM5ow==
 
-"@tiptap/pm@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/pm/-/pm-3.2.1.tgz#a64d74a4b779b57a068aa42a003f4bc43e94a62b"
-  integrity sha512-eNHxq9ozL1Z4pWn0ROki3Ujk7JOf/c/BqP7X85m9SdEOMwqcjvsKytj9MdAAzDpyFDJQ1y4cIZFJri+OcspCTg==
+"@tiptap/pm@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/pm/-/pm-3.3.0.tgz#15f4f8e15fe0e30c5e099c060daa6de9379ebd8a"
+  integrity sha512-uKsysdjP5kQbQRQN8YinN5lr71TVgsHKhxgkq/psXZzNoUh2fPoNpzkhZTaondgr0IXFwzYX+DA5cLkzu4ig/A==
   dependencies:
     prosemirror-changeset "^2.3.0"
     prosemirror-collab "^1.3.1"
@@ -459,11 +459,11 @@ browserslist@^4.24.4:
     update-browserslist-db "^1.1.3"
 
 caniuse-lite@^1.0.30001702, caniuse-lite@^1.0.30001735:
-  version "1.0.30001736"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001736.tgz#3710a99cf154b653590fb6a57f81ee34173c3b47"
-  integrity sha512-ImpN5gLEY8gWeqfLUyEF4b7mYWcYoR2Si1VhnrbM4JizRFmfGaAQ12PhNykq6nvI4XvKLrsp8Xde74D5phJOSw==
+  version "1.0.30001737"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001737.tgz#8292bb7591932ff09e9a765f12fdf5629a241ccc"
+  integrity sha512-BiloLiXtQNrY5UyF0+1nSJLXUENuhka2pzy2Fx5pGxqavdrxSCW4U6Pn/PoG3Efspi2frRbHpBV2XsrPE6EDlw==
 
-core-js@~3.45.0:
+core-js@~3.45.1:
   version "3.45.1"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.45.1.tgz#5810e04a1b4e9bc5ddaa4dd12e702ff67300634d"
   integrity sha512-L4NPsJlCfZsPeXukyzHFlg/i7IIVwHSItR0wg0FLNqYClJ4MQYTYLbC7EkjKYRLZF2iof2MUgN0EGy7MdQFChg==
@@ -474,9 +474,9 @@ crelt@^1.0.0:
   integrity sha512-VQ2MBenTq1fWZUH9DJNGti7kKv6EeAuYr3cLwxUWhIu1baTaXh4Ib5W2CqHVqib4/MqbYGJqiL3Zb8GJZr3l4g==
 
 electron-to-chromium@^1.5.204:
-  version "1.5.207"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.207.tgz#0fedde3eec615065ee95531c09a10578644c5552"
-  integrity sha512-mryFrrL/GXDTmAtIVMVf+eIXM09BBPlO5IQ7lUyKmK8d+A4VpRGG+M3ofoVef6qyF8s60rJei8ymlJxjUA8Faw==
+  version "1.5.209"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.209.tgz#403e7a84933b7206bb2e737d897042b2a6ef8d3e"
+  integrity sha512-Xoz0uMrim9ZETCQt8UgM5FxQF9+imA7PBpokoGcZloA1uw2LeHzTlip5cb5KOAsXZLjh/moN2vReN3ZjJmjI9A==
 
 entities@^4.4.0:
   version "4.5.0"
@@ -525,12 +525,12 @@ linkifyjs@^4.3.2:
   resolved "https://registry.yarnpkg.com/linkifyjs/-/linkifyjs-4.3.2.tgz#d97eb45419aabf97ceb4b05a7adeb7b8c8ade2b1"
   integrity sha512-NT1CJtq3hHIreOianA8aSXn6Cw0JzYOuDQbOrSPe7gqFnCpKP++MQe3ODgO3oh2GJFORkAAdqredOa60z63GbA==
 
-magic-string@^0.30.17:
-  version "0.30.17"
-  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.30.17.tgz#450a449673d2460e5bbcfba9a61916a1714c7453"
-  integrity sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==
+magic-string@^0.30.18:
+  version "0.30.18"
+  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.30.18.tgz#905bfbbc6aa5692703a93db26a9edcaa0007d2bb"
+  integrity sha512-yi8swmWbO17qHhwIBNeeZxTceJMeBvWJaId6dyvTSOwTipqeHhMhOrz6513r1sOKnpvQ7zkhlG8tPrpilwTxHQ==
   dependencies:
-    "@jridgewell/sourcemap-codec" "^1.5.0"
+    "@jridgewell/sourcemap-codec" "^1.5.5"
 
 markdown-it@^14.0.0:
   version "14.1.0"
@@ -762,13 +762,13 @@ rope-sequence@^1.3.0:
   resolved "https://registry.yarnpkg.com/rope-sequence/-/rope-sequence-1.3.4.tgz#df85711aaecd32f1e756f76e43a415171235d425"
   integrity sha512-UT5EDe2cu2E/6O4igUr5PSFs23nvvukicWHx6GnOPlHAiiYbzNuCRQCuiUdHJQcqKalLKlrYJnjY0ySGsXNQXQ==
 
-rsbuild-plugin-dts@0.12.2:
-  version "0.12.2"
-  resolved "https://registry.yarnpkg.com/rsbuild-plugin-dts/-/rsbuild-plugin-dts-0.12.2.tgz#e7356c8b79b3f237181d227b54ce1818b66b153f"
-  integrity sha512-qI7wwT7R6T5LzuwcBWt6dZYaS1Fv5Tg2D3OHbAX9MXYn2oJ3eJjdwXU2LcLALd1CpXUPaQCjOTHRMJzHT0++JQ==
+rsbuild-plugin-dts@0.12.3:
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/rsbuild-plugin-dts/-/rsbuild-plugin-dts-0.12.3.tgz#61c9e3582fd2e266ffcc4e90a0473effad54de7b"
+  integrity sha512-FEZ+q+H1HezdNshEuYYtIoYlx/HQPjPhBT4u0X7d0pRyMDhD/LpD2GxmyIjJMfTvh2CaxoIMKRarvTOBL8GGYg==
   dependencies:
     "@ast-grep/napi" "0.37.0"
-    magic-string "^0.30.17"
+    magic-string "^0.30.18"
     picocolors "1.1.1"
     tinyglobby "^0.2.14"
     tsconfig-paths "^4.2.0"
