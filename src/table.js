@@ -65,7 +65,7 @@ export const Table = TiptapTable.extend({
   },
 })
 
-function defineTableMenuItems({ editor, buttons, menu }) {
+function defineTableMenuItems({ buttons, menu }) {
   const tableManipulationItem = (name, command, button) => {
     menu.defineItem({
       name,
