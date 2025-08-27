@@ -581,7 +581,7 @@ def test_html_extension_edit_and_prettify_button(page, live_server):
 
 @pytest.mark.django_db
 @pytest.mark.e2e
-def test_nodeclass(live_server, page):
+def test_nodeclass_textclass(live_server, page):
     User.objects.create_superuser("admin", "admin@example.com", "password")
 
     page.goto(f"{live_server.url}/admin/login/")
@@ -605,6 +605,10 @@ def test_nodeclass(live_server, page):
     page.locator("div").filter(has_text=re.compile(r"^Block style$")).click()
     page.get_by_text("paragraph: highlight").click()
 
+    page.get_by_role("textbox").press("ControlOrMeta+Shift+ArrowLeft")
+    page.locator("div").filter(has_text=re.compile(r"^default$")).click()
+    page.get_by_text("highlight", exact=True).click()
+
     page.click("input[name='_save']")
 
     # Check that we've been redirected to the changelist page
@@ -615,7 +619,10 @@ def test_nodeclass(live_server, page):
     # Check that the model was created
     model = ConfigurableProseEditorModel.objects.first()
     assert model is not None
-    assert model.description == '<p class="highlight">Blubbering Hello World</p>'
+    assert (
+        model.description
+        == '<p class="highlight">Blubbering Hello <span class="highlight">World</span></p>'
+    )
 
 
 """
