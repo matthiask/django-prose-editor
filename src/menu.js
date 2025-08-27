@@ -60,12 +60,13 @@ const createMenuObject = (cssClass, _definedItems, buttons) => {
         hidden,
         update,
         command,
+        name,
       } of items) {
         if (button) {
           dom.append(button)
 
-          if (button.dataset.initialized) return
-          button.dataset.initialized = true
+          if (button.dataset.name) return
+          button.dataset.name = name
 
           button.addEventListener("click", (e) => {
             editor.view.focus()
@@ -103,7 +104,10 @@ const createMenuObject = (cssClass, _definedItems, buttons) => {
       ])
 
       // Add all items to the picker content initially
-      pickerContent.append(...items.map((item) => item.option))
+      for (const { option, name } of items) {
+        option.dataset.name = name
+        pickerContent.append(option)
+      }
 
       // Function to update item visibility based on hidden state
       const updateItemVisibility = () => {
