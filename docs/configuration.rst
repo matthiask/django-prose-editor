@@ -22,6 +22,7 @@ sanitization rules:
             "Bold": True,
             "Italic": True,
             "BulletList": True,
+            "ListItem": True,
             "Link": True,
         },
         sanitize=True,  # Server side sanitization is strongly recommended.
@@ -74,6 +75,7 @@ want to enable in your editor:
                 },
                 "BulletList": True,
                 "OrderedList": True,
+                "ListItem": True, # Used by BulletList and OrderedList
                 "Blockquote": True,
 
                 # Advanced extensions
@@ -82,6 +84,9 @@ want to enable in your editor:
                     "protocols": ["http", "https", "mailto"],  # Limit protocols
                 },
                 "Table": True,
+                "TableRow": True,
+                "TableHeader": True,
+                "TableCell": True,
 
                 # Editor capabilities
                 "History": True,       # Enables undo/redo
@@ -100,7 +105,6 @@ You can also pass additional configurations to extensions:
             "Italic": True,
             "Heading": {"levels": [1, 2, 3]},  # Only allow H1-H3
             "Link": {"enableTarget": False},  # Disable "open in new tab"
-            "Table": True,
         }
     )
 
