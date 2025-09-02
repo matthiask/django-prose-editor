@@ -20,6 +20,7 @@ django-prose-editor[sanitize]``) the following should get you started:
             "Bold": True,
             "Italic": True,
             "BulletList": True,
+            "ListItem": True,
             "Link": True,
         },
         sanitize=True,  # Server side sanitization is strongly recommended.
