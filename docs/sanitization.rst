@@ -82,8 +82,9 @@ Underline      <u>                     -
 Subscript      <sub>                   -
 Superscript    <sup>                   -
 Heading        <h1> to <h6>            -
-BulletList     <ul>, <li>              -
-OrderedList    <ol>, <li>              start, type
+BulletList     <ul>                    -
+OrderedList    <ol>                    start, type
+ListItem       <li>                    -
 Blockquote     <blockquote>            -
 HorizontalRule <hr>                    -
 Link           <a>                     href, title, target, rel
