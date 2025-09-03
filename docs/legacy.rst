@@ -68,3 +68,6 @@ ProseMirror-style names are still supported:
 * Legacy mark names: ``strong`` → ``Bold``, ``em`` → ``Italic``,
   ``strikethrough`` → ``Strike``, ``sub`` → ``Subscript``, ``sup`` → ``Superscript``,
   ``link`` → ``Link``
+
+Note that when using the legacy format, lists and tables automatically include
+the extensions they depend on.

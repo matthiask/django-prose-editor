@@ -4,6 +4,13 @@ Change log
 Next version
 ~~~~~~~~~~~~
 
+- Updated the documentation to provide working examples by including the
+  necessary dependencies. Thanks @benopotamus and @j4lib!
+- Updated the sanitization documentation to correctly say which HTML tags and
+  attributes are actually allowlisted by which extensions.
+- Updated the Tiptap dependency and pre-commit hooks.
+
+
 0.18 (2025-08-27)
 ~~~~~~~~~~~~~~~~~
 
@@ -169,7 +176,7 @@ Next version
   be disabled by configuring the extension when using a custom preset using
   ``Link.configure({ enableTarget: false })``. Also removed ``nofollow`` and
   ``noreferrer`` from the ``rel`` attribute of links since they do not make
-  sense in a CMS context.
+  sense in a CMS context. Thanks to @yoshson for getting this started!
 - Added integration testing using playwright.
 - Pruned the CI matrix a bit, stopped running tests using Python 3.11 and
   Django 5.0. Python 3.10 and Django 4.2 are still tested so we should be safe.
@@ -235,8 +242,8 @@ Next version
 0.7 (2024-08-02)
 ~~~~~~~~~~~~~~~~
 
-- Added the ``django-prose-editor[sanitize]`` which automatically installs the
-  ``nh3`` dependency. Thanks @plenaerts!
+- Added the ``django-prose-editor[sanitize]`` extra which automatically
+  installs the ``nh3`` dependency. Thanks @plenaerts!
 - Properly restored the textarea element when destroying the editor.
 - Added more unittesting.
 - Supported using the ``ProseEditorFormField`` with widget instances, not just
