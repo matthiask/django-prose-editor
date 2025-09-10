@@ -195,7 +195,7 @@
 .ProseMirror table[show_borders="false"]:hover td,
 .ProseMirror table[show_borders="false"]:hover th {
   min-width: 1em;
-  border: 2px solid #ced4da;
+  border: 2px solid var(--border-color, #ced4da);
   padding: 3px 5px;
   vertical-align: top;
   box-sizing: border-box;
@@ -217,10 +217,6 @@
   font-weight: bold;
   text-align: left;
   background-color: #f1f3f5;
-}
-
-.ProseMirror tr {
-  background-color: white !important;
 }
 
 .ProseMirror table .selectedCell:after {

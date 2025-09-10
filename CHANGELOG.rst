@@ -9,6 +9,7 @@ Next version
 - Updated the sanitization documentation to correctly say which HTML tags and
   attributes are actually allowlisted by which extensions.
 - Updated the Tiptap dependency and pre-commit hooks.
+- Fixed the table style overrides to work better in dark mode.
 
 
 0.18 (2025-08-27)
