@@ -10,6 +10,8 @@ Next version
   attributes are actually allowlisted by which extensions.
 - Updated the Tiptap dependency and pre-commit hooks.
 - Fixed the table style overrides to work better in dark mode.
+- Refactored the node class extension to use a single function to walk the
+  ancestor list.
 
 
 0.18 (2025-08-27)

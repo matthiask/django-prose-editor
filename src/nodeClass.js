@@ -3,6 +3,28 @@ import { crel } from "./utils.js"
 
 const cssClass = (c) => (typeof c === "string" ? { className: c, title: c } : c)
 
+const getApplicableNodes = (state, cssClasses) => {
+  const { selection } = state
+  const { $from } = selection
+  const applicableNodes = []
+
+  let depth = $from.depth
+  while (depth > 0) {
+    const node = $from.node(depth)
+    if (cssClasses[node.type.name]) {
+      applicableNodes.push({
+        nodeType: node.type.name,
+        node: node,
+        depth: depth,
+        pos: $from.before(depth),
+      })
+    }
+    depth--
+  }
+
+  return applicableNodes
+}
+
 export const NodeClass = Extension.create({
   name: "nodeClass",
 
@@ -43,32 +65,11 @@ export const NodeClass = Extension.create({
   },
 
   addMenuItems({ buttons, menu }) {
-    // Helper function to get all applicable node types in the current selection
-    const getApplicableNodeTypes = (editor) => {
-      const { selection } = editor.state
-      const { $from } = selection
-      const applicableNodes = []
-
-      let depth = $from.depth
-      while (depth > 0) {
-        const node = $from.node(depth)
-        if (this.options.cssClasses[node.type.name]) {
-          applicableNodes.push({
-            nodeType: node.type.name,
-            node: node,
-            depth: depth,
-            pos: $from.before(depth),
-          })
-        }
-        depth--
-      }
-
-      return applicableNodes
-    }
+    const cssClasses = this.options.cssClasses
 
     // Helper function to get the display title for a node type
     const getNodeTypeTitle = (nodeType) => {
-      const nodeConfig = this.options.cssClasses[nodeType]
+      const nodeConfig = cssClasses[nodeType]
       if (
         typeof nodeConfig === "object" &&
         nodeConfig.title &&
@@ -81,7 +82,7 @@ export const NodeClass = Extension.create({
 
     // Helper function to get the classes for a node type
     const getNodeTypeClasses = (nodeType) => {
-      const nodeConfig = this.options.cssClasses[nodeType]
+      const nodeConfig = cssClasses[nodeType]
       if (
         typeof nodeConfig === "object" &&
         nodeConfig.cssClasses &&
@@ -110,7 +111,7 @@ export const NodeClass = Extension.create({
       },
       command(editor) {
         // Remove classes from all applicable ancestor nodes
-        const applicableNodes = getApplicableNodeTypes(editor)
+        const applicableNodes = getApplicableNodes(editor.state, cssClasses)
         editor
           .chain()
           .focus()
@@ -125,7 +126,7 @@ export const NodeClass = Extension.create({
     })
 
     // Create separate menu items for each node type and its classes
-    for (const nodeType of Object.keys(this.options.cssClasses)) {
+    for (const nodeType of Object.keys(cssClasses)) {
       const classes = getNodeTypeClasses(nodeType)
       if (!classes || classes.length === 0) continue
 
@@ -144,25 +145,20 @@ export const NodeClass = Extension.create({
           }),
           active(editor) {
             // Active when this specific node type has this class
-            const applicableNodes = getApplicableNodeTypes(editor)
+            const applicableNodes = getApplicableNodes(editor.state, cssClasses)
             const targetNode = applicableNodes.find(
               (n) => n.nodeType === nodeType,
             )
             return targetNode && targetNode.node.attrs.class === className
           },
           hidden(editor) {
-            const applicableNodes = getApplicableNodeTypes(editor)
+            const applicableNodes = getApplicableNodes(editor.state, cssClasses)
             return !applicableNodes.some((n) => n.nodeType === nodeType)
           },
           command(editor) {
-            const { selection } = editor.state
-            const { $from } = selection
-
-            let depth = $from.depth
-            while (depth > 0) {
-              const node = $from.node(depth)
+            const applicableNodes = getApplicableNodes(editor.state, cssClasses)
+            for (const { node, pos } of applicableNodes) {
               if (node.type.name === nodeType) {
-                const pos = $from.before(depth)
                 editor
                   .chain()
                   .focus()
@@ -173,7 +169,6 @@ export const NodeClass = Extension.create({
                   .run()
                 return
               }
-              depth--
             }
           },
         })
