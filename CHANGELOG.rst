@@ -12,6 +12,8 @@ Next version
 - Fixed the table style overrides to work better in dark mode.
 - Refactored the node class extension to use a single function to walk the
   ancestor list.
+- Changed the CSS overrides so that paragraphs in table header cells inherit
+  the font weight.
 
 
 0.18 (2025-08-27)
