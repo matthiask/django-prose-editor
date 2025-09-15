@@ -14,6 +14,8 @@ Next version
   ancestor list.
 - Changed the CSS overrides so that paragraphs in table header cells inherit
   the font weight.
+- Added a description to the HTML extension's textarea which explains that the
+  HTML is restricted by the editor schema.
 
 
 0.18 (2025-08-27)

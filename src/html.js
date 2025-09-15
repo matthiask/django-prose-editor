@@ -7,6 +7,9 @@ const htmlDialog = updateAttrsDialog(
     html: {
       type: "string",
       title: "HTML",
+      description: gettext(
+        "The HTML contents of the editor. Note that the allowed HTML is restricted by the editor schema.",
+      ),
       format: "textarea",
     },
   },

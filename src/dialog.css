@@ -35,6 +35,12 @@
   min-width: 0;
 }
 
+.prose-editor-help {
+  font-weight: normal;
+  font-size: 80%;
+  margin-left: 4px;
+}
+
 .prose-editor-dialog input:not([type="checkbox"], [type="radio"]),
 .prose-editor-dialog select,
 .prose-editor-dialog textarea,

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-20 11:23+0100\n"
+"POT-Creation-Date: 2025-09-15 22:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,111 +18,122 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: figure.js:125
+#: src/figure.js:134
 msgid "Image URL"
 msgstr "Bild-URL"
 
-#: figure.js:131
+#: src/figure.js:140
 msgid "Alternative Text"
 msgstr "Alternativer Text"
 
-#: figure.js:135
+#: src/figure.js:144
 msgid "Caption"
 msgstr "Legende"
 
-#: figure.js:142
+#: src/figure.js:151
 msgid "Edit Figure"
 msgstr "Bild bearbeiten"
 
-#: figure.js:143
+#: src/figure.js:152
 msgid "Insert Figure"
 msgstr "Bild einfügen"
 
-#: figure.js:144 orderedList.js:63 utils.js:67
+#: src/figure.js:153 src/orderedList.js:63 src/utils.js:95
 msgid "Update"
 msgstr "Aktualisieren"
 
-#: figure.js:144
+#: src/figure.js:153
 msgid "Insert"
 msgstr "Einfügen"
 
-#: html.js:14
+#: src/html.js:11
+msgid ""
+"The HTML contents of the editor. Note that the allowed HTML is restricted by "
+"the editor schema."
+msgstr ""
+"Der HTML-Inhalt des Editors. Das HTML wird immer noch durch das Editor-Schema eingeschränkt."
+
+#: src/html.js:17
 msgid "Edit HTML"
 msgstr "HTML bearbeiten"
 
-#: link.js:9
+#: src/html.js:20
+msgid "Prettify"
+msgstr "Verschönern"
+
+#: src/link.js:9
 msgid "URL"
 msgstr "URL"
 
-#: link.js:13
+#: src/link.js:13
 msgid "Title"
 msgstr "Titel"
 
-#: link.js:17
+#: src/link.js:20
 msgid "Open in new window"
 msgstr "In neuem Fenster öffnen"
 
-#: link.js:21
+#: src/link.js:24
 msgid "Edit Link"
 msgstr "Link bearbeiten"
 
-#: menu.js:258 orderedList.js:62
+#: src/menu.js:478 src/orderedList.js:62
 msgid "List properties"
 msgstr "Listen-Einstellungen"
 
-#: menu.js:545
+#: src/menu.js:641
 msgid "Toggle fullscreen"
 msgstr "Vollbild umschalten"
 
-#: orderedList.js:10
+#: src/orderedList.js:10
 msgid "Decimal numbers"
 msgstr "Dezimalzahlen"
 
-#: orderedList.js:15
+#: src/orderedList.js:15
 msgid "Lowercase letters"
 msgstr "Kleinbuchstaben"
 
-#: orderedList.js:20
+#: src/orderedList.js:20
 msgid "Uppercase letters"
 msgstr "Grossbuchstaben"
 
-#: orderedList.js:25
+#: src/orderedList.js:25
 msgid "Lowercase Roman numerals"
 msgstr "Kleine römische Zahlen"
 
-#: orderedList.js:30
+#: src/orderedList.js:30
 msgid "Uppercase Roman numerals"
 msgstr "Grosse römische Zahlen"
 
-#: orderedList.js:50
+#: src/orderedList.js:50
 msgid "Start at"
 msgstr "Starten mit"
 
-#: orderedList.js:56
+#: src/orderedList.js:56
 msgid "List type"
 msgstr "Listentyp"
 
-#: table.js:9
+#: src/table.js:9
 msgid "Rows"
 msgstr "Zeilen"
 
-#: table.js:17
+#: src/table.js:17
 msgid "Columns"
 msgstr "Spalten"
 
-#: table.js:24
+#: src/table.js:24
 msgid "Include header row"
 msgstr "Inklusive Kopfzeile"
 
-#: table.js:30
+#: src/table.js:30
 msgid "Table Properties"
 msgstr "Tabellen-Einstellungen"
 
-#: table.js:31
+#: src/table.js:31
 msgid "Insert Table"
 msgstr "Tabelle einfügen"
 
-#: utils.js:72
+#: src/utils.js:100
 msgid "Cancel"
 msgstr "Abbrechen"
 

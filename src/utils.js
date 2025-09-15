@@ -20,6 +20,14 @@ const formFieldForProperty = (name, config, attrValue, id) => {
     htmlFor: id,
     textContent: config.title || name,
   })
+  if (config.description) {
+    label.append(
+      crel("span", {
+        className: "prose-editor-help",
+        textContent: config.description,
+      }),
+    )
+  }
   const defaultValue =
     typeof config.default === "function" ? config.default() : config.default
   const value = attrValue || defaultValue || ""
